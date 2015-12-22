@@ -22,7 +22,8 @@ public class PlayerMain extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         jettyServer.start();
-        populatePrimaryStage(primaryStage, new UserInterface(jettyServer)).show();
+        UserInterface userInterface = new UserInterface(jettyServer);
+        prepareStage(primaryStage, userInterface).show();
     }
 
     @Override
@@ -30,10 +31,10 @@ public class PlayerMain extends Application {
         jettyServer.stop();
     }
 
-    private Stage populatePrimaryStage(Stage primaryStage, UserInterface userInterface) {
-        primaryStage.setScene(new Scene(userInterface, primaryStage.getWidth(), primaryStage.getHeight()));
-        primaryStage.setTitle(UserInterface.TITLE);
-        return primaryStage;
+    private Stage prepareStage(Stage stage, UserInterface userInterface) {
+        stage.setScene(new Scene(userInterface, stage.getWidth(), stage.getHeight()));
+        stage.setTitle(UserInterface.TITLE);
+        return stage;
     }
 
 }
