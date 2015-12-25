@@ -28,8 +28,7 @@
 
     <properties>
         <jetty-version>9.3.6.v20151106</jetty-version>
-        <junit-version>4.12
-        </junit-version>
+        <junit-version>4.12</junit-version>
     </properties>
 
     <dependencies>
