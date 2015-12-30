@@ -1,0 +1,16 @@
+.carousel {
+    background-color: #5F4687;
+    height: auto;
+}
+
+.carousel-inner > .item {
+    margin: 20px;
+}
+
+.carousel-inner > .item > .img-thumbnail {
+    width: 926px;
+    height: 521px;
+    border-width: 5px;
+    border-color: #ffffff;
+    border-radius: 0px;;
+}
