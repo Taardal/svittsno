@@ -1,4 +1,4 @@
-package no.svitts.player.userinterface;
+package no.svitts.player.eventhandler;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
