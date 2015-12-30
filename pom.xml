@@ -13,23 +13,26 @@
         <module>player</module>
     </modules>
 
+    <properties>
+        <java-sdk-version>1.8</java-sdk-version>
+        <maven-compiler-version>3.3</maven-compiler-version>
+        <jetty-version>9.3.6.v20151106</jetty-version>
+        <junit-version>4.12</junit-version>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-version}</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${java-sdk-version}</source>
+                    <target>${java-sdk-version}</target>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
-    <properties>
-        <jetty-version>9.3.6.v20151106</jetty-version>
-        <junit-version>4.12</junit-version>
-    </properties>
 
     <dependencies>
         <dependency>
