@@ -12,7 +12,7 @@ public class PlayerMain extends Application {
 
     public PlayerMain() {
         jettyServer = new JettyServer(8585);
-        jettyServer.addServlet("no.svitts.player.api.PlayerServlet", "/");
+        jettyServer.addServlet("no.svitts.player.servlet.PlayerServlet", "/");
     }
 
     public static void main(String[] args) {
