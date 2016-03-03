@@ -1,4 +1,4 @@
-package no.svitts.core.movie;
+package no.svitts.core.person;
 
 public class Person {
 
@@ -6,5 +6,5 @@ public class Person {
     private int age;
     private String name;
     private Gender gender;
-    private MovieRole movieRole;
+    private Role role;
 }
