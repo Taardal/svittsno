@@ -23,6 +23,8 @@
         <maven-compiler.version>3.3</maven-compiler.version>
         <maven-eclipse-plugin.version>2.10</maven-eclipse-plugin.version>
         <joda-time.version>2.9.1</joda-time.version>
+        <hikari-cp.version>2.4.3</hikari-cp.version>
+        <h2-database-engine.version>1.4.191</h2-database-engine.version>
     </properties>
 
     <dependencies>
@@ -54,8 +56,8 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.test-framework.providers</groupId>
-            <artifactId>jersey-test-framework-provider-bundle</artifactId>
-            <version>${jersey.version}</version>
+            <artifactId>jersey-test-framework-provider-grizzly2</artifactId>
+            <version>2.22.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -71,6 +73,16 @@
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
             <version>${joda-time.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>${hikari-cp.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2-database-engine.version}</version>
         </dependency>
     </dependencies>
 
