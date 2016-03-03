@@ -1,31 +1,27 @@
 package no.svitts.core.movie;
 
+import no.svitts.core.file.VideoFile;
+
 import java.sql.Date;
 
 public class Movie {
 
     private final int id;
-    private int runtime;
     private String imdbId;
     private String name;
     private String tagline;
     private String overview;
+    private int runtime;
     private Date releaseDate;
-    private Date added;
-    private Date lastPlayed;
-//    private File movieFile;
-//    private File backdropFile;
+    private Genre genre;
+    private VideoFile videoFile;
 
     public Movie(int id) {
         this.id = id;
     }
 
-    public int getRuntime() {
-        return runtime;
-    }
-
-    public void setRuntime(int runtime) {
-        this.runtime = runtime;
+    public int getId() {
+        return id;
     }
 
     public String getImdbId() {
@@ -60,6 +56,14 @@ public class Movie {
         this.overview = overview;
     }
 
+    public int getRuntime() {
+        return runtime;
+    }
+
+    public void setRuntime(int runtime) {
+        this.runtime = runtime;
+    }
+
     public Date getReleaseDate() {
         return releaseDate;
     }
@@ -68,34 +72,34 @@ public class Movie {
         this.releaseDate = releaseDate;
     }
 
-    public Date getAdded() {
-        return added;
+    public Genre getGenre() {
+        return genre;
     }
 
-    public void setAdded(Date added) {
-        this.added = added;
+    public void setGenre(Genre genre) {
+        this.genre = genre;
     }
 
-    public Date getLastPlayed() {
-        return lastPlayed;
+    public VideoFile getVideoFile() {
+        return videoFile;
     }
 
-    public void setLastPlayed(Date lastPlayed) {
-        this.lastPlayed = lastPlayed;
+    public void setVideoFile(VideoFile videoFile) {
+        this.videoFile = videoFile;
     }
 
     @Override
     public String toString() {
         return "Movie{" +
                 "id=" + id +
-                ", runtime=" + runtime +
                 ", imdbId='" + imdbId + '\'' +
                 ", name='" + name + '\'' +
                 ", tagline='" + tagline + '\'' +
                 ", overview='" + overview + '\'' +
+                ", runtime=" + runtime +
                 ", releaseDate=" + releaseDate +
-                ", added=" + added +
-                ", lastPlayed=" + lastPlayed +
+                ", genre=" + genre +
+                ", videoFile=" + videoFile +
                 '}';
     }
 }
