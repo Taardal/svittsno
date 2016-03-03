@@ -1,4 +1,4 @@
-package no.svitts.core.controller;
+package no.svitts.core.resource;
 
 import com.google.gson.Gson;
 import no.svitts.core.movie.Movie;
@@ -8,24 +8,29 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
 
 @Path("/movie")
 @Produces(MediaType.APPLICATION_JSON)
-public class MovieController {
+public class MovieResource {
 
     private Service<Movie> movieService;
 
-    public MovieController(Service<Movie> movieService) {
+    public MovieResource(Service<Movie> movieService) {
         this.movieService = movieService;
     }
 
     @GET
     @Path("/all")
     public String getAll() {
-        List<Movie> movies = movieService.getAll();
-        return new Gson().toJson(movies);
+        return new Gson().toJson(movieService.getAll());
     }
+
+    @GET
+    @Path("/single")
+    public String getSingle() {
+        return new Gson().toJson(movieService.getById(1));
+    }
+
 
     @GET
     @Path("/hello")
