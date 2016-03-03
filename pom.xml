@@ -11,6 +11,7 @@
     <modules>
         <module>core</module>
         <module>player</module>
+        <module>core-itests</module>
     </modules>
 
     <properties>
