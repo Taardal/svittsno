@@ -5,7 +5,7 @@ import java.util.List;
 public interface Repository<T> {
     List<T> getAll();
     T getById(int id);
-    void update(int id);
-    void delete(int id);
+    int update(int id);
+    int delete(int id);
 
 }

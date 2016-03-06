@@ -3,13 +3,11 @@ package no.svitts.core.repository;
 import no.svitts.core.database.DataSource;
 import no.svitts.core.database.SvittsDataSource;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public abstract class AbstractRepository<T> {
@@ -21,61 +19,47 @@ public abstract class AbstractRepository<T> {
         this.dataSource = dataSource;
     }
 
-    protected List<T> executeQuery(String query) {
-        LOGGER.log(Level.INFO, "Executing query [" + query + "]");
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+    protected int executeUpdate(PreparedStatement preparedStatement) throws SQLException {
         try {
-            connection = dataSource.getConnection();
-            preparedStatement = connection.prepareStatement(query);
-            resultSet = preparedStatement.executeQuery();
-            return getResults(resultSet);
+            return preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not execute query [" + query + "]", e);
+            e.printStackTrace();
         } finally {
-            closeResultSet(resultSet);
-            closePreparedStatement(preparedStatement);
-            closeConnection(connection);
+            preparedStatement.close();
+            preparedStatement.getConnection().close();
+        }
+        return 0;
+    }
+
+    protected List<T> executeQuery(PreparedStatement preparedStatement) throws SQLException {
+        try {
+            return getResults(preparedStatement.executeQuery());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            preparedStatement.close();
+            preparedStatement.getConnection().close();
         }
         return new ArrayList<>();
     }
 
-    protected abstract List<T> getResults(ResultSet resultSet) throws SQLException;
-
-    private void closeResultSet(ResultSet resultSet) {
-        if (resultSet != null) {
-            try {
-                resultSet.close();
-            } catch (SQLException e) {
-                LOGGER.log(Level.SEVERE, "Could not close result set", e);
-            }
-        } else {
-            LOGGER.log(Level.WARNING, "Result set was null when trying to close it");
+    protected List<T> getResults(ResultSet resultSet) throws SQLException {
+        try {
+            return getResultsFromResultSet(resultSet);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            resultSet.close();;
         }
+        return new ArrayList<>();
     }
 
-    private void closePreparedStatement(PreparedStatement preparedStatement) {
-        if (preparedStatement != null) {
-            try {
-                preparedStatement.close();
-            } catch (SQLException e) {
-                LOGGER.log(Level.SEVERE, "Could not close prepared statement", e);
-            }
-        } else {
-            LOGGER.log(Level.WARNING, "Prepared statement was null when trying to close it");
+    protected List<T> getResultsFromResultSet(ResultSet resultSet) throws SQLException {
+        List<T> results = new ArrayList<>();
+        while (resultSet.next()) {
+            //results.add(result)
         }
+        return results;
     }
 
-    private void closeConnection(Connection connection) {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                LOGGER.log(Level.SEVERE, "Could not close connection", e);
-            }
-        } else {
-            LOGGER.log(Level.WARNING, "Connection was null when trying to close it");
-        }
-    }
 }

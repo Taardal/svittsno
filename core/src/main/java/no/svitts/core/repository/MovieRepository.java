@@ -36,13 +36,15 @@ public class MovieRepository extends AbstractRepository<Movie> implements Reposi
     }
 
     @Override
-    public void update(int id) {
+    public int update(int id) {
 
+        return id;
     }
 
     @Override
-    public void delete(int id) {
+    public int delete(int id) {
 
+        return id;
     }
 
     public void create() {

@@ -31,13 +31,15 @@ public class VideoFileRepository extends AbstractRepository<VideoFile> implement
     }
 
     @Override
-    public void update(int id) {
+    public int update(int id) {
 
+        return id;
     }
 
     @Override
-    public void delete(int id) {
+    public int delete(int id) {
 
+        return id;
     }
 
     @Override
