@@ -1,15 +1,22 @@
 package no.svitts.core.repository;
 
 import no.svitts.core.database.DataSource;
+import no.svitts.core.person.Gender;
 import no.svitts.core.person.Person;
+import no.svitts.core.person.Role;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class PersonRepository extends AbstractRepository<Person> implements Repository<Person> {
+public class PersonRepository extends SqlRepository<Person> implements Repository<Person> {
+
+    private static final Logger LOGGER = Logger.getLogger(PersonRepository.class.getName());
 
     protected PersonRepository(DataSource dataSource) {
         super(dataSource);
@@ -18,9 +25,10 @@ public class PersonRepository extends AbstractRepository<Person> implements Repo
     @Override
     public List<Person> getAll() {
         try {
-            return executeQuery(getAllPersonsPreparedStatement(dataSource.getConnection()));
+            PreparedStatement allPersonsPreparedStatement = getAllPersonsPreparedStatement(dataSource.getConnection());
+            return executeQuery(allPersonsPreparedStatement);
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Could not get all persons");
         }
         return new ArrayList<>();
     }
@@ -28,72 +36,74 @@ public class PersonRepository extends AbstractRepository<Person> implements Repo
     @Override
     public Person getById(int id) {
         try {
-            PreparedStatement personByIdPreparedStatement = getPersonByIdPreparedStatement(id, dataSource.getConnection());
-            return executeQuery(personByIdPreparedStatement).get(0);
+            PreparedStatement personPreparedStatement = getPersonPreparedStatement(id, dataSource.getConnection());
+            return executeQuery(personPreparedStatement).get(0);
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Could not get person with ID: [" + id + "]");
         }
-        return new Person();
+        return new Person(0);
     }
 
     @Override
-    public int update(int id) {
+    public int updateSingle(int id) {
         try {
-            return executeUpdate(getUpdatePersonByIdPreparedStatement(id, dataSource.getConnection()));
+            PreparedStatement updatePersonPreparedStatement = getUpdatePersonPreparedStatement(id, dataSource.getConnection());
+            return executeUpdate(updatePersonPreparedStatement);
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Could not update person with ID: [" + id + "]");
         }
-        return 0;
+        return UPDATE_ERROR_CODE;
     }
 
     @Override
-    public int delete(int id) {
+    public int deleteSingle(int id) {
         try {
-            return executeUpdate(getDeletePersonByIdPreparedStatement(id, dataSource.getConnection()));
+            PreparedStatement deletePersonPreparedStatement = getDeletePersonPreparedStatement(id, dataSource.getConnection());
+            return executeUpdate(deletePersonPreparedStatement);
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Could not delete person with ID: [" + id + "]");
         }
-        return 0;
+        return UPDATE_ERROR_CODE;
     }
 
-    private PreparedStatement getUpdatePersonByIdPreparedStatement(int id, Connection connection) {
-        return null;
-    }
-
-    private PreparedStatement getDeletePersonByIdPreparedStatement(int id, Connection connection) {
-        return null;
+    @Override
+    protected List<Person> getResults(ResultSet resultSet) throws SQLException {
+        List<Person> persons = new ArrayList<>();
+        while (resultSet.next()) {
+            Person person = new Person(resultSet.getInt("id"));
+            person.setName(resultSet.getString("name"));
+            person.setAge(resultSet.getInt("age"));
+            person.setGender(Gender.valueOf(resultSet.getString("gender")));
+            person.setRole(Role.valueOf(resultSet.getString("role")));
+            persons.add(person);
+        }
+        LOGGER.log(Level.INFO, "Got person(s) [" + persons.toString() + "]");
+        return persons;
     }
 
     private PreparedStatement getAllPersonsPreparedStatement(Connection connection) throws SQLException {
         return connection.prepareStatement("SELECT * FROM person;");
     }
 
-    private PreparedStatement getPersonByIdPreparedStatement(int id, Connection connection) throws SQLException {
+    private PreparedStatement getPersonPreparedStatement(int id, Connection connection) throws SQLException {
         String query = "SELECT * FROM person WHERE person.id = ?;";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setInt(1, id);
         return preparedStatement;
     }
 
-    public List<Person> getAllPersons(Connection connection) throws SQLException {
-        try {
-            return executeQuery(getAllPersonsPreparedStatement(connection));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            connection.close();
-        }
-        return new ArrayList<>();
+    private PreparedStatement getUpdatePersonPreparedStatement(int id, Connection connection) throws SQLException {
+        String query = "";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, id);
+        return preparedStatement;
     }
 
-    private Person getPerson(int id, Connection connection) throws SQLException {
-        try {
-            return executeQuery(getPersonByIdPreparedStatement(id, connection)).get(0);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            connection.close();
-        }
-        return new Person();
+    private PreparedStatement getDeletePersonPreparedStatement(int id, Connection connection) throws SQLException {
+        String query = "";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, id);
+        return preparedStatement;
     }
+
 }

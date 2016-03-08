@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class VideoFileRepository extends AbstractRepository<VideoFile> implements Repository<VideoFile> {
+public class VideoFileRepository extends SqlRepository<VideoFile> implements Repository<VideoFile> {
 
     private static final Logger LOGGER = Logger.getLogger(VideoFile.class.getName());
 
@@ -31,13 +31,13 @@ public class VideoFileRepository extends AbstractRepository<VideoFile> implement
     }
 
     @Override
-    public int update(int id) {
+    public int updateSingle(int id) {
 
         return id;
     }
 
     @Override
-    public int delete(int id) {
+    public int deleteSingle(int id) {
 
         return id;
     }
