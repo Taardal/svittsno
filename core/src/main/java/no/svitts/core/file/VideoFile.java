@@ -4,43 +4,27 @@ import java.io.File;
 
 public class VideoFile extends File {
 
-    protected final int movieId;
-    protected String name;
-    protected String format;
-    protected int directoryId;
-    protected int size;
+    private final String id;
+    private String movieId;
+    private String name;
+    private String format;
+    private int size;
 
-    public VideoFile(String pathname, int movieId, String name, String format, int directoryId, int size) {
+    public VideoFile(String pathname, String id) {
         super(pathname);
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getMovieId() {
+        return movieId;
+    }
+
+    public void setMovieId(String movieId) {
         this.movieId = movieId;
-        this.name = name;
-        this.format = format;
-        this.directoryId = directoryId;
-        this.size = size;
-    }
-
-    public int getDirectoryId() {
-        return directoryId;
-    }
-
-    public void setDirectoryId(int directoryId) {
-        this.directoryId = directoryId;
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public void setSize(int size) {
-        this.size = size;
-    }
-
-    public String getFormat() {
-        return format;
-    }
-
-    public void setFormat(String format) {
-        this.format = format;
     }
 
     @Override
@@ -52,18 +36,30 @@ public class VideoFile extends File {
         this.name = name;
     }
 
-    public int getMovieId() {
-        return movieId;
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
     }
 
     @Override
     public String toString() {
         return "VideoFile{" +
-                "movieId=" + movieId +
+                "id='" + id + '\'' +
+                ", movieId='" + movieId + '\'' +
                 ", name='" + name + '\'' +
                 ", format='" + format + '\'' +
                 ", path='" + getPath() + '\'' +
-                ", directoryId=" + directoryId +
                 ", size=" + size +
                 '}';
     }

@@ -6,7 +6,7 @@ import java.sql.Date;
 
 public class Movie {
 
-    private final int id;
+    private final String id;
     private String imdbId;
     private String name;
     private String tagline;
@@ -16,11 +16,11 @@ public class Movie {
     private Genre genre;
     private VideoFile videoFile;
 
-    public Movie(int id) {
+    public Movie(String id) {
         this.id = id;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 

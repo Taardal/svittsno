@@ -1,7 +1,9 @@
 package no.svitts.core.database;
 
+import no.svitts.core.datasource.DataSource;
 import no.svitts.core.reader.FileReader;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -13,17 +15,17 @@ import java.util.logging.Logger;
 public class LocalDatabase {
 
     private static final Logger LOGGER = Logger.getLogger(LocalDatabase.class.getName());
-    private static final String DATABASE_SCHEMA_FILE = "database_schema.sql";
+    private static final String DATABASE_SCHEMA_FILE_NAME = "database_schema.sql";
     private DataSource dataSource;
 
-    public LocalDatabase() {
-        dataSource = new LocalDataSource();
+    public LocalDatabase(DataSource dataSource) {
+        this.dataSource = dataSource;
         createTables();
     }
 
-    private void createTables() {
-        String databaseSchemaFilePath = getClass().getResource(DATABASE_SCHEMA_FILE).getPath();
-        String sql = new FileReader().readFile(databaseSchemaFilePath);
+    public void createTables() {
+        File file = new File(getClass().getClassLoader().getResource(DATABASE_SCHEMA_FILE_NAME).getFile());
+        String sql = new FileReader().readFile(file);
         List<String> statements = Arrays.asList(sql.split(";"));
         statements.forEach(this::executeStatement);
     }
@@ -35,7 +37,7 @@ public class LocalDatabase {
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not execute statement: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Could not execute statement [" + statement + "]", e);
         }
     }
 

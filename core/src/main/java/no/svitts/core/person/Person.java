@@ -2,17 +2,17 @@ package no.svitts.core.person;
 
 public class Person {
 
-    private int id;
+    private final String id;
     private String name;
     private int age;
     private Gender gender;
-    private Role role;
+    private Job job;
 
-    public Person(int id) {
+    public Person(String id) {
         this.id = id;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -40,12 +40,12 @@ public class Person {
         this.gender = gender;
     }
 
-    public Role getRole() {
-        return role;
+    public Job getJob() {
+        return job;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setJob(Job job) {
+        this.job = job;
     }
 
     @Override
@@ -55,7 +55,7 @@ public class Person {
                 ", name='" + name + '\'' +
                 ", age=" + age +
                 ", gender=" + gender +
-                ", role=" + role +
+                ", job=" + job +
                 '}';
     }
 }

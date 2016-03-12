@@ -4,8 +4,8 @@ import java.util.List;
 
 public interface Repository<T> {
     List<T> getAll();
-    T getById(int id);
-    int updateSingle(int id);
-    int deleteSingle(int id);
+    T getById(String id);
+    int updateSingle(String id);
+    int deleteSingle(String id);
 
 }

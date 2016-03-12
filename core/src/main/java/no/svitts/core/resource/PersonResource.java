@@ -1,6 +1,8 @@
 package no.svitts.core.resource;
 
 import com.google.gson.Gson;
+import no.svitts.core.person.Person;
+import no.svitts.core.repository.Repository;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -11,10 +13,18 @@ import javax.ws.rs.core.MediaType;
 @Produces(MediaType.APPLICATION_JSON)
 public class PersonResource {
 
+    private Repository<Person> personRepository;
+    private Gson gson;
+
+    public PersonResource(Repository<Person> personRepository) {
+        this.personRepository = personRepository;
+        gson = new Gson();
+    }
+
     @GET
-    @Path("/hello")
-    public String getHello() {
-        return new Gson().toJson("Hello World!");
+    @Path("/all")
+    public String getAll() {
+        return gson.toJson(personRepository.getAll());
     }
 
 }
