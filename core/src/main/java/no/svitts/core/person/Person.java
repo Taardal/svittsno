@@ -6,7 +6,13 @@ public class Person {
     private String name;
     private int age;
     private Gender gender;
-    private Job job;
+
+    public Person(String id, String name, int age, Gender gender) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+        this.gender = gender;
+    }
 
     public Person(String id) {
         this.id = id;
@@ -40,14 +46,6 @@ public class Person {
         this.gender = gender;
     }
 
-    public Job getJob() {
-        return job;
-    }
-
-    public void setJob(Job job) {
-        this.job = job;
-    }
-
     @Override
     public String toString() {
         return "Person{" +
@@ -55,7 +53,6 @@ public class Person {
                 ", name='" + name + '\'' +
                 ", age=" + age +
                 ", gender=" + gender +
-                ", job=" + job +
                 '}';
     }
 }

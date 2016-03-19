@@ -46,23 +46,11 @@ CREATE TABLE `image_file` (
   PRIMARY KEY (`id`)
 );
 CREATE TABLE `person` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
-  `age` int(10) unsigned DEFAULT NULL,
-  PRIMARY KEY (`id`)
-);
-CREATE TABLE `gender` (
-  `id` int(1) unsigned NOT NULL AUTO_INCREMENT,
+  `id` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `age` int(10) unsigned NOT NULL,
   `gender` varchar(15) NOT NULL,
-  PRIMARY KEY (`gender`)
-);
-CREATE TABLE `person_gender` (
-`person_id` int(10) unsigned NOT NULL,
-`gender_id` int(10) unsigned NOT NULL,
-PRIMARY KEY (`person_id`,`gender_id`),
-KEY `gender` (`gender_id`),
-CONSTRAINT `person_gender_ibfk_1` FOREIGN KEY (`person_id`) REFERENCES `person` (`id`),
-CONSTRAINT `person_gender_ibfk_2` FOREIGN KEY (`gender_id`) REFERENCES `gender` (`gender`)
+  PRIMARY KEY (`id`)
 );
 CREATE TABLE `job` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -75,8 +63,8 @@ CREATE TABLE `person_movie_job` (
   `job_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`person_id`,`movie_id`,`job_id`),
   KEY `movie_id` (`movie_id`),
-  KEY `role_id` (`job_id`),
-  CONSTRAINT `person_movie_role_ibfk_1` FOREIGN KEY (`person_id`) REFERENCES `person` (`id`),
-  CONSTRAINT `person_movie_role_ibfk_2` FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`),
-  CONSTRAINT `person_movie_role_ibfk_3` FOREIGN KEY (`job_id`) REFERENCES `job` (`id`)
+  KEY `job_id` (`job_id`),
+  CONSTRAINT `person_movie_job_ibfk_1` FOREIGN KEY (`person_id`) REFERENCES `person` (`id`),
+  CONSTRAINT `person_movie_job_ibfk_2` FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`),
+  CONSTRAINT `person_movie_job_ibfk_3` FOREIGN KEY (`job_id`) REFERENCES `job` (`id`)
 );

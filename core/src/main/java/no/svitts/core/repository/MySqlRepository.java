@@ -10,24 +10,24 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class SqlRepository<T> {
+public abstract class MySqlRepository<T> {
 
-    protected static final int UPDATE_ERROR_CODE = 0;
+    private static final Logger LOGGER = Logger.getLogger(MySqlRepository.class.getName());
     protected DataSource dataSource;
-    private static final Logger LOGGER = Logger.getLogger(SqlRepository.class.getName());
 
-    protected SqlRepository(DataSource dataSource) {
+    protected MySqlRepository(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
-    protected int executeUpdate(PreparedStatement preparedStatement) {
+    protected boolean executeUpdate(PreparedStatement preparedStatement) {
         LOGGER.log(Level.INFO, "Executing update [" + preparedStatement.toString() + "]");
         try {
-            return preparedStatement.executeUpdate();
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not execute update [" + preparedStatement.toString() + "]");
-            return UPDATE_ERROR_CODE;
+            LOGGER.log(Level.SEVERE, "Could not execute update [" + preparedStatement.toString() + "]", e);
         }
+        return false;
     }
 
     protected List<T> executeQuery(PreparedStatement preparedStatement) {
@@ -36,8 +36,8 @@ public abstract class SqlRepository<T> {
             return getResults(resultSet);
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Could not execute query [" + preparedStatement.toString() + "]", e);
-            return new ArrayList<>();
         }
+        return new ArrayList<>();
     }
 
     protected abstract List<T> getResults(ResultSet resultSet) throws SQLException;

@@ -3,7 +3,6 @@ package no.svitts.core.database;
 import no.svitts.core.datasource.DataSource;
 import no.svitts.core.reader.FileReader;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -23,9 +22,8 @@ public class LocalDatabase {
         createTables();
     }
 
-    public void createTables() {
-        File file = new File(getClass().getClassLoader().getResource(DATABASE_SCHEMA_FILE_NAME).getFile());
-        String sql = new FileReader().readFile(file);
+    private void createTables() {
+        String sql = new FileReader().readResource(DATABASE_SCHEMA_FILE_NAME);
         List<String> statements = Arrays.asList(sql.split(";"));
         statements.forEach(this::executeStatement);
     }
