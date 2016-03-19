@@ -1,4 +1,4 @@
-package no.svitts.core.database;
+package no.svitts.core.datasource;
 
 import java.sql.Connection;
 import java.sql.SQLException;

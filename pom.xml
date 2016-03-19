@@ -17,6 +17,7 @@
     <properties>
         <jetty.version>9.3.6.v20151106</jetty.version>
         <junit.version>4.12</junit.version>
+        <constretto.version>2.2.3</constretto.version>
     </properties>
 
     <dependencies>
@@ -39,6 +40,11 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.constretto</groupId>
+            <artifactId>constretto-core</artifactId>
+            <version>${constretto.version}</version>
         </dependency>
     </dependencies>
 
