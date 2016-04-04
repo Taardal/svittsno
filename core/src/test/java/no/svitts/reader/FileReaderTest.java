@@ -26,7 +26,7 @@ public class FileReaderTest {
     public void readFile_ShouldReturnStringWithContent() throws IOException {
         String targetContent = "SELECT * FROM test;";
         File file = getTempFile("testfile", ".sql", targetContent);
-        assertContent(fileReader.readFile(file), targetContent);
+        assertContent(targetContent, fileReader.readFile(file));
         assertTrue(file.delete());
     }
 
@@ -43,9 +43,9 @@ public class FileReaderTest {
         }
     }
 
-    private void assertContent(String readContent, String targetContent) {
+    private void assertContent(String targetContent, String readContent) {
         assertNotNull(readContent);
         assertFalse(readContent.isEmpty());
-        assertEquals(readContent, targetContent);
+        assertEquals(targetContent, readContent);
     }
 }

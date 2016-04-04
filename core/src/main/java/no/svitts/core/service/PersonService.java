@@ -15,7 +15,7 @@ public class PersonService {
         this.personRepository = personRepository;
     }
 
-    public List<Person> getAllPersons() {
+    public List<Person> getAll() {
         return personRepository.getAll();
     }
 
@@ -33,5 +33,18 @@ public class PersonService {
 
     public boolean deletePerson(String id) {
         return personRepository.deleteSingle(id);
+    }
+
+    public boolean createPersons(List<Person> persons) {
+        for (Person person : persons) {
+            if (!alreadyExists(person)) {
+
+            }
+        }
+        return false;
+    }
+
+    void alreadyExists(Person person) {
+
     }
 }

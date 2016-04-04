@@ -26,22 +26,24 @@ public class PersonResource extends SvittsResource {
     }
 
     @GET
-    @Path("/{id}")
-    public String getPerson(@PathParam("id") String id) {
-        return gson.toJson(personService.getPerson(id));
+    @Path("/all")
+    public String getAllPersons() {
+        LOGGER.log(Level.INFO, "Received request to GET all persons");
+        return gson.toJson(personService.getAll());
     }
 
     @GET
-    @Path("/all")
-    public String getAllPersons() {
-        return gson.toJson(personService.getAllPersons());
+    @Path("/{id}")
+    public String getPerson(@PathParam("id") String id) {
+        LOGGER.log(Level.INFO, "Received request to GET person with ID [" + id + "]");
+        return gson.toJson(personService.getPerson(id));
     }
 
     @POST
     @Path("/new")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createPerson(String json) {
-        LOGGER.log(Level.INFO, "Received JSON [" + json + "]");
+        LOGGER.log(Level.INFO, "Received request to CREATE person by JSON [" + json + "]");
         Person person = gson.fromJson(json, Person.class);
         return getRespone(personService.createPerson(person));
     }
@@ -50,15 +52,16 @@ public class PersonResource extends SvittsResource {
     @Path("/update/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updatePerson(@PathParam("id") String id, String json) {
-        LOGGER.log(Level.INFO, "Received JSON [" + json + "]");
+        LOGGER.log(Level.INFO, "Received request to UPDATE person by JSON [" + json + "]");
         Person person = gson.fromJson(json, Person.class);
         return getRespone(personService.updatePerson(person));
     }
 
-    @PUT
+    @DELETE
     @Path("/delete/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response deletePerson(@PathParam("id") String id) {
+        LOGGER.log(Level.INFO, "Received request to DELETE person with ID [" + id + "]");
         return getRespone(personService.deletePerson(id));
     }
 

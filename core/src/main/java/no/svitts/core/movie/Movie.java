@@ -1,35 +1,47 @@
 package no.svitts.core.movie;
 
+import no.svitts.core.file.ImageFile;
 import no.svitts.core.file.VideoFile;
+import no.svitts.core.person.Job;
+import no.svitts.core.person.Person;
 
 import java.sql.Date;
+import java.util.List;
+import java.util.Map;
 
 public class Movie {
 
     private final String id;
-    private String imdbId;
     private String name;
+    private String imdbId;
     private String tagline;
     private String overview;
     private int runtime;
     private Date releaseDate;
-    private Genre genre;
+    private List<Genre> genres;
+    private List<Person> cast;
+    private Map<Job, Person> crew;
     private VideoFile videoFile;
+    private ImageFile poster;
+    private ImageFile backdrop;
 
     public Movie(String id) {
         this.id = id;
     }
 
+    public Movie(String id, String name, String imdbId, String tagline, String overview, int runtime, Date releaseDate, List<Genre> genres) {
+        this.id = id;
+        this.name = name;
+        this.imdbId = imdbId;
+        this.tagline = tagline;
+        this.overview = overview;
+        this.runtime = runtime;
+        this.releaseDate = releaseDate;
+        this.genres = genres;
+    }
+
     public String getId() {
         return id;
-    }
-
-    public String getImdbId() {
-        return imdbId;
-    }
-
-    public void setImdbId(String imdbId) {
-        this.imdbId = imdbId;
     }
 
     public String getName() {
@@ -38,6 +50,14 @@ public class Movie {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getImdbId() {
+        return imdbId;
+    }
+
+    public void setImdbId(String imdbId) {
+        this.imdbId = imdbId;
     }
 
     public String getTagline() {
@@ -72,12 +92,28 @@ public class Movie {
         this.releaseDate = releaseDate;
     }
 
-    public Genre getGenre() {
-        return genre;
+    public List<Genre> getGenres() {
+        return genres;
     }
 
-    public void setGenre(Genre genre) {
-        this.genre = genre;
+    public void setGenres(List<Genre> genres) {
+        this.genres = genres;
+    }
+
+    public List<Person> getCast() {
+        return cast;
+    }
+
+    public void setCast(List<Person> cast) {
+        this.cast = cast;
+    }
+
+    public Map<Job, Person> getCrew() {
+        return crew;
+    }
+
+    public void setCrew(Map<Job, Person> crew) {
+        this.crew = crew;
     }
 
     public VideoFile getVideoFile() {
@@ -91,14 +127,14 @@ public class Movie {
     @Override
     public String toString() {
         return "Movie{" +
-                "id=" + id +
-                ", imdbId='" + imdbId + '\'' +
+                "id='" + id + '\'' +
                 ", name='" + name + '\'' +
+                ", imdbId='" + imdbId + '\'' +
                 ", tagline='" + tagline + '\'' +
                 ", overview='" + overview + '\'' +
                 ", runtime=" + runtime +
                 ", releaseDate=" + releaseDate +
-                ", genre=" + genre +
+                ", genres=" + genres +
                 ", videoFile=" + videoFile +
                 '}';
     }

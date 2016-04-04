@@ -37,7 +37,7 @@ public class PersonRepository extends MySqlRepository<Person> implements Reposit
 
     @Override
     public Person getById(String id) {
-        LOGGER.log(Level.SEVERE, "Getting person with ID [" + id + "]");
+        LOGGER.log(Level.INFO, "Getting person with ID [" + id + "]");
         try (Connection connection = dataSource.getConnection()){
             try (PreparedStatement selectPersonPreparedStatement = getSelectPersonPreparedStatement(id, connection)) {
                 return executeQuery(selectPersonPreparedStatement).get(0);
@@ -50,7 +50,7 @@ public class PersonRepository extends MySqlRepository<Person> implements Reposit
 
     @Override
     public boolean insertSingle(Person person) {
-        LOGGER.log(Level.SEVERE, "Creating person [" + person.toString() + "]");
+        LOGGER.log(Level.INFO, "Creating person [" + person.toString() + "]");
         try (Connection connection = dataSource.getConnection()){
             try (PreparedStatement insertPersonPreparedStatement = getInsertPersonPreparedStatement(person, connection)) {
                 return executeUpdate(insertPersonPreparedStatement);
@@ -63,7 +63,7 @@ public class PersonRepository extends MySqlRepository<Person> implements Reposit
 
     @Override
     public boolean updateSingle(Person person) {
-        LOGGER.log(Level.SEVERE, "Updating person with values [" + person.toString() + "]");
+        LOGGER.log(Level.INFO, "Updating person with values [" + person.toString() + "]");
         try (Connection connection = dataSource.getConnection()){
             try (PreparedStatement updatePersonPreparedStatement = getUpdatePersonPreparedStatement(person, connection)) {
                 return executeUpdate(updatePersonPreparedStatement);
@@ -76,7 +76,7 @@ public class PersonRepository extends MySqlRepository<Person> implements Reposit
 
     @Override
     public boolean deleteSingle(String id) {
-        LOGGER.log(Level.SEVERE, "Deleting person with ID [" + id + "]");
+        LOGGER.log(Level.INFO, "Deleting person with ID [" + id + "]");
         try (Connection connection = dataSource.getConnection()){
             try (PreparedStatement deletePersonPreparedStatement = getDeletePersonPreparedStatement(id, connection)) {
                 return executeUpdate(deletePersonPreparedStatement);
@@ -93,7 +93,7 @@ public class PersonRepository extends MySqlRepository<Person> implements Reposit
         while (resultSet.next()) {
             Person person = new Person(resultSet.getString("id"));
             person.setName(resultSet.getString("name"));
-            person.setAge(resultSet.getInt("age"));
+            person.setDateOfBirth(resultSet.getDate("date_of_birth"));
             person.setGender(Gender.valueOf(resultSet.getString("gender")));
             persons.add(person);
         }
@@ -117,7 +117,7 @@ public class PersonRepository extends MySqlRepository<Person> implements Reposit
         PreparedStatement preparedStatement = connection.prepareStatement(statement);
         preparedStatement.setString(1, person.getId());
         preparedStatement.setString(2, person.getName());
-        preparedStatement.setInt(3, person.getAge());
+        preparedStatement.setDate(3, person.getDateOfBirth());
         preparedStatement.setString(4, person.getGender().toString());
         return preparedStatement;
     }
@@ -126,7 +126,7 @@ public class PersonRepository extends MySqlRepository<Person> implements Reposit
         String statement = "UPDATE person SET name = ?, age = ?, gender = ? WHERE id = ?";
         PreparedStatement preparedStatement = connection.prepareStatement(statement);
         preparedStatement.setString(1, person.getName());
-        preparedStatement.setInt(2, person.getAge());
+        preparedStatement.setDate(2, person.getDateOfBirth());
         preparedStatement.setString(3, person.getGender().toString());
         preparedStatement.setString(4, person.getId());
         return preparedStatement;

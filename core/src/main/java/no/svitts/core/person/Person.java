@@ -1,21 +1,23 @@
 package no.svitts.core.person;
 
+import java.sql.Date;
+
 public class Person {
 
     private final String id;
     private String name;
-    private int age;
+    private Date dateOfBirth;
     private Gender gender;
-
-    public Person(String id, String name, int age, Gender gender) {
-        this.id = id;
-        this.name = name;
-        this.age = age;
-        this.gender = gender;
-    }
 
     public Person(String id) {
         this.id = id;
+    }
+
+    public Person(String id, String name, Date dateOfBirth, Gender gender) {
+        this.id = id;
+        this.name = name;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
     }
 
     public String getId() {
@@ -30,12 +32,12 @@ public class Person {
         this.name = name;
     }
 
-    public int getAge() {
-        return age;
+    public Date getDateOfBirth() {
+        return dateOfBirth;
     }
 
-    public void setAge(int age) {
-        this.age = age;
+    public void setDateOfBirth(Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
     public Gender getGender() {
@@ -49,9 +51,9 @@ public class Person {
     @Override
     public String toString() {
         return "Person{" +
-                "id=" + id +
+                "id='" + id + '\'' +
                 ", name='" + name + '\'' +
-                ", age=" + age +
+                ", dateOfBirth=" + dateOfBirth +
                 ", gender=" + gender +
                 '}';
     }

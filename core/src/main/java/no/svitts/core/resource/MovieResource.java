@@ -2,40 +2,64 @@ package no.svitts.core.resource;
 
 import com.google.gson.Gson;
 import no.svitts.core.movie.Movie;
-import no.svitts.core.service.Service;
+import no.svitts.core.service.MovieService;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Path("/movie")
 @Produces(MediaType.APPLICATION_JSON)
-public class MovieResource {
+public class MovieResource extends SvittsResource {
 
-    private Service<Movie> movieService;
+    private static final Logger LOGGER = Logger.getLogger(MovieResource.class.getName());
+    private MovieService movieService;
+    private Gson gson;
 
-    public MovieResource(Service<Movie> movieService) {
+    public MovieResource(MovieService movieService) {
         this.movieService = movieService;
+        gson = new Gson();
     }
 
     @GET
     @Path("/all")
-    public String getAll() {
-        return new Gson().toJson(movieService.getAll());
+    public String getAllMovies() {
+        LOGGER.log(Level.INFO, "Received request to GET all movies");
+        return gson.toJson(movieService.getAll());
     }
 
     @GET
-    @Path("/single")
-    public String getSingle() {
-        return new Gson().toJson(movieService.getById(1));
+    @Path("/{id}")
+    public String getMovie(@PathParam("id") String id) {
+        LOGGER.log(Level.INFO, "Received request to GET movie with ID [" + id + "]");
+        return gson.toJson(movieService.getMovie(id));
     }
 
-
-    @GET
-    @Path("/hello")
-    public String getHello() {
-        return new Gson().toJson("Hello World!");
+    @POST
+    @Path("/new")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response createMovie(String json) {
+        LOGGER.log(Level.INFO, "Received request to CREATE movie by JSON [" + json + "]");
+        Movie movie = gson.fromJson(json, Movie.class);
+        return getRespone(movieService.createMovie(movie));
     }
 
+    @PUT
+    @Path("/update/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateMovie(@PathParam("id") String id, String json) {
+        LOGGER.log(Level.INFO, "Received request to UPDATE movie by JSON [" + json + "]");
+        Movie movie = gson.fromJson(json, Movie.class);
+        return getRespone(movieService.updateMovie(movie));
+    }
+
+    @PUT
+    @Path("/delete/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response deleteMovie(@PathParam("id") String id) {
+        LOGGER.log(Level.INFO, "Received request to DELETE movie with ID [" + id + "]");
+        return getRespone(movieService.deleteMovie(id));
+    }
 }

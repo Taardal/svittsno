@@ -24,8 +24,8 @@ public class FileReader {
              return new String(Files.readAllBytes(path));
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Could not read file", e);
+            return "";
         }
-        return "";
     }
 
     public String readResource(String resourceName) {
@@ -38,8 +38,8 @@ public class FileReader {
             return bufferedReader.lines().collect(Collectors.joining("\n"));
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Could not read resource", e);
+            return "";
         }
-        return "";
     }
 
 }

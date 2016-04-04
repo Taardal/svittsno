@@ -2,27 +2,40 @@ package no.svitts.core.service;
 
 import no.svitts.core.file.VideoFile;
 import no.svitts.core.movie.Movie;
+import no.svitts.core.person.Person;
 import no.svitts.core.repository.Repository;
 
 import java.util.List;
 
-public class MovieService implements Service<Movie> {
+public class MovieService {
 
     private Repository<Movie> movieRepository;
-    private Repository<VideoFile> videoFileRepository;
+    private PersonService personService;
 
-    public MovieService(Repository<Movie> movieRepository, Repository<VideoFile> videoFileRepository) {
+    public MovieService(Repository<Movie> movieRepository, PersonService personService) {
         this.movieRepository = movieRepository;
-        this.videoFileRepository = videoFileRepository;
+        this.personService = personService;
     }
 
     public List<Movie> getAll() {
         return enrichMovies(movieRepository.getAll());
     }
 
-    @Override
-    public Movie getById(int id) {
+    public Movie getMovie(String id) {
         return enrichMovie(movieRepository.getById(id));
+    }
+
+    public boolean createMovie(Movie movie) {
+        boolean movieCreated = movieRepository.insertSingle(movie);
+        boolean personsCreated = personService.createPersons(movie.getCast());
+    }
+
+    public boolean updateMovie(Movie movie) {
+        return movieRepository.updateSingle(movie);
+    }
+
+    public boolean deleteMovie(String id) {
+        return movieRepository.deleteSingle(id);
     }
 
     private List<Movie> enrichMovies(List<Movie> movies) {
@@ -31,7 +44,6 @@ public class MovieService implements Service<Movie> {
     }
 
     private Movie enrichMovie(Movie movie) {
-        movie.setVideoFile(videoFileRepository.getById(movie.getId()));
         return movie;
     }
 

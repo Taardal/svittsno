@@ -15,7 +15,6 @@ import no.svitts.core.resource.MovieResource;
 import no.svitts.core.resource.PersonResource;
 import no.svitts.core.service.MovieService;
 import no.svitts.core.service.PersonService;
-import no.svitts.core.service.Service;
 import org.constretto.ConstrettoBuilder;
 import org.constretto.ConstrettoConfiguration;
 import org.constretto.model.ClassPathResource;
@@ -40,7 +39,8 @@ public class CoreApplication extends ResourceConfig {
     private MovieResource getMovieResource(DataSource dataSource) {
         Repository<VideoFile> videoFileRepository = new VideoFileRepository(dataSource);
         Repository<Movie> movieRepository = new MovieRepository(dataSource);
-        Service<Movie> movieService = new MovieService(movieRepository, videoFileRepository);
+        Repository<Person> personRepository = new PersonRepository(dataSource);
+        MovieService movieService = new MovieService(movieRepository, videoFileRepository, personRepository);
         return new MovieResource(movieService);
     }
 

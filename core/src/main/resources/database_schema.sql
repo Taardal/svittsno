@@ -48,7 +48,7 @@ CREATE TABLE `image_file` (
 CREATE TABLE `person` (
   `id` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `age` int(10) unsigned NOT NULL,
+  `date_of_birth` date DEFAULT NULL,
   `gender` varchar(15) NOT NULL,
   PRIMARY KEY (`id`)
 );
