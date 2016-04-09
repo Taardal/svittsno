@@ -25,7 +25,7 @@ public class MovieService {
 
     public boolean createMovie(Movie movie) {
         boolean movieCreated = movieRepository.insertSingle(movie);
-        boolean personsCreated = personService.createPersons(movie.getCast());
+        boolean personsCreated = personService.createPersons(movie.getPersons());
         return false;
     }
 

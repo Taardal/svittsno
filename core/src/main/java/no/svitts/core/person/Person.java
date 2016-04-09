@@ -5,7 +5,8 @@ import java.sql.Date;
 public class Person {
 
     private final String id;
-    private String name;
+    private String firstName;
+    private String lastName;
     private Date dateOfBirth;
     private Gender gender;
 
@@ -13,9 +14,10 @@ public class Person {
         this.id = id;
     }
 
-    public Person(String id, String name, Date dateOfBirth, Gender gender) {
+    public Person(String id, String firstName, String lastName, Date dateOfBirth, Gender gender) {
         this.id = id;
-        this.name = name;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
     }
@@ -24,12 +26,20 @@ public class Person {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public Date getDateOfBirth() {
@@ -52,7 +62,8 @@ public class Person {
     public String toString() {
         return "Person{" +
                 "id='" + id + '\'' +
-                ", name='" + name + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", dateOfBirth=" + dateOfBirth +
                 ", gender=" + gender +
                 '}';

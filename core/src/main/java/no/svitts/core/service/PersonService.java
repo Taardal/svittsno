@@ -1,9 +1,11 @@
 package no.svitts.core.service;
 
+import no.svitts.core.person.Job;
 import no.svitts.core.person.Person;
 import no.svitts.core.repository.Repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class PersonService {
@@ -35,10 +37,12 @@ public class PersonService {
         return personRepository.deleteSingle(id);
     }
 
-    public boolean createPersons(List<Person> persons) {
-        for (Person person : persons) {
-            if (!alreadyExists(person)) {
+    public boolean createPersons(Map<Job, Person> persons) {
+        for (Job job : persons.keySet()) {
+            for (Person person : persons.values()) {
+                if (!alreadyExists(person)) {
 
+                }
             }
         }
         return false;

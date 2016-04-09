@@ -19,8 +19,7 @@ public class Movie {
     private int runtime;
     private Date releaseDate;
     private List<Genre> genres;
-    private List<Person> cast;
-    private Map<Job, Person> crew;
+    private Map<Job, Person> persons;
     private VideoFile videoFile;
     private ImageFile poster;
     private ImageFile backdrop;
@@ -100,20 +99,12 @@ public class Movie {
         this.genres = genres;
     }
 
-    public List<Person> getCast() {
-        return cast;
+    public Map<Job, Person> getPersons() {
+        return persons;
     }
 
-    public void setCast(List<Person> cast) {
-        this.cast = cast;
-    }
-
-    public Map<Job, Person> getCrew() {
-        return crew;
-    }
-
-    public void setCrew(Map<Job, Person> crew) {
-        this.crew = crew;
+    public void setPersons(Map<Job, Person> persons) {
+        this.persons = persons;
     }
 
     public VideoFile getVideoFile() {

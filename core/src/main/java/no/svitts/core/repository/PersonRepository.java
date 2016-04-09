@@ -92,7 +92,8 @@ public class PersonRepository extends MySqlRepository<Person> implements Reposit
         List<Person> persons = new ArrayList<>();
         while (resultSet.next()) {
             Person person = new Person(resultSet.getString("id"));
-            person.setName(resultSet.getString("name"));
+            person.setFirstName(resultSet.getString("first_name"));
+            person.setLastName(resultSet.getString("last_name"));
             person.setDateOfBirth(resultSet.getDate("date_of_birth"));
             person.setGender(Gender.valueOf(resultSet.getString("gender")));
             persons.add(person);
@@ -113,22 +114,24 @@ public class PersonRepository extends MySqlRepository<Person> implements Reposit
     }
 
     private PreparedStatement getInsertPersonPreparedStatement(Person person, Connection connection) throws SQLException {
-        String statement = "INSERT INTO person VALUES (?, ?, ?, ?)";
+        String statement = "INSERT INTO person VALUES (?, ?, ?, ?, ?)";
         PreparedStatement preparedStatement = connection.prepareStatement(statement);
         preparedStatement.setString(1, person.getId());
-        preparedStatement.setString(2, person.getName());
-        preparedStatement.setDate(3, person.getDateOfBirth());
-        preparedStatement.setString(4, person.getGender().toString());
+        preparedStatement.setString(2, person.getFirstName());
+        preparedStatement.setString(3, person.getLastName());
+        preparedStatement.setDate(4, person.getDateOfBirth());
+        preparedStatement.setString(5, person.getGender().toString());
         return preparedStatement;
     }
 
     private PreparedStatement getUpdatePersonPreparedStatement(Person person, Connection connection) throws SQLException {
-        String statement = "UPDATE person SET name = ?, age = ?, gender = ? WHERE id = ?";
+        String statement = "UPDATE person SET first_name = ?, last_name = ?, age = ?, gender = ? WHERE id = ?";
         PreparedStatement preparedStatement = connection.prepareStatement(statement);
-        preparedStatement.setString(1, person.getName());
-        preparedStatement.setDate(2, person.getDateOfBirth());
-        preparedStatement.setString(3, person.getGender().toString());
-        preparedStatement.setString(4, person.getId());
+        preparedStatement.setString(1, person.getFirstName());
+        preparedStatement.setString(2, person.getLastName());
+        preparedStatement.setDate(3, person.getDateOfBirth());
+        preparedStatement.setString(4, person.getGender().toString());
+        preparedStatement.setString(5, person.getId());
         return preparedStatement;
     }
 
