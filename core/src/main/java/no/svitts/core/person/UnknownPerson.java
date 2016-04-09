@@ -1,13 +1,14 @@
 package no.svitts.core.person;
 
-import java.sql.Date;
+import no.svitts.core.date.KeyDate;
 
 public class UnknownPerson extends Person {
 
     public UnknownPerson() {
         super("id-for-unknown-person");
-        setName("Jane Doe");
-        setDateOfBirth(Date.valueOf("1975-01-01"));
+        setFirstName("Jane");
+        setLastName("Doe");
+        setDateOfBirth(new KeyDate(1975, 1, 1));
         setGender(Gender.FEMALE);
     }
 

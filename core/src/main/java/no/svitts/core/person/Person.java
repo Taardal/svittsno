@@ -1,20 +1,20 @@
 package no.svitts.core.person;
 
-import java.sql.Date;
+import no.svitts.core.date.KeyDate;
 
 public class Person {
 
     private final String id;
     private String firstName;
     private String lastName;
-    private Date dateOfBirth;
+    private KeyDate dateOfBirth;
     private Gender gender;
 
     public Person(String id) {
         this.id = id;
     }
 
-    public Person(String id, String firstName, String lastName, Date dateOfBirth, Gender gender) {
+    public Person(String id, String firstName, String lastName, KeyDate dateOfBirth, Gender gender) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -42,11 +42,11 @@ public class Person {
         this.lastName = lastName;
     }
 
-    public Date getDateOfBirth() {
+    public KeyDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(KeyDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 

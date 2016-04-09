@@ -1,11 +1,11 @@
 package no.svitts.core.movie;
 
+import no.svitts.core.date.KeyDate;
 import no.svitts.core.file.ImageFile;
 import no.svitts.core.file.VideoFile;
 import no.svitts.core.person.Job;
 import no.svitts.core.person.Person;
 
-import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +17,7 @@ public class Movie {
     private String tagline;
     private String overview;
     private int runtime;
-    private Date releaseDate;
+    private KeyDate releaseDate;
     private List<Genre> genres;
     private Map<Job, Person> persons;
     private VideoFile videoFile;
@@ -28,7 +28,7 @@ public class Movie {
         this.id = id;
     }
 
-    public Movie(String id, String name, String imdbId, String tagline, String overview, int runtime, Date releaseDate, List<Genre> genres) {
+    public Movie(String id, String name, String imdbId, String tagline, String overview, int runtime, KeyDate releaseDate, List<Genre> genres) {
         this.id = id;
         this.name = name;
         this.imdbId = imdbId;
@@ -83,11 +83,11 @@ public class Movie {
         this.runtime = runtime;
     }
 
-    public Date getReleaseDate() {
+    public KeyDate getReleaseDate() {
         return releaseDate;
     }
 
-    public void setReleaseDate(Date releaseDate) {
+    public void setReleaseDate(KeyDate releaseDate) {
         this.releaseDate = releaseDate;
     }
 

@@ -1,6 +1,7 @@
 package no.svitts.core.repository;
 
 import no.svitts.core.datasource.DataSource;
+import no.svitts.core.date.KeyDate;
 import no.svitts.core.person.Gender;
 import no.svitts.core.person.Person;
 import no.svitts.core.person.UnknownPerson;
@@ -94,7 +95,7 @@ public class PersonRepository extends MySqlRepository<Person> implements Reposit
             Person person = new Person(resultSet.getString("id"));
             person.setFirstName(resultSet.getString("first_name"));
             person.setLastName(resultSet.getString("last_name"));
-            person.setDateOfBirth(resultSet.getDate("date_of_birth"));
+            person.setDateOfBirth(new KeyDate(resultSet.getDate("date_of_birth")));
             person.setGender(Gender.valueOf(resultSet.getString("gender")));
             persons.add(person);
         }
@@ -119,7 +120,7 @@ public class PersonRepository extends MySqlRepository<Person> implements Reposit
         preparedStatement.setString(1, person.getId());
         preparedStatement.setString(2, person.getFirstName());
         preparedStatement.setString(3, person.getLastName());
-        preparedStatement.setDate(4, person.getDateOfBirth());
+        preparedStatement.setDate(4, person.getDateOfBirth().toJavaSqlDate());
         preparedStatement.setString(5, person.getGender().toString());
         return preparedStatement;
     }
@@ -129,7 +130,7 @@ public class PersonRepository extends MySqlRepository<Person> implements Reposit
         PreparedStatement preparedStatement = connection.prepareStatement(statement);
         preparedStatement.setString(1, person.getFirstName());
         preparedStatement.setString(2, person.getLastName());
-        preparedStatement.setDate(3, person.getDateOfBirth());
+        preparedStatement.setDate(3, person.getDateOfBirth().toJavaSqlDate());
         preparedStatement.setString(4, person.getGender().toString());
         preparedStatement.setString(5, person.getId());
         return preparedStatement;

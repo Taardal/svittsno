@@ -1,6 +1,7 @@
 package no.svitts.core.repository;
 
 import no.svitts.core.datasource.DataSource;
+import no.svitts.core.date.KeyDate;
 import no.svitts.core.movie.Genre;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.movie.UnknownMovie;
@@ -97,7 +98,7 @@ public class MovieRepository extends MySqlRepository<Movie> implements Repositor
             movie.setOverview(resultSet.getString("overview"));
             movie.setImdbId(resultSet.getString("imdb_id"));
             movie.setRuntime(resultSet.getInt("runtime"));
-            movie.setReleaseDate(resultSet.getDate("release_date"));
+            movie.setReleaseDate(new KeyDate(resultSet.getDate("release_date")));
             List<Genre> genres = new ArrayList<>();
             genres.add(Genre.valueOf(resultSet.getString("genre")));
             movie.setGenres(genres);
@@ -133,7 +134,7 @@ public class MovieRepository extends MySqlRepository<Movie> implements Repositor
         preparedStatement.setString(4, movie.getTagline());
         preparedStatement.setString(5, movie.getOverview());
         preparedStatement.setInt(6, movie.getRuntime());
-        preparedStatement.setDate(7, movie.getReleaseDate());
+        preparedStatement.setDate(7, movie.getReleaseDate().toJavaSqlDate());
         return preparedStatement;
     }
 
@@ -145,7 +146,7 @@ public class MovieRepository extends MySqlRepository<Movie> implements Repositor
         preparedStatement.setString(3, movie.getTagline());
         preparedStatement.setString(4, movie.getOverview());
         preparedStatement.setInt(5, movie.getRuntime());
-        preparedStatement.setDate(6, movie.getReleaseDate());
+        preparedStatement.setDate(6, movie.getReleaseDate().toJavaSqlDate());
         preparedStatement.setString(7, movie.getId());
         return preparedStatement;
     }
