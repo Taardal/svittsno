@@ -4,6 +4,8 @@ import no.svitts.core.datasource.DataSource;
 import no.svitts.core.person.Gender;
 import no.svitts.core.person.Person;
 import no.svitts.core.person.UnknownPerson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,12 +13,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class PersonRepository extends MySqlRepository<Person> implements Repository<Person> {
 
-    private static final Logger LOGGER = Logger.getLogger(PersonRepository.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(PersonRepository.class);
 
     public PersonRepository(DataSource dataSource) {
         super(dataSource);
@@ -24,65 +24,65 @@ public class PersonRepository extends MySqlRepository<Person> implements Reposit
 
     @Override
     public List<Person> getAll() {
-        LOGGER.log(Level.INFO, "Getting all persons");
+        LOGGER.info("Getting all persons");
         try (Connection connection = dataSource.getConnection()){
             try (PreparedStatement selectAllPersonsPreparedStatement = getSelectAllPersonsPreparedStatement(connection)) {
                 return executeQuery(selectAllPersonsPreparedStatement);
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not get all persons", e);
+            LOGGER.error("Could not get all persons", e);
         }
         return new ArrayList<>();
     }
 
     @Override
     public Person getById(String id) {
-        LOGGER.log(Level.INFO, "Getting person with ID [" + id + "]");
+        LOGGER.info("Getting person with ID {}", id);
         try (Connection connection = dataSource.getConnection()){
             try (PreparedStatement selectPersonPreparedStatement = getSelectPersonPreparedStatement(id, connection)) {
                 return executeQuery(selectPersonPreparedStatement).get(0);
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not get person with ID [" + id + "]", e);
+            LOGGER.error("Could not get person with ID {}", id, e);
         }
         return new UnknownPerson();
     }
 
     @Override
     public boolean insertSingle(Person person) {
-        LOGGER.log(Level.INFO, "Creating person [" + person.toString() + "]");
+        LOGGER.info("Creating person {}", person);
         try (Connection connection = dataSource.getConnection()){
             try (PreparedStatement insertPersonPreparedStatement = getInsertPersonPreparedStatement(person, connection)) {
                 return executeUpdate(insertPersonPreparedStatement);
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not create person [" + person.toString() + "]", e);
+            LOGGER.error("Could not create person {}", person, e);
         }
         return false;
     }
 
     @Override
     public boolean updateSingle(Person person) {
-        LOGGER.log(Level.INFO, "Updating person with values [" + person.toString() + "]");
+        LOGGER.info("Updating person with values [" + person.toString() + "]");
         try (Connection connection = dataSource.getConnection()){
             try (PreparedStatement updatePersonPreparedStatement = getUpdatePersonPreparedStatement(person, connection)) {
                 return executeUpdate(updatePersonPreparedStatement);
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not update person [" + person.toString() + "]", e);
+            LOGGER.error("Could not update person {}", person, e);
         }
         return false;
     }
 
     @Override
     public boolean deleteSingle(String id) {
-        LOGGER.log(Level.INFO, "Deleting person with ID [" + id + "]");
+        LOGGER.info("Deleting person with ID {}", id);
         try (Connection connection = dataSource.getConnection()){
             try (PreparedStatement deletePersonPreparedStatement = getDeletePersonPreparedStatement(id, connection)) {
                 return executeUpdate(deletePersonPreparedStatement);
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not delete person with ID [" + id + "]", e);
+            LOGGER.error("Could not delete person with ID {}", id, e);
         }
         return false;
     }
@@ -97,7 +97,7 @@ public class PersonRepository extends MySqlRepository<Person> implements Reposit
             person.setGender(Gender.valueOf(resultSet.getString("gender")));
             persons.add(person);
         }
-        LOGGER.log(Level.INFO, "Got person(s) " + persons.toString() + "");
+        LOGGER.info("Got person(s) {}", persons.toString());
         return persons;
     }
 

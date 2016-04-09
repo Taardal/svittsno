@@ -4,6 +4,8 @@ import no.svitts.core.datasource.DataSource;
 import no.svitts.core.movie.Genre;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.movie.UnknownMovie;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,12 +13,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class MovieRepository extends MySqlRepository<Movie> implements Repository<Movie> {
 
-    private static final Logger LOGGER = Logger.getLogger(MovieRepository.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(MovieRepository.class);
 
     public MovieRepository(DataSource dataSource) {
         super(dataSource);
@@ -24,65 +24,65 @@ public class MovieRepository extends MySqlRepository<Movie> implements Repositor
 
     @Override
     public List<Movie> getAll() {
-        LOGGER.log(Level.INFO, "Getting all movies");
-        try (Connection connection = dataSource.getConnection()){
+        LOGGER.info("Getting all movies");
+        try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement selectAllMoviesPreparedStatement = getSelectAllMoviesPreparedStatement(connection)) {
                 return executeQuery(selectAllMoviesPreparedStatement);
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not get all movies", e);
+            LOGGER.error("Could not get all movies", e);
+            return new ArrayList<>();
         }
-        return new ArrayList<>();
     }
 
     @Override
     public Movie getById(String id) {
-        LOGGER.log(Level.INFO, "Getting movie with ID [" + id + "]");
-        try (Connection connection = dataSource.getConnection()){
+        LOGGER.info("Getting movie with ID {}", id);
+        try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement selectMoviePreparedStatement = getSelectMoviePreparedStatement(id, connection)) {
                 return executeQuery(selectMoviePreparedStatement).get(0);
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not get movie with ID [" + id + "]", e);
+            LOGGER.error("Could not get movie with ID {}", id, e);
         }
         return new UnknownMovie();
     }
 
     @Override
     public boolean insertSingle(Movie movie) {
-        LOGGER.log(Level.INFO, "Inserting movie [" + movie.toString() + "]");
-        try (Connection connection = dataSource.getConnection()){
+        LOGGER.info("Inserting movie {}", movie.toString());
+        try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement insertMoviePreparedStatement = getInsertMoviePreparedStatement(movie, connection)) {
                 executeUpdate(insertMoviePreparedStatement);
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not insert movie [" + movie.toString() + "]", e);
+            LOGGER.error("Could not insert movie {}", movie.toString(), e);
         }
         return false;
     }
 
     @Override
     public boolean updateSingle(Movie movie) {
-        LOGGER.log(Level.INFO, "Updating movie [" + movie.toString() + "]");
-        try (Connection connection = dataSource.getConnection()){
+        LOGGER.info("Updating movie {}", movie.toString());
+        try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement updateMoviePreparedStatement = getUpdateMoviePreparedStatement(movie, connection)) {
                 executeUpdate(updateMoviePreparedStatement);
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not update movie [" + movie.toString() + "]", e);
+            LOGGER.error("Could not update movie {}", movie.toString(), e);
         }
         return false;
     }
 
     @Override
     public boolean deleteSingle(String id) {
-        LOGGER.log(Level.INFO, "Deleting movie with ID [" + id + "]");
-        try (Connection connection = dataSource.getConnection()){
+        LOGGER.info("Deleting movie with ID {}", id);
+        try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement deleteMoviePreparedStatement = getDeleteMoviePreparedStatement(id, connection)) {
                 executeUpdate(deleteMoviePreparedStatement);
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not delete movie with ID [" + id + "]", e);
+            LOGGER.error("Could not delete movie with ID {}", id, e);
         }
         return false;
     }
@@ -98,10 +98,12 @@ public class MovieRepository extends MySqlRepository<Movie> implements Repositor
             movie.setImdbId(resultSet.getString("imdb_id"));
             movie.setRuntime(resultSet.getInt("runtime"));
             movie.setReleaseDate(resultSet.getDate("release_date"));
-            movie.setGenre(Genre.valueOf(resultSet.getString("genre")));
+            List<Genre> genres = new ArrayList<>();
+            genres.add(Genre.valueOf(resultSet.getString("genre")));
+            movie.setGenres(genres);
             movies.add(movie);
         }
-        LOGGER.log(Level.INFO, "Got movie(s) " + movies.toString());
+        LOGGER.info("Got movie(s) {}", movies.toString());
         return movies;
     }
 

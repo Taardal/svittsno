@@ -3,6 +3,8 @@ package no.svitts.core.repository;
 import no.svitts.core.datasource.DataSource;
 import no.svitts.core.file.UnknownVideoFile;
 import no.svitts.core.file.VideoFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,12 +12,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class VideoFileRepository extends MySqlRepository<VideoFile> implements Repository<VideoFile> {
 
-    private static final Logger LOGGER = Logger.getLogger(VideoFile.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(VideoFileRepository.class);
 
     public VideoFileRepository(DataSource dataSource) {
         super(dataSource);
@@ -23,65 +23,65 @@ public class VideoFileRepository extends MySqlRepository<VideoFile> implements R
 
     @Override
     public List<VideoFile> getAll() {
-        LOGGER.log(Level.INFO, "Getting all video files");
+        LOGGER.info("Getting all video files");
         try (Connection connection = dataSource.getConnection()){
             try (PreparedStatement selectAllVideoFilesPreparedStatement = getSelectAllVideoFilesPreparedStatement(connection)) {
                 return executeQuery(selectAllVideoFilesPreparedStatement);
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not get all video files", e);
+            LOGGER.error("Could not get all video files", e);
             return new ArrayList<>();
         }
     }
 
     @Override
     public VideoFile getById(String id) {
-        LOGGER.log(Level.INFO, "Getting video file with ID [" + id + "]");
+        LOGGER.info("Getting video file with ID {}", id);
         try (Connection connection = dataSource.getConnection()){
             try (PreparedStatement selectVideoFilePreparedStatement = getSelectVideoFilePreparedStatement(id, connection)) {
                 return executeQuery(selectVideoFilePreparedStatement).get(0);
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not get video file with ID [" + id + "]", e);
+            LOGGER.error("Could not get video file with ID {}", id, e);
             return new UnknownVideoFile();
         }
     }
 
     @Override
     public boolean insertSingle(VideoFile videoFile) {
-        LOGGER.log(Level.INFO, "Inserting video file [" + videoFile.toString() + "]");
+        LOGGER.info("Inserting video file [" + videoFile.toString() + "]");
         try (Connection connection = dataSource.getConnection()){
             try (PreparedStatement insertVideoFilePreparedStatement = getInsertVideoFilePreparedStatement(videoFile, connection)) {
                 executeUpdate(insertVideoFilePreparedStatement);
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not insert videoFile [" + videoFile.toString() + "]", e);
+            LOGGER.error("Could not insert videoFile {}", videoFile.toString(), e);
         }
         return false;
     }
 
     @Override
     public boolean updateSingle(VideoFile videoFile) {
-        LOGGER.log(Level.INFO, "Updating video file [" + videoFile.toString() + "]");
+        LOGGER.info("Updating video file [" + videoFile.toString() + "]");
         try (Connection connection = dataSource.getConnection()){
             try (PreparedStatement updateVideoFilePreparedStatement = getUpdateVideoFilePreparedStatement(videoFile, connection)) {
                 executeUpdate(updateVideoFilePreparedStatement);
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not update videoFile [" + videoFile.toString() + "]", e);
+            LOGGER.error("Could not update videoFile {}", videoFile.toString(), e);
         }
         return false;
     }
 
     @Override
     public boolean deleteSingle(String id) {
-        LOGGER.log(Level.INFO, "Deleting video file with ID [" + id + "]");
+        LOGGER.info("Deleting video file with ID {}", id);
         try (Connection connection = dataSource.getConnection()){
             try (PreparedStatement deleteVideoFilePreparedStatement = getDeleteVideoFilePreparedStatement(id, connection)) {
                 executeUpdate(deleteVideoFilePreparedStatement);
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not delete video file with ID [" + id + "]", e);
+            LOGGER.error("Could not delete video file with ID {}", id, e);
         }
         return false;
     }
@@ -99,7 +99,7 @@ public class VideoFileRepository extends MySqlRepository<VideoFile> implements R
             int size = resultSet.getInt("size");
             videoFiles.add(new VideoFile(path, id, movieId, name, format, quality, size));
         }
-        LOGGER.log(Level.INFO, "Got video file(s) [" + videoFiles.toString() + "]");
+        LOGGER.info("Got video file(s) {}", videoFiles.toString());
         return videoFiles;
     }
 
