@@ -36,8 +36,8 @@ public abstract class MySqlRepository<T> {
             return getResults(resultSet);
         } catch (SQLException e) {
             LOGGER.error("Could not execute query {}", preparedStatement.toString(), e);
+            return new ArrayList<>();
         }
-        return new ArrayList<>();
     }
 
     protected abstract List<T> getResults(ResultSet resultSet) throws SQLException;

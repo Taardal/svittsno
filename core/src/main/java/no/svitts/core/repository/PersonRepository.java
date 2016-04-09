@@ -31,8 +31,8 @@ public class PersonRepository extends MySqlRepository<Person> implements Reposit
             }
         } catch (SQLException e) {
             LOGGER.error("Could not get all persons", e);
+            return new ArrayList<>();
         }
-        return new ArrayList<>();
     }
 
     @Override
@@ -44,8 +44,8 @@ public class PersonRepository extends MySqlRepository<Person> implements Reposit
             }
         } catch (SQLException e) {
             LOGGER.error("Could not get person with ID {}", id, e);
+            return new UnknownPerson();
         }
-        return new UnknownPerson();
     }
 
     @Override
@@ -57,8 +57,8 @@ public class PersonRepository extends MySqlRepository<Person> implements Reposit
             }
         } catch (SQLException e) {
             LOGGER.error("Could not create person {}", person, e);
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -70,8 +70,8 @@ public class PersonRepository extends MySqlRepository<Person> implements Reposit
             }
         } catch (SQLException e) {
             LOGGER.error("Could not update person {}", person, e);
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -83,8 +83,8 @@ public class PersonRepository extends MySqlRepository<Person> implements Reposit
             }
         } catch (SQLException e) {
             LOGGER.error("Could not delete person with ID {}", id, e);
+            return false;
         }
-        return false;
     }
 
     @Override

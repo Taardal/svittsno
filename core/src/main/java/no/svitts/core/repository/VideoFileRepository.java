@@ -52,12 +52,12 @@ public class VideoFileRepository extends MySqlRepository<VideoFile> implements R
         LOGGER.info("Inserting video file [" + videoFile.toString() + "]");
         try (Connection connection = dataSource.getConnection()){
             try (PreparedStatement insertVideoFilePreparedStatement = getInsertVideoFilePreparedStatement(videoFile, connection)) {
-                executeUpdate(insertVideoFilePreparedStatement);
+                return executeUpdate(insertVideoFilePreparedStatement);
             }
         } catch (SQLException e) {
             LOGGER.error("Could not insert videoFile {}", videoFile.toString(), e);
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -65,12 +65,12 @@ public class VideoFileRepository extends MySqlRepository<VideoFile> implements R
         LOGGER.info("Updating video file [" + videoFile.toString() + "]");
         try (Connection connection = dataSource.getConnection()){
             try (PreparedStatement updateVideoFilePreparedStatement = getUpdateVideoFilePreparedStatement(videoFile, connection)) {
-                executeUpdate(updateVideoFilePreparedStatement);
+                return executeUpdate(updateVideoFilePreparedStatement);
             }
         } catch (SQLException e) {
             LOGGER.error("Could not update videoFile {}", videoFile.toString(), e);
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -78,12 +78,12 @@ public class VideoFileRepository extends MySqlRepository<VideoFile> implements R
         LOGGER.info("Deleting video file with ID {}", id);
         try (Connection connection = dataSource.getConnection()){
             try (PreparedStatement deleteVideoFilePreparedStatement = getDeleteVideoFilePreparedStatement(id, connection)) {
-                executeUpdate(deleteVideoFilePreparedStatement);
+                return executeUpdate(deleteVideoFilePreparedStatement);
             }
         } catch (SQLException e) {
             LOGGER.error("Could not delete video file with ID {}", id, e);
+            return false;
         }
-        return false;
     }
 
     @Override

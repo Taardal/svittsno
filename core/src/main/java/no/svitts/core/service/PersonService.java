@@ -44,7 +44,7 @@ public class PersonService {
         return false;
     }
 
-    void alreadyExists(Person person) {
-
+    boolean alreadyExists(Person person) {
+        return false;
     }
 }

@@ -44,8 +44,8 @@ public class MovieRepository extends MySqlRepository<Movie> implements Repositor
             }
         } catch (SQLException e) {
             LOGGER.error("Could not get movie with ID {}", id, e);
+            return new UnknownMovie();
         }
-        return new UnknownMovie();
     }
 
     @Override
@@ -53,12 +53,12 @@ public class MovieRepository extends MySqlRepository<Movie> implements Repositor
         LOGGER.info("Inserting movie {}", movie.toString());
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement insertMoviePreparedStatement = getInsertMoviePreparedStatement(movie, connection)) {
-                executeUpdate(insertMoviePreparedStatement);
+                return executeUpdate(insertMoviePreparedStatement);
             }
         } catch (SQLException e) {
             LOGGER.error("Could not insert movie {}", movie.toString(), e);
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -66,12 +66,12 @@ public class MovieRepository extends MySqlRepository<Movie> implements Repositor
         LOGGER.info("Updating movie {}", movie.toString());
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement updateMoviePreparedStatement = getUpdateMoviePreparedStatement(movie, connection)) {
-                executeUpdate(updateMoviePreparedStatement);
+                return executeUpdate(updateMoviePreparedStatement);
             }
         } catch (SQLException e) {
             LOGGER.error("Could not update movie {}", movie.toString(), e);
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -79,12 +79,12 @@ public class MovieRepository extends MySqlRepository<Movie> implements Repositor
         LOGGER.info("Deleting movie with ID {}", id);
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement deleteMoviePreparedStatement = getDeleteMoviePreparedStatement(id, connection)) {
-                executeUpdate(deleteMoviePreparedStatement);
+                return executeUpdate(deleteMoviePreparedStatement);
             }
         } catch (SQLException e) {
             LOGGER.error("Could not delete movie with ID {}", id, e);
+            return false;
         }
-        return false;
     }
 
     @Override

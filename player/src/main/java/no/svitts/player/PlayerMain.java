@@ -8,11 +8,12 @@ import no.svitts.player.userinterface.UserInterface;
 
 public class PlayerMain extends Application {
 
+    private static final String PLAYER_SERVLET = "no.svitts.player.servlet.PlayerServlet";
     private JettyServer jettyServer;
 
     public PlayerMain() {
         jettyServer = new JettyServer(8585);
-        jettyServer.addServlet("no.svitts.player.servlet.PlayerServlet", "/");
+        jettyServer.addServlet(PLAYER_SERVLET, "/");
     }
 
     public static void main(String[] args) {

@@ -2,40 +2,36 @@ package no.svitts.core.database;
 
 import no.svitts.core.datasource.DataSource;
 import no.svitts.core.reader.FileReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class LocalDatabase {
 
-    private static final Logger LOGGER = Logger.getLogger(LocalDatabase.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalDatabase.class);
     private static final String DATABASE_SCHEMA_FILE_NAME = "database_schema.sql";
-    private DataSource dataSource;
 
-    public LocalDatabase(DataSource dataSource) {
-        this.dataSource = dataSource;
-        createTables();
-    }
-
-    private void createTables() {
+    public static void initialize(DataSource dataSource) {
         String sql = new FileReader().readResource(DATABASE_SCHEMA_FILE_NAME);
         List<String> statements = Arrays.asList(sql.split(";"));
-        statements.forEach(this::executeStatement);
+        for (String statement : statements) {
+            executeStatement(statement, dataSource);
+        }
     }
 
-    private void executeStatement(String statement) {
+    private static void executeStatement(String statement, DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(statement)) {
-                LOGGER.log(Level.INFO, "Executing statement [" + preparedStatement.toString() + "]");
+                LOGGER.info("Executing statement {}", preparedStatement.toString());
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Could not execute statement [" + statement + "]", e);
+            LOGGER.error("Could not execute statement {}", statement, e);
         }
     }
 

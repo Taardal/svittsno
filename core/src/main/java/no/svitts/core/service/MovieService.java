@@ -1,8 +1,6 @@
 package no.svitts.core.service;
 
-import no.svitts.core.file.VideoFile;
 import no.svitts.core.movie.Movie;
-import no.svitts.core.person.Person;
 import no.svitts.core.repository.Repository;
 
 import java.util.List;
@@ -28,6 +26,7 @@ public class MovieService {
     public boolean createMovie(Movie movie) {
         boolean movieCreated = movieRepository.insertSingle(movie);
         boolean personsCreated = personService.createPersons(movie.getCast());
+        return false;
     }
 
     public boolean updateMovie(Movie movie) {

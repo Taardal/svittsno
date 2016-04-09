@@ -31,7 +31,7 @@ public class CoreApplication extends ResourceConfig {
         DataSourceConfig dataSourceConfig = constrettoConfiguration.as(DataSourceConfig.class);
         DataSource dataSource = new MySqlDataSource(dataSourceConfig);
         if (constrettoConfiguration.getCurrentTags().get(0).equals("LOCAL")) {
-            new LocalDatabase(dataSource);
+            LocalDatabase.initialize(dataSource);
         }
         register(getPersonResource(dataSource));
     }
@@ -40,7 +40,8 @@ public class CoreApplication extends ResourceConfig {
         Repository<VideoFile> videoFileRepository = new VideoFileRepository(dataSource);
         Repository<Movie> movieRepository = new MovieRepository(dataSource);
         Repository<Person> personRepository = new PersonRepository(dataSource);
-        MovieService movieService = new MovieService(movieRepository, videoFileRepository, personRepository);
+        PersonService personService = new PersonService(personRepository);
+        MovieService movieService = new MovieService(movieRepository, personService);
         return new MovieResource(movieService);
     }
 
