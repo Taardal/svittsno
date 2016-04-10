@@ -1,4 +1,4 @@
-package no.svitts.testdata;
+package no.svitts.integration.testdata;
 
 import no.svitts.core.movie.Genre;
 import no.svitts.core.movie.Movie;

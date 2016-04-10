@@ -1,4 +1,4 @@
-package no.svitts.reader;
+package no.svitts.unit.reader;
 
 import no.svitts.core.reader.FileReader;
 import org.junit.Test;
