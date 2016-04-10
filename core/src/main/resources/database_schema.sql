@@ -1,7 +1,7 @@
 CREATE TABLE `movie` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `imdb_id` varchar(255) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
   `tagline` varchar(255) DEFAULT NULL,
   `overview` varchar(255) DEFAULT NULL,
   `runtime` int(10) unsigned DEFAULT NULL,
@@ -47,8 +47,9 @@ CREATE TABLE `image_file` (
 );
 CREATE TABLE `person` (
   `id` varchar(255) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `date_of_birth` date DEFAULT NULL,
+  `first_name` varchar(255) NOT NULL,
+  `last_name` varchar(255) NOT NULL,
+  `date_of_birth` date NOT NULL,
   `gender` varchar(15) NOT NULL,
   PRIMARY KEY (`id`)
 );

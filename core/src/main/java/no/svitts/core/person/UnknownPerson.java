@@ -4,8 +4,10 @@ import no.svitts.core.date.KeyDate;
 
 public class UnknownPerson extends Person {
 
+    public static final String ID = "unknown-person-id";
+
     public UnknownPerson() {
-        super("id-for-unknown-person");
+        super(ID);
         setFirstName("Jane");
         setLastName("Doe");
         setDateOfBirth(new KeyDate(1975, 1, 1));

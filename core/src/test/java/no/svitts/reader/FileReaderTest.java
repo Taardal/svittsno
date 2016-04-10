@@ -1,7 +1,6 @@
 package no.svitts.reader;
 
 import no.svitts.core.reader.FileReader;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.BufferedWriter;
@@ -15,18 +14,11 @@ import static org.junit.Assert.*;
 
 public class FileReaderTest {
 
-    private FileReader fileReader;
-
-    @Before
-    public void setup() {
-        fileReader = new FileReader();
-    }
-
     @Test
     public void readFile_ShouldReturnStringWithContent() throws IOException {
         String targetContent = "SELECT * FROM test;";
         File file = getTempFile("testfile", ".sql", targetContent);
-        assertContent(targetContent, fileReader.readFile(file));
+        assertContent(targetContent, new FileReader().readFile(file));
         assertTrue(file.delete());
     }
 
