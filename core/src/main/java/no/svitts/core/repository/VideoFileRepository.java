@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VideoFileRepository extends MySqlRepository<VideoFile> implements Repository<VideoFile> {
+public class VideoFileRepository extends SqlRepository<VideoFile> implements Repository<VideoFile> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VideoFileRepository.class);
 
@@ -45,6 +45,11 @@ public class VideoFileRepository extends MySqlRepository<VideoFile> implements R
             LOGGER.error("Could not get video file with ID {}", id, e);
             return new UnknownVideoFile();
         }
+    }
+
+    @Override
+    public VideoFile getByAttributes(Object... objects) {
+        return null;
     }
 
     @Override

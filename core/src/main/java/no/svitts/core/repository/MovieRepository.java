@@ -8,14 +8,11 @@ import no.svitts.core.movie.UnknownMovie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovieRepository extends MySqlRepository<Movie> implements Repository<Movie> {
+public class MovieRepository extends SqlRepository<Movie> implements Repository<Movie> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieRepository.class);
 
@@ -45,6 +42,19 @@ public class MovieRepository extends MySqlRepository<Movie> implements Repositor
             }
         } catch (SQLException e) {
             LOGGER.error("Could not get movie with ID {}", id, e);
+            return new UnknownMovie();
+        }
+    }
+
+    @Override
+    public Movie getByAttributes(Object... objects) {
+        LOGGER.info("Getting movie by attributes");
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement selectMoviePreparedStatement = getSelectMoviePreparedStatement(objects, connection)) {
+                return executeQuery(selectMoviePreparedStatement).get(0);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Could not get movie by attributes", e);
             return new UnknownMovie();
         }
     }
@@ -92,20 +102,27 @@ public class MovieRepository extends MySqlRepository<Movie> implements Repositor
     protected List<Movie> getResults(ResultSet resultSet) throws SQLException {
         List<Movie> movies = new ArrayList<>();
         while (resultSet.next()) {
-            Movie movie = new Movie(resultSet.getString("id"));
-            movie.setName(resultSet.getString("name"));
-            movie.setTagline(resultSet.getString("tagline"));
-            movie.setOverview(resultSet.getString("overview"));
-            movie.setImdbId(resultSet.getString("imdb_id"));
-            movie.setRuntime(resultSet.getInt("runtime"));
-            movie.setReleaseDate(new KeyDate(resultSet.getDate("release_date")));
-            List<Genre> genres = new ArrayList<>();
-            genres.add(Genre.valueOf(resultSet.getString("genre")));
-            movie.setGenres(genres);
-            movies.add(movie);
+            String id = resultSet.getString("id");
+            String name = resultSet.getString("name");
+            String imdbId = resultSet.getString("imdb_id");
+            String tagline = resultSet.getString("tagline");
+            String overview = resultSet.getString("overview");
+            int runtime = resultSet.getInt("runtime");
+            KeyDate releaseDate = new KeyDate(resultSet.getDate("release_date"));
+            List<Genre> genres = getGenres(resultSet.getString("genres"));
+            movies.add(new Movie(id, name, imdbId, tagline, overview, runtime, releaseDate, genres));
         }
         LOGGER.info("Got movie(s) {}", movies.toString());
         return movies;
+    }
+
+    private List<Genre> getGenres(String genresString) throws SQLException {
+        String[] genreStrings = genresString.split(",");
+        List<Genre> genres = new ArrayList<>();
+        for (String genreString : genreStrings) {
+            genres.add(Genre.valueOf(genreString));
+        }
+        return genres;
     }
 
     private PreparedStatement getSelectAllMoviesPreparedStatement(Connection connection) throws SQLException {
@@ -116,12 +133,22 @@ public class MovieRepository extends MySqlRepository<Movie> implements Repositor
     }
 
     private PreparedStatement getSelectMoviePreparedStatement(String id, Connection connection) throws SQLException {
-        String query = "SELECT movie.*, genre.name AS genre FROM movie " +
+        String query = "SELECT movie.*, GROUP_CONCAT(DISTINCT genre.name) AS genres FROM movie " +
                 "JOIN movie_genre ON movie.id = movie_genre.movie_id " +
                 "JOIN genre ON genre.id = movie_genre.genre_id " +
                 "WHERE movie.id = ?;";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setString(1, id);
+        return preparedStatement;
+    }
+
+    private PreparedStatement getSelectMoviePreparedStatement(Object[] attributes, Connection connection) throws SQLException {
+        String query = "SELECT movie.*, GROUP_CONCAT(DISTINCT genre.name) AS genres FROM movie " +
+                "JOIN movie_genre ON movie.id = movie_genre.movie_id " +
+                "JOIN genre ON genre.id = movie_genre.genre_id " +
+                "WHERE movie.name = ?;";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(1, (String) attributes[0]);
         return preparedStatement;
     }
 

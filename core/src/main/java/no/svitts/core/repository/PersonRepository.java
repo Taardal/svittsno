@@ -15,7 +15,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PersonRepository extends MySqlRepository<Person> implements Repository<Person> {
+public class PersonRepository extends SqlRepository<Person> implements Repository<Person> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PersonRepository.class);
 
@@ -45,6 +45,19 @@ public class PersonRepository extends MySqlRepository<Person> implements Reposit
             }
         } catch (SQLException e) {
             LOGGER.error("Could not get person with ID {}", id, e);
+            return new UnknownPerson();
+        }
+    }
+
+    @Override
+    public Person getByAttributes(Object... attributes) {
+        LOGGER.info("Getting person by attributes");
+        try (Connection connection = dataSource.getConnection()){
+            try (PreparedStatement selectPersonPreparedStatement = getSelectPersonPreparedStatement(attributes, connection)) {
+                return executeQuery(selectPersonPreparedStatement).get(0);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Could not get person by attributes", e);
             return new UnknownPerson();
         }
     }
@@ -111,6 +124,27 @@ public class PersonRepository extends MySqlRepository<Person> implements Reposit
         String query = "SELECT * FROM person WHERE id = ?;";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setString(1, id);
+        return preparedStatement;
+    }
+
+    private PreparedStatement getSelectPersonPreparedStatement(Object[] attributes, Connection connection) throws SQLException {
+        String firstName = (String) attributes[0];
+        String lastName = (String) attributes[1];
+        KeyDate dateOfBirth = (KeyDate) attributes[2];
+        Gender gender = (Gender) attributes[3];
+
+        String query = "SELECT * FROM person " +
+                "WHERE firstName = ? " +
+                "AND lastName = ? " +
+                "AND (dateOfBirth BETWEEN ? AND ?)" +
+                "AND gender = ?;";
+
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(1, firstName);
+        preparedStatement.setString(2, lastName);
+        preparedStatement.setString(3, dateOfBirth.startOfDay().toJavaSqlDate().toString());
+        preparedStatement.setString(3, dateOfBirth.endOfDay().toJavaSqlDate().toString());
+        preparedStatement.setString(5, gender.toString());
         return preparedStatement;
     }
 
