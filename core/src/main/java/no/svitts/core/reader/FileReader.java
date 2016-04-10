@@ -1,9 +1,8 @@
 package no.svitts.core.reader;
 
 
+import no.svitts.core.exception.FileReaderException;
 import org.constretto.model.ClassPathResource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -12,8 +11,6 @@ import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
 public class FileReader {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileReader.class);
 
     public String readFile(String path) {
         return readFile(new File(path));
@@ -24,8 +21,7 @@ public class FileReader {
         try {
              return new String(Files.readAllBytes(path));
         } catch (IOException e) {
-            LOGGER.error("Could not read file {}", file.getAbsolutePath(), e);
-            return "";
+            throw new FileReaderException("Could not read file [" + file.getAbsolutePath() + "]");
         }
     }
 
@@ -38,8 +34,7 @@ public class FileReader {
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
             return bufferedReader.lines().collect(Collectors.joining("\n"));
         } catch (IOException e) {
-            LOGGER.error("Could not read resource {}", classPathResource.toString(), e);
-            return "";
+            throw new FileReaderException("Could not read resource [" + classPathResource.toString() + "]");
         }
     }
 
