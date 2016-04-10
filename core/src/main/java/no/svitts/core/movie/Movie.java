@@ -24,8 +24,9 @@ public class Movie {
     private ImageFile poster;
     private ImageFile backdrop;
 
-    public Movie(String id) {
+    public Movie(String id, String name) {
         this.id = id;
+        this.name = name;
     }
 
     public Movie(String id, String name, String imdbId, String tagline, String overview, int runtime, KeyDate releaseDate, List<Genre> genres) {

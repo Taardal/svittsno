@@ -10,12 +10,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class MySqlRepository<T> {
+public abstract class SqlRepository<T> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MySqlRepository.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SqlRepository.class);
     protected DataSource dataSource;
 
-    protected MySqlRepository(DataSource dataSource) {
+    protected SqlRepository(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 

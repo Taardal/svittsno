@@ -45,7 +45,7 @@ public class PersonResource extends SvittsResource {
     public Response createPerson(String json) {
         LOGGER.info("Received request to CREATE person by JSON {}", json);
         Person person = gson.fromJson(json, Person.class);
-        return getRespone(personService.createPerson(person));
+        return getResponse(personService.createPerson(person));
     }
 
     @PUT
@@ -54,7 +54,7 @@ public class PersonResource extends SvittsResource {
     public Response updatePerson(@PathParam("id") String id, String json) {
         LOGGER.info("Received request to UPDATE person by JSON {}", json);
         Person person = gson.fromJson(json, Person.class);
-        return getRespone(personService.updatePerson(person));
+        return getResponse(personService.updatePerson(person));
     }
 
     @DELETE
@@ -62,7 +62,7 @@ public class PersonResource extends SvittsResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response deletePerson(@PathParam("id") String id) {
         LOGGER.info("Received request to DELETE person with ID {}", id);
-        return getRespone(personService.deletePerson(id));
+        return getResponse(personService.deletePerson(id));
     }
 
 }

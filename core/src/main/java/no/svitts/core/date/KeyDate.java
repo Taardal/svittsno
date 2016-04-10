@@ -1,12 +1,14 @@
 package no.svitts.core.date;
 
-import no.svitts.core.exception.KeyDateParseException;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class KeyDate {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(KeyDate.class);
     private static final String KEY_DATE_REGEX = "(\\d{4})(\\d{2})(\\d{2})";
     private static final String JAVA_SQL_DATE_REGEX = "(\\d{4})-(\\d{2})-(\\d{2})";
     private static final DateTimeFormatter KEY_DATE_PATTERN = DateTimeFormat.forPattern("yyyyMMdd");
@@ -24,6 +26,10 @@ public class KeyDate {
 
     public KeyDate(String date) {
         dateTime = parseDateTime(date);
+    }
+
+    public KeyDate(DateTime dateTime) {
+        this.dateTime = dateTime;
     }
 
     public KeyDate(java.sql.Date date) {
@@ -54,6 +60,32 @@ public class KeyDate {
         return dateTime.isAfter(keyDate.getTime());
     }
 
+    public KeyDate plusHours(int hours) {
+        return new KeyDate(dateTime.plusHours(hours));
+    }
+
+    public KeyDate plusMinutes(int minutes) {
+        return new KeyDate(dateTime.plusMinutes(minutes));
+    }
+
+    public KeyDate plusSeconds(int seconds) {
+        return new KeyDate(dateTime.plusSeconds(seconds));
+    }
+
+    public KeyDate startOfDay() {
+        return new KeyDate(dateTime
+                .hourOfDay().withMinimumValue()
+                .minuteOfHour().withMinimumValue()
+                .secondOfMinute().withMinimumValue());
+    }
+
+    public KeyDate endOfDay() {
+        return new KeyDate(dateTime
+                .hourOfDay().withMaximumValue()
+                .minuteOfHour().withMaximumValue()
+                .secondOfMinute().withMaximumValue());
+    }
+
     @Override
     public String toString() {
         return PRETTY_PATTERN.print(getTime());
@@ -65,7 +97,8 @@ public class KeyDate {
         } else if (date.matches(JAVA_SQL_DATE_REGEX)) {
             return JAVA_SQL_DATE_PATTERN.parseDateTime(date);
         } else {
-            throw new KeyDateParseException("Could not parse string [" + date + "] to DateTime");
+            LOGGER.warn("Could not parse date {} to DateTime. Using today's date instead.", date);
+            return DateTime.now();
         }
     }
 

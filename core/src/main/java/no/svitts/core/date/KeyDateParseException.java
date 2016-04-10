@@ -1,4 +1,4 @@
-package no.svitts.core.exception;
+package no.svitts.core.date;
 
 public class KeyDateParseException extends RuntimeException {
 

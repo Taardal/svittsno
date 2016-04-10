@@ -5,11 +5,11 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class MySqlDataSource implements DataSource {
+public class SqlDataSource implements DataSource {
 
     private HikariDataSource hikariDataSource;
 
-    public MySqlDataSource(DataSourceConfig dataSourceConfig) {
+    public SqlDataSource(DataSourceConfig dataSourceConfig) {
         hikariDataSource = new HikariDataSource(dataSourceConfig);
     }
 

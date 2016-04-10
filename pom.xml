@@ -11,48 +11,27 @@
     <modules>
         <module>core</module>
         <module>player</module>
-        <module>core-itests</module>
     </modules>
 
     <properties>
         <jetty.version>9.3.6.v20151106</jetty.version>
         <junit.version>4.12</junit.version>
-        <constretto.version>2.2.3</constretto.version>
         <jersey.version>2.22.1</jersey.version>
         <slf4j.version>1.7.21</slf4j.version>
+        <java-sdk.version>1.8</java-sdk.version>
+        <gson.version>2.5</gson.version>
+        <mysql-connector.version>5.1.38</mysql-connector.version>
+        <maven-war-plugin.version>2.6</maven-war-plugin.version>
+        <maven-compiler.version>3.3</maven-compiler.version>
+        <maven-eclipse-plugin.version>2.10</maven-eclipse-plugin.version>
+        <joda-time.version>2.9.1</joda-time.version>
+        <hikari-cp.version>2.4.3</hikari-cp.version>
+        <h2-database-engine.version>1.4.191</h2-database-engine.version>
+        <maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>2.19.1</maven-failsafe-plugin.version>
+        <maven-resources-plugin.version>2.3</maven-resources-plugin.version>
+        <sql-maven-plugin.version>1.5</sql-maven-plugin.version>
+        <properties-maven-plugin.version>1.0.0</properties-maven-plugin.version>
     </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-servlet</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-util</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.constretto</groupId>
-            <artifactId>constretto-core</artifactId>
-            <version>${constretto.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-    </dependencies>
 
 </project>
