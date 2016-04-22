@@ -47,10 +47,11 @@ public abstract class SqlRepository<T> {
             int[] results = preparedStatement.executeBatch();
             return Arrays.stream(results).allMatch(rowsAffected -> rowsAffected > 0);
         } catch (SQLException e) {
-            LOGGER.error("Could not execute query {}", preparedStatement.toString(), e);
+            LOGGER.error("Could not execute batch {}", preparedStatement.toString(), e);
             return false;
         }
     }
+
 
     protected abstract List<T> getResults(ResultSet resultSet) throws SQLException;
 
