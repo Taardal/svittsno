@@ -23,10 +23,8 @@ public class MovieRepository extends SqlRepository<Movie> implements Repository<
     @Override
     public List<Movie> getAll() {
         LOGGER.info("Getting all movies");
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement selectAllMoviesPreparedStatement = getSelectAllMoviesPreparedStatement(connection)) {
-                return executeQuery(selectAllMoviesPreparedStatement);
-            }
+        try (PreparedStatement selectAllMoviesPreparedStatement = getSelectAllMoviesPreparedStatement(dataSource.getConnection())) {
+            return executeQuery(selectAllMoviesPreparedStatement);
         } catch (SQLException e) {
             LOGGER.error("Could not get all movies", e);
             return new ArrayList<>();
@@ -36,10 +34,8 @@ public class MovieRepository extends SqlRepository<Movie> implements Repository<
     @Override
     public Movie getById(String id) {
         LOGGER.info("Getting movie with ID {}", id);
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement selectMoviePreparedStatement = getSelectMoviePreparedStatement(id, connection)) {
-                return executeQuery(selectMoviePreparedStatement).get(0);
-            }
+        try (PreparedStatement selectMoviePreparedStatement = getSelectMoviePreparedStatement(id, dataSource.getConnection())) {
+            return executeQuery(selectMoviePreparedStatement).get(0);
         } catch (SQLException e) {
             LOGGER.error("Could not get movie with ID {}", id, e);
             return new UnknownMovie();
@@ -47,12 +43,10 @@ public class MovieRepository extends SqlRepository<Movie> implements Repository<
     }
 
     @Override
-    public Movie getByAttributes(Object... objects) {
+    public Movie getByAttributes(Object... attributes) {
         LOGGER.info("Getting movie by attributes");
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement selectMoviePreparedStatement = getSelectMoviePreparedStatement(objects, connection)) {
-                return executeQuery(selectMoviePreparedStatement).get(0);
-            }
+        try (PreparedStatement selectMoviePreparedStatement = getSelectMoviePreparedStatement(attributes, dataSource.getConnection())) {
+            return executeQuery(selectMoviePreparedStatement).get(0);
         } catch (SQLException e) {
             LOGGER.error("Could not get movie by attributes", e);
             return new UnknownMovie();
@@ -61,26 +55,47 @@ public class MovieRepository extends SqlRepository<Movie> implements Repository<
 
     @Override
     public boolean insertSingle(Movie movie) {
+        return insertMovie(movie) && insertMovieGenreRelations(movie);
+    }
+
+    private boolean insertMovie(Movie movie) {
         LOGGER.info("Inserting movie {}", movie.toString());
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement insertMoviePreparedStatement = getInsertMoviePreparedStatement(movie, connection)) {
-                return executeUpdate(insertMoviePreparedStatement);
-            }
+        try (PreparedStatement insertMoviePreparedStatement = getInsertMoviePreparedStatement(movie, dataSource.getConnection())) {
+            return executeUpdate(insertMoviePreparedStatement);
         } catch (SQLException e) {
-            LOGGER.error("Could not insert movie {}", movie.toString(), e);
+            LOGGER.error("Could not insertSingle movie {}", movie.toString(), e);
             return false;
         }
+    }
+
+    private boolean insertMovieGenreRelations(Movie movie) {
+        try (PreparedStatement preparedStatement = getInsertMovieGenreRelationsPreparedStatement(movie, dataSource.getConnection())) {
+            return executeBatch(preparedStatement);
+        } catch (SQLException e) {
+            LOGGER.error("Could not insert Movie/Genre relations", e);
+            return false;
+        }
+    }
+
+    private PreparedStatement getInsertMovieGenreRelationsPreparedStatement(Movie movie, Connection connection) throws SQLException {
+        String statement = "INSERT INTO movie_genre VALUES (?, ?);";
+        PreparedStatement preparedStatement = connection.prepareStatement(statement);
+        for (Genre genre : movie.getGenres()) {
+            int i = 1;
+            preparedStatement.setString(i++, movie.getId());
+            preparedStatement.setString(i, genre.getId());
+            preparedStatement.addBatch();
+        }
+        return preparedStatement;
     }
 
     @Override
     public boolean updateSingle(Movie movie) {
         LOGGER.info("Updating movie {}", movie.toString());
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement updateMoviePreparedStatement = getUpdateMoviePreparedStatement(movie, connection)) {
-                return executeUpdate(updateMoviePreparedStatement);
-            }
+        try (PreparedStatement updateMoviePreparedStatement = getUpdateMoviePreparedStatement(movie, dataSource.getConnection())) {
+            return executeUpdate(updateMoviePreparedStatement);
         } catch (SQLException e) {
-            LOGGER.error("Could not update movie {}", movie.toString(), e);
+            LOGGER.error("Could not updateSingle movie {}", movie.toString(), e);
             return false;
         }
     }
@@ -88,12 +103,10 @@ public class MovieRepository extends SqlRepository<Movie> implements Repository<
     @Override
     public boolean deleteSingle(String id) {
         LOGGER.info("Deleting movie with ID {}", id);
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement deleteMoviePreparedStatement = getDeleteMoviePreparedStatement(id, connection)) {
-                return executeUpdate(deleteMoviePreparedStatement);
-            }
+        try (PreparedStatement deleteMoviePreparedStatement = getDeleteMoviePreparedStatement(id, dataSource.getConnection())) {
+            return executeUpdate(deleteMoviePreparedStatement);
         } catch (SQLException e) {
-            LOGGER.error("Could not delete movie with ID {}", id, e);
+            LOGGER.error("Could not deleteSingle movie with ID {}", id, e);
             return false;
         }
     }
