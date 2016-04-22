@@ -37,8 +37,8 @@ public class MovieService {
         return movieRepository.updateSingle(movie);
     }
 
-    public boolean deleteMovie(Movie movie) {
-        return movieRepository.deleteSingle(movie);
+    public boolean deleteMovie(String id) {
+        return movieRepository.deleteSingle(id);
     }
 
 }

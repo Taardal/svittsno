@@ -1,6 +1,9 @@
 package no.svitts.core.movie;
 
-import no.svitts.core.util.Id;
+import no.svitts.core.id.Id;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public enum Genre {
 
@@ -33,6 +36,26 @@ public enum Genre {
     Genre(String id, String value) {
         this.id = id;
         this.value = value;
+    }
+
+    public static String toString(List<Genre> genres) {
+        String genresString = "";
+        for (int i = 0; i < genres.size(); i++) {
+            if (i > 0) {
+                genresString += ",";
+            }
+            genresString += genres.get(i);
+        }
+        return genresString;
+    }
+
+    public static List<Genre> fromString(String genresString) {
+        String[] genreStrings = genresString.split(",");
+        List<Genre> genres = new ArrayList<>();
+        for (String genreString : genreStrings) {
+            genres.add(Genre.valueOf(genreString));
+        }
+        return genres;
     }
 
     public String getId() {

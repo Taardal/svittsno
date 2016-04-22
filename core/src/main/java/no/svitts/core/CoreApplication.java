@@ -2,7 +2,6 @@ package no.svitts.core;
 
 import no.svitts.core.application.ApplicationProperties;
 import no.svitts.core.datasource.DataSource;
-import no.svitts.core.datasource.DataSourceConfig;
 import no.svitts.core.datasource.SqlDataSource;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.repository.MovieRepository;
@@ -15,8 +14,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 public class CoreApplication extends ResourceConfig {
 
     public CoreApplication() {
-        DataSourceConfig dataSourceConfig = new DataSourceConfig(new ApplicationProperties());
-        DataSource dataSource = new SqlDataSource(dataSourceConfig);
+        DataSource dataSource = new SqlDataSource(new ApplicationProperties());
         register(getMovieResource(dataSource));
     }
 

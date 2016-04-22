@@ -53,6 +53,6 @@ public abstract class SqlRepository<T> {
     }
 
 
-    protected abstract List<T> getResults(ResultSet resultSet) throws SQLException;
+    protected abstract List<T> getResults(ResultSet resultSet);
 
 }

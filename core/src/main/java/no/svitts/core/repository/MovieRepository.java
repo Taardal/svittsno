@@ -14,6 +14,14 @@ import java.util.List;
 
 public class MovieRepository extends SqlRepository<Movie> implements Repository<Movie> {
 
+    public static final String ID = "id";
+    public static final String NAME = "name";
+    public static final String IMDB_ID = "imdb_id";
+    public static final String TAGLINE = "tagline";
+    public static final String OVERVIEW = "overview";
+    public static final String RUNTIME = "runtime";
+    public static final String RELEASE_DATE = "release_date";
+    public static final String GENRES = "genres";
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieRepository.class);
 
     public MovieRepository(DataSource dataSource) {
@@ -49,7 +57,7 @@ public class MovieRepository extends SqlRepository<Movie> implements Repository<
     public boolean insertMultiple(List<Movie> movies) {
         boolean allInserted = true;
         for (Movie movie : movies) {
-            boolean inserted = insertMovie(movie);
+            boolean inserted = insertSingle(movie);
             if (!inserted) {
                 allInserted = false;
             }
@@ -63,23 +71,27 @@ public class MovieRepository extends SqlRepository<Movie> implements Repository<
     }
 
     @Override
-    public boolean deleteSingle(Movie movie) {
-        return deleteMovie(movie);
+    public boolean deleteSingle(String id) {
+        return deleteMovie(id);
     }
 
     @Override
-    protected List<Movie> getResults(ResultSet resultSet) throws SQLException {
+    protected List<Movie> getResults(ResultSet resultSet) {
         List<Movie> movies = new ArrayList<>();
-        while (resultSet.next()) {
-            String id = resultSet.getString("id");
-            String name = resultSet.getString("name");
-            String imdbId = resultSet.getString("imdb_id");
-            String tagline = resultSet.getString("tagline");
-            String overview = resultSet.getString("overview");
-            int runtime = resultSet.getInt("runtime");
-            KeyDate releaseDate = new KeyDate(resultSet.getDate("release_date"));
-            List<Genre> genres = getGenres(resultSet.getString("genres"));
-            movies.add(new Movie(id, name, imdbId, tagline, overview, runtime, releaseDate, genres));
+        try {
+            while (resultSet.next()) {
+                String id = resultSet.getString(ID);
+                String name = resultSet.getString(NAME);
+                String imdbId = resultSet.getString(IMDB_ID);
+                String tagline = resultSet.getString(TAGLINE);
+                String overview = resultSet.getString(OVERVIEW);
+                int runtime = resultSet.getInt(RUNTIME);
+                KeyDate releaseDate = new KeyDate(resultSet.getDate(RELEASE_DATE));
+                List<Genre> genres = Genre.fromString(resultSet.getString(GENRES));
+                movies.add(new Movie(id, name, imdbId, tagline, overview, runtime, releaseDate, genres));
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Could not get results from result set {}", resultSet.toString(), e);
         }
         LOGGER.info("Got movie(s) {}", movies.toString());
         return movies;
@@ -130,7 +142,7 @@ public class MovieRepository extends SqlRepository<Movie> implements Repository<
             }
             parameters += "?";
         }
-        return "SELECT * from movie WHERE id IN (" + parameters + ")";
+        return "SELECT * from movie WHERE util IN (" + parameters + ")";
     }
 
     private Movie getMovie(String id) {
@@ -245,30 +257,21 @@ public class MovieRepository extends SqlRepository<Movie> implements Repository<
         return preparedStatement;
     }
 
-    private boolean deleteMovie(Movie movie) {
-        LOGGER.info("Deleting movie {}", movie.toString());
-        try (PreparedStatement preparedStatement = getDeleteMoviePreparedStatement(dataSource.getConnection(), movie)) {
+    private boolean deleteMovie(String id) {
+        LOGGER.info("Deleting movie with ID {}", id);
+        try (PreparedStatement preparedStatement = getDeleteMoviePreparedStatement(dataSource.getConnection(), id)) {
             return executeUpdate(preparedStatement);
         } catch (SQLException e) {
-            LOGGER.error("Could not delete movie {}", movie.toString(), e);
+            LOGGER.error("Could not delete movie with ID {}", id, e);
             return false;
         }
     }
 
-    private PreparedStatement getDeleteMoviePreparedStatement(Connection connection, Movie movie) throws SQLException {
+    private PreparedStatement getDeleteMoviePreparedStatement(Connection connection, String id) throws SQLException {
         String query = "DELETE FROM movie WHERE id = ?";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setString(1, movie.getId());
+        preparedStatement.setString(1, id);
         return preparedStatement;
-    }
-
-    private List<Genre> getGenres(String genresString) throws SQLException {
-        String[] genreStrings = genresString.split(",");
-        List<Genre> genres = new ArrayList<>();
-        for (String genreString : genreStrings) {
-            genres.add(Genre.valueOf(genreString));
-        }
-        return genres;
     }
 
 }

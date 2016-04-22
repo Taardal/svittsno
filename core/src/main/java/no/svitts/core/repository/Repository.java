@@ -10,5 +10,5 @@ public interface Repository<T> {
     boolean insertSingle(T t);
     boolean insertMultiple(List<T> ts);
     boolean updateSingle(T t);
-    boolean deleteSingle(T t);
+    boolean deleteSingle(String id);
 }
