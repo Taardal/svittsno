@@ -99,6 +99,11 @@
             <artifactId>h2</artifactId>
             <version>${h2-database-engine.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>${mockito.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -189,7 +194,7 @@
                                 </goals>
                                 <configuration>
                                     <srcFiles>
-                                        <srcFile>${resources.directory}/${build.profile.id}/database_schema.sql</srcFile>
+                                        <srcFile>${resources.directory}/database_schema.sql</srcFile>
                                     </srcFiles>
                                 </configuration>
                             </execution>
