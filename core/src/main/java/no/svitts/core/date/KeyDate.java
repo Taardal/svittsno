@@ -3,16 +3,9 @@ package no.svitts.core.date;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class KeyDate {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KeyDate.class);
-    private static final String KEY_DATE_REGEX = "(\\d{4})(\\d{2})(\\d{2})";
-    private static final String JAVA_SQL_DATE_REGEX = "(\\d{4})-(\\d{2})-(\\d{2})";
-    private static final DateTimeFormatter KEY_DATE_PATTERN = DateTimeFormat.forPattern("yyyyMMdd");
-    private static final DateTimeFormatter JAVA_SQL_DATE_PATTERN = DateTimeFormat.forPattern("yyyy-MM-dd");
     private static final DateTimeFormatter PRETTY_PATTERN = DateTimeFormat.forPattern("dd.MMMM.yyyy");
     private DateTime dateTime;
 
@@ -24,10 +17,6 @@ public class KeyDate {
         dateTime = new DateTime(year, monthOfYear, dayOfMonth, 0, 0);
     }
 
-    public KeyDate(String date) {
-        dateTime = parseDateTime(date);
-    }
-
     public KeyDate(DateTime dateTime) {
         this.dateTime = dateTime;
     }
@@ -36,16 +25,8 @@ public class KeyDate {
         dateTime = new DateTime(date);
     }
 
-    public KeyDate(java.util.Date date) {
-        dateTime = new DateTime(date);
-    }
-
-    public java.sql.Date toJavaSqlDate() {
+    public java.sql.Date toSqlDate() {
         return new java.sql.Date(dateTime.toInstant().getMillis());
-    }
-
-    public java.util.Date toJavaUtilDate() {
-        return new java.util.Date(dateTime.toInstant().getMillis());
     }
 
     public long getTime() {
@@ -89,17 +70,6 @@ public class KeyDate {
     @Override
     public String toString() {
         return PRETTY_PATTERN.print(getTime());
-    }
-
-    private DateTime parseDateTime(String date) {
-        if (date.matches(KEY_DATE_REGEX)) {
-            return KEY_DATE_PATTERN.parseDateTime(date);
-        } else if (date.matches(JAVA_SQL_DATE_REGEX)) {
-            return JAVA_SQL_DATE_PATTERN.parseDateTime(date);
-        } else {
-            LOGGER.warn("Could not parse date {} to DateTime. Using today's date instead.", date);
-            return DateTime.now();
-        }
     }
 
 }

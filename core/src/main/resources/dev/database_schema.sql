@@ -18,8 +18,8 @@ CREATE TABLE IF NOT EXISTS `movie_genre` (
   `genre_id` varchar(255) NOT NULL,
   PRIMARY KEY (`movie_id`,`genre_id`),
   KEY `genre_id` (`genre_id`),
-  CONSTRAINT `movie_genre_ibfk_1` FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`),
-  CONSTRAINT `movie_genre_ibfk_2` FOREIGN KEY (`genre_id`) REFERENCES `genre` (`id`)
+  CONSTRAINT `movie_genre_ibfk_1` FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `movie_genre_ibfk_2` FOREIGN KEY (`genre_id`) REFERENCES `genre` (`id`) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS `video_file` (
   `id` varchar(255) NOT NULL,
@@ -35,8 +35,8 @@ CREATE TABLE IF NOT EXISTS `movie_video_file` (
   `video_file_id` varchar(255) NOT NULL,
   PRIMARY KEY (`movie_id`,`video_file_id`),
   KEY `video_file_id` (`video_file_id`),
-  CONSTRAINT `movie_video_file_ibfk_1` FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`),
-  CONSTRAINT `movie_video_file_ibfk_2` FOREIGN KEY (`video_file_id`) REFERENCES `video_file` (`id`)
+  CONSTRAINT `movie_video_file_ibfk_1` FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `movie_video_file_ibfk_2` FOREIGN KEY (`video_file_id`) REFERENCES `video_file` (`id`) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS `image_file` (
   `id` varchar(255) NOT NULL,
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS `person_movie_job` (
   PRIMARY KEY (`person_id`,`movie_id`,`job_id`),
   KEY `movie_id` (`movie_id`),
   KEY `job_id` (`job_id`),
-  CONSTRAINT `person_movie_job_ibfk_1` FOREIGN KEY (`person_id`) REFERENCES `person` (`id`),
-  CONSTRAINT `person_movie_job_ibfk_2` FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`),
-  CONSTRAINT `person_movie_job_ibfk_3` FOREIGN KEY (`job_id`) REFERENCES `job` (`id`)
+  CONSTRAINT `person_movie_job_ibfk_1` FOREIGN KEY (`person_id`) REFERENCES `person` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `person_movie_job_ibfk_2` FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `person_movie_job_ibfk_3` FOREIGN KEY (`job_id`) REFERENCES `job` (`id`) ON DELETE CASCADE
 );
