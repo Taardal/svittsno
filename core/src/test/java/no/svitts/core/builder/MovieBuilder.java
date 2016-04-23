@@ -1,9 +1,9 @@
 package no.svitts.core.builder;
 
 import no.svitts.core.date.KeyDate;
+import no.svitts.core.id.Id;
 import no.svitts.core.movie.Genre;
 import no.svitts.core.movie.Movie;
-import no.svitts.core.id.Id;
 
 import java.util.ArrayList;
 import java.util.List;

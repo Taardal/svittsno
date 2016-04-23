@@ -8,12 +8,10 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 @Path("/movie")
 @Produces(MediaType.APPLICATION_JSON)
-public class MovieResource extends SvittsResource {
+public class MovieResource extends CoreResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieResource.class);
     private MovieService movieService;
@@ -23,7 +21,6 @@ public class MovieResource extends SvittsResource {
     }
 
     @GET
-    @Path("/")
     public String getMovieByName(@QueryParam("name") String name) {
         LOGGER.info("Received request to GET movie with name {}", name);
         return gson.toJson(movieService.getMovieByName(name));
@@ -49,7 +46,7 @@ public class MovieResource extends SvittsResource {
     public Response createMovie(String json) {
         LOGGER.info("Received request to CREATE movie by json {}", json);
         Movie movie = gson.fromJson(json, Movie.class);
-        return movieService.createMovie(movie) ? Response.created(getURI("/" + movie.getId())).build() : Response.serverError().build();
+        return getResponse(movieService.createMovie(movie));
     }
 
     @PUT
@@ -69,12 +66,4 @@ public class MovieResource extends SvittsResource {
         return getResponse(movieService.deleteMovie(id));
     }
 
-    private URI getURI(String path) {
-        try {
-            return new URI(path);
-        } catch (URISyntaxException e) {
-            LOGGER.error("Could not create URI", e);
-            return getURI("");
-        }
-    }
 }

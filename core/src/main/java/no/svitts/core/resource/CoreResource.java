@@ -5,19 +5,15 @@ import com.google.gson.Gson;
 
 import javax.ws.rs.core.Response;
 
-public abstract class SvittsResource {
+public abstract class CoreResource {
 
     protected Gson gson;
 
-    protected SvittsResource() {
+    protected CoreResource() {
         gson = new Gson();
     }
 
     protected Response getResponse(boolean success) {
-        if (success) {
-            return Response.ok().build();
-        } else {
-            return Response.serverError().build();
-        }
+        return success ?  Response.ok().build() : Response.serverError().build();
     }
 }

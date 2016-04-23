@@ -26,7 +26,14 @@ public class MovieService {
     }
 
     public boolean createMovies(List<Movie> movies) {
-        return movieRepository.insertMultiple(movies);
+        boolean allCreated = true;
+        for (Movie movie : movies) {
+            boolean created = createMovie(movie);
+            if (!created) {
+                allCreated = false;
+            }
+        }
+        return allCreated;
     }
 
     public boolean createMovie(Movie movie) {

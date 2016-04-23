@@ -50,19 +50,7 @@ public class MovieRepository extends SqlRepository<Movie> implements Repository<
 
     @Override
     public boolean insertSingle(Movie movie) {
-        return insertMovie(movie) && insertMovieGenreRelations(movie);
-    }
-
-    @Override
-    public boolean insertMultiple(List<Movie> movies) {
-        boolean allInserted = true;
-        for (Movie movie : movies) {
-            boolean inserted = insertSingle(movie);
-            if (!inserted) {
-                allInserted = false;
-            }
-        }
-        return allInserted;
+        return insertMovie(movie) && insertGenres(movie) && insertMovieGenreRelations(movie);
     }
 
     @Override
@@ -142,7 +130,7 @@ public class MovieRepository extends SqlRepository<Movie> implements Repository<
             }
             parameters += "?";
         }
-        return "SELECT * from movie WHERE util IN (" + parameters + ")";
+        return "SELECT * from movie WHERE id IN (" + parameters + ")";
     }
 
     private Movie getMovie(String id) {
@@ -208,6 +196,28 @@ public class MovieRepository extends SqlRepository<Movie> implements Repository<
         preparedStatement.setString(i++, movie.getOverview());
         preparedStatement.setInt(i++, movie.getRuntime());
         preparedStatement.setDate(i, movie.getReleaseDate().toSqlDate());
+        return preparedStatement;
+    }
+
+    private boolean insertGenres(Movie movie) {
+        LOGGER.info("Inserting genres {}", movie.getGenres().toString());
+        try (PreparedStatement preparedStatement = getInsertGenrePreparedStatement(dataSource.getConnection(), movie)) {
+            return executeBatch(preparedStatement);
+        } catch (SQLException e) {
+            LOGGER.error("Could not insert genres {}", movie.getGenres().toString(), e);
+            return false;
+        }
+    }
+
+    private PreparedStatement getInsertGenrePreparedStatement(Connection connection, Movie movie) throws SQLException {
+        String statement = "INSERT IGNORE INTO genre VALUES (?, ?);";
+        PreparedStatement preparedStatement = connection.prepareStatement(statement);
+        for (Genre genre : movie.getGenres()) {
+            int i = 1;
+            preparedStatement.setString(i++, genre.getId());
+            preparedStatement.setString(i, genre + "");
+            preparedStatement.addBatch();
+        }
         return preparedStatement;
     }
 
