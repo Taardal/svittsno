@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 public class KeyDate {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KeyDate.class);
-    private static final String KEY_DATE_REGEX = "((19|20)\\\\d\\\\d)(0?[1-9]|1[012])(0?[1-9]|[12][0-9]|3[01])";
-    private static final String SQL_DATE_REGEX = "((19|20)\\\\d\\\\d)(-)(0?[1-9]|1[012])(-)(0?[1-9]|[12][0-9]|3[01])";
+    private static final String KEY_DATE_REGEX = "((19|20)(\\d)(\\d))(0?[1-9]|1[012])(0?[1-9]|[12][0-9]|3[01])";
+    private static final String SQL_DATE_REGEX = "((19|20)(\\d)(\\d))(-)(0?[1-9]|1[012])(-)(0?[1-9]|[12][0-9]|3[01])";
     private static final DateTimeFormatter KEY_DATE_PATTERN = DateTimeFormat.forPattern("yyyyMMdd");
     private static final DateTimeFormatter SQL_DATE_PATTERN = DateTimeFormat.forPattern("yyyy-MM-dd");
     private static final DateTimeFormatter PRETTY_PATTERN = DateTimeFormat.forPattern("dd.MMMM.yyyy");
@@ -80,6 +80,10 @@ public class KeyDate {
 
     @Override
     public String toString() {
+        return KEY_DATE_PATTERN.print(getTime());
+    }
+
+    public String toPrettyString() {
         return PRETTY_PATTERN.print(getTime());
     }
 
@@ -89,8 +93,7 @@ public class KeyDate {
         } else if (date.matches(SQL_DATE_REGEX)) {
             return SQL_DATE_PATTERN.parseDateTime(date);
         } else {
-            LOGGER.warn("Could not parse date {} to DateTime. Using today's date instead.", date);
-            return DateTime.now();
+            throw new RuntimeException("Could not parse date [" + date + "]");
         }
     }
 

@@ -1,7 +1,10 @@
 package no.svitts.core.resource;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import no.svitts.core.builder.MovieBuilder;
+import no.svitts.core.gson.deserializer.MovieDeserializer;
+import no.svitts.core.gson.serializer.MovieSerializer;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.service.MovieService;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -28,7 +31,7 @@ public class MovieResourceTest extends JerseyTest {
     protected Application configure() {
         mockMovieService = mock(MovieService.class);
         movieBuilder = new MovieBuilder();
-        gson = new Gson();
+        gson = getGson();
         ResourceConfig resourceConfig = new ResourceConfig();
         resourceConfig.register(new MovieResource(mockMovieService));
         return resourceConfig;
@@ -75,48 +78,49 @@ public class MovieResourceTest extends JerseyTest {
     @Test
     public void createMovie_ShouldReturn200() {
         Movie sherlockHolmes = movieBuilder.sherlockHolmes().build();
-        when(mockMovieService.createMovie(sherlockHolmes)).thenReturn(true);
+        when(mockMovieService.createMovie(any(Movie.class))).thenReturn(true);
         Entity<String> jsonEntity = Entity.entity(gson.toJson(sherlockHolmes), MediaType.APPLICATION_JSON);
 
         Response response = target("movie").path("create").request().post(jsonEntity, Response.class);
 
         assertEquals(200, response.getStatus());
-        verify(mockMovieService, times(1)).createMovie(sherlockHolmes);
+        verify(mockMovieService, times(1)).createMovie(any(Movie.class));
     }
 
     @Test
     public void createMovie_Failed_ShouldReturn500() {
         Movie sherlockHolmes = movieBuilder.sherlockHolmes().build();
-        when(mockMovieService.createMovie(sherlockHolmes)).thenReturn(false);
+        when(mockMovieService.createMovie(any(Movie.class))).thenReturn(false);
         Entity<String> jsonEntity = Entity.entity(gson.toJson(sherlockHolmes), MediaType.APPLICATION_JSON);
 
         Response response = target("movie").path("create").request().post(jsonEntity, Response.class);
 
         assertEquals(500, response.getStatus());
+        verify(mockMovieService, times(1)).createMovie(any(Movie.class));
     }
 
     @Test
     public void updateMovie_ShouldReturn200() {
         Movie sherlockHolmes = movieBuilder.sherlockHolmes().build();
-        when(mockMovieService.updateMovie(sherlockHolmes)).thenReturn(true);
+        when(mockMovieService.updateMovie(any(Movie.class))).thenReturn(true);
         Entity<String> jsonEntity = Entity.entity(gson.toJson(sherlockHolmes), MediaType.APPLICATION_JSON);
 
         Response response = target("movie").path("update").path(sherlockHolmes.getId()).request().put(jsonEntity, Response.class);
 
         assertEquals(200, response.getStatus());
-        verify(mockMovieService, times(1)).updateMovie(sherlockHolmes);
+        verify(mockMovieService, times(1)).updateMovie(any(Movie.class));
     }
 
     @Test
     public void updateMovie_Failed_ShouldReturn500() {
         Movie sherlockHolmes = movieBuilder.sherlockHolmes().build();
-        when(mockMovieService.updateMovie(sherlockHolmes)).thenReturn(false);
+        when(mockMovieService.updateMovie(any(Movie.class))).thenReturn(false);
         Entity<String> jsonEntity = Entity.entity(gson.toJson(sherlockHolmes), MediaType.APPLICATION_JSON);
 
         Response response = target("movie").path("update").path(sherlockHolmes.getId()).request().put(jsonEntity, Response.class);
 
         assertEquals(500, response.getStatus());
-        verify(mockMovieService, times(1)).updateMovie(sherlockHolmes);
+        verify(mockMovieService, times(1)).updateMovie(any(Movie.class));
     }
 
     @Test
@@ -141,5 +145,12 @@ public class MovieResourceTest extends JerseyTest {
 
         assertEquals(500, response.getStatus());
         verify(mockMovieService, times(1)).deleteMovie(sherlockHolmes.getId());
+    }
+
+    private Gson getGson() {
+        return new GsonBuilder()
+                .registerTypeAdapter(Movie.class, new MovieSerializer())
+                .registerTypeAdapter(Movie.class, new MovieDeserializer())
+                .create();
     }
 }
