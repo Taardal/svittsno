@@ -116,4 +116,22 @@ public class Movie {
         this.videoFile = videoFile;
     }
 
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", imdbId='" + imdbId + '\'' +
+                ", tagline='" + tagline + '\'' +
+                ", overview='" + overview + '\'' +
+                ", runtime=" + runtime +
+                ", releaseDate=" + releaseDate +
+                ", genres=" + genres +
+                ", persons=" + persons +
+                ", videoFile=" + videoFile +
+                ", poster=" + poster +
+                ", backdrop=" + backdrop +
+                '}';
+    }
+
 }

@@ -19,12 +19,9 @@ public class SqlDataSource implements DataSource {
     }
 
     @Override
-    public Connection getConnection() {
-        try (Connection connection = hikariDataSource.getConnection()){
-            return connection;
-        } catch (SQLException e) {
-            throw new RuntimeException("Could not get connection");
-        }
+    public Connection getConnection() throws SQLException {
+        LOGGER.info("Getting connection from data source [{}]", hikariDataSource.toString());
+        return hikariDataSource.getConnection();
     }
 
     @Override

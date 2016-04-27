@@ -58,7 +58,7 @@ public class MovieResource extends CoreResource {
         return getResponse(movieService.updateMovie(movie));
     }
 
-    @PUT
+    @DELETE
     @Path("/delete/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response deleteMovie(@PathParam("id") String id) {

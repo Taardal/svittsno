@@ -130,10 +130,23 @@ public class MovieRepositoryTest {
         boolean success = movieRepository.insertSingle(sherlockHolmes);
 
         assertTrue(success);
-        verify(mockDataSource, times(3)).getConnection();
-        verify(mockConnection, times(3)).prepareStatement(anyString());
+        verify(mockDataSource, times(2)).getConnection();
+        verify(mockConnection, times(2)).prepareStatement(anyString());
         verify(mockPreparedStatement, times(1)).executeUpdate();
-        verify(mockPreparedStatement, times(2)).executeBatch();
+        verify(mockPreparedStatement, times(1)).executeBatch();
+    }
+
+    @Test
+    public void insertSingle_RequiredFieldsInvalid_ShouldNotExecuteStatementsAndReturnFalse() throws SQLException {
+        Movie movie = movieBuilder.id("").name("").build();
+
+        boolean success = movieRepository.insertSingle(movie);
+
+        assertFalse(success);
+        verify(mockDataSource, times(0)).getConnection();
+        verify(mockConnection, times(0)).prepareStatement(anyString());
+        verify(mockPreparedStatement, times(0)).executeUpdate();
+        verify(mockPreparedStatement, times(0)).executeBatch();
     }
 
     @Test

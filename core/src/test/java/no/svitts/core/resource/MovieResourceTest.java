@@ -23,15 +23,15 @@ import static org.mockito.Mockito.*;
 
 public class MovieResourceTest extends JerseyTest {
 
-    private MovieService mockMovieService;
-    private MovieBuilder movieBuilder;
     private Gson gson;
+    private MovieBuilder movieBuilder;
+    private MovieService mockMovieService;
 
     @Override
     protected Application configure() {
-        mockMovieService = mock(MovieService.class);
-        movieBuilder = new MovieBuilder();
         gson = getGson();
+        movieBuilder = new MovieBuilder();
+        mockMovieService = mock(MovieService.class);
         ResourceConfig resourceConfig = new ResourceConfig();
         resourceConfig.register(new MovieResource(mockMovieService));
         return resourceConfig;
@@ -76,7 +76,7 @@ public class MovieResourceTest extends JerseyTest {
     }
 
     @Test
-    public void createMovie_ShouldReturn200() {
+    public void createMovie_ServiceReturnsTrue_ShouldReturnOk() {
         Movie sherlockHolmes = movieBuilder.sherlockHolmes().build();
         when(mockMovieService.createMovie(any(Movie.class))).thenReturn(true);
         Entity<String> jsonEntity = Entity.entity(gson.toJson(sherlockHolmes), MediaType.APPLICATION_JSON);
@@ -88,7 +88,7 @@ public class MovieResourceTest extends JerseyTest {
     }
 
     @Test
-    public void createMovie_Failed_ShouldReturn500() {
+    public void createMovie_ServiceReturnsFalse_ShouldReturnServerError() {
         Movie sherlockHolmes = movieBuilder.sherlockHolmes().build();
         when(mockMovieService.createMovie(any(Movie.class))).thenReturn(false);
         Entity<String> jsonEntity = Entity.entity(gson.toJson(sherlockHolmes), MediaType.APPLICATION_JSON);
@@ -100,7 +100,7 @@ public class MovieResourceTest extends JerseyTest {
     }
 
     @Test
-    public void updateMovie_ShouldReturn200() {
+    public void updateMovie_ServiceReturnsTrue_ShouldReturnOk() {
         Movie sherlockHolmes = movieBuilder.sherlockHolmes().build();
         when(mockMovieService.updateMovie(any(Movie.class))).thenReturn(true);
         Entity<String> jsonEntity = Entity.entity(gson.toJson(sherlockHolmes), MediaType.APPLICATION_JSON);
@@ -112,7 +112,7 @@ public class MovieResourceTest extends JerseyTest {
     }
 
     @Test
-    public void updateMovie_Failed_ShouldReturn500() {
+    public void updateMovie_ServiceReturnsFalse_ShouldReturnServerError() {
         Movie sherlockHolmes = movieBuilder.sherlockHolmes().build();
         when(mockMovieService.updateMovie(any(Movie.class))).thenReturn(false);
         Entity<String> jsonEntity = Entity.entity(gson.toJson(sherlockHolmes), MediaType.APPLICATION_JSON);
@@ -124,24 +124,22 @@ public class MovieResourceTest extends JerseyTest {
     }
 
     @Test
-    public void deleteMovie_ShouldReturn200() {
+    public void deleteMovie_ServiceReturnsTrue_ShouldReturnOk() {
         Movie sherlockHolmes = movieBuilder.sherlockHolmes().build();
         when(mockMovieService.deleteMovie(sherlockHolmes.getId())).thenReturn(true);
-        Entity<String> jsonEntity = Entity.entity(gson.toJson(sherlockHolmes), MediaType.APPLICATION_JSON);
 
-        Response response = target("movie").path("delete").path(sherlockHolmes.getId()).request().put(jsonEntity, Response.class);
+        Response response = target("movie").path("delete").path(sherlockHolmes.getId()).request().delete();
 
         assertEquals(200, response.getStatus());
         verify(mockMovieService, times(1)).deleteMovie(sherlockHolmes.getId());
     }
 
     @Test
-    public void deleteMovie_Failed_ShouldReturn500() {
+    public void deleteMovie_ServiceReturnsFalse_ShouldReturnServerError() {
         Movie sherlockHolmes = movieBuilder.sherlockHolmes().build();
         when(mockMovieService.deleteMovie(sherlockHolmes.getId())).thenReturn(false);
-        Entity<String> jsonEntity = Entity.entity(gson.toJson(sherlockHolmes), MediaType.APPLICATION_JSON);
 
-        Response response = target("movie").path("delete").path(sherlockHolmes.getId()).request().put(jsonEntity, Response.class);
+        Response response = target("movie").path("delete").path(sherlockHolmes.getId()).request().delete();
 
         assertEquals(500, response.getStatus());
         verify(mockMovieService, times(1)).deleteMovie(sherlockHolmes.getId());

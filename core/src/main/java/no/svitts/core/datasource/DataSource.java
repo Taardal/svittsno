@@ -1,10 +1,11 @@
 package no.svitts.core.datasource;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 public interface DataSource {
 
-    Connection getConnection();
+    Connection getConnection() throws SQLException;
     void close();
 
 }

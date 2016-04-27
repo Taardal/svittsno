@@ -21,38 +21,40 @@ public abstract class SqlRepository<T> {
     }
 
     protected List<T> executeQuery(PreparedStatement preparedStatement) {
-        LOGGER.info("Executing query {}", preparedStatement.toString());
+        LOGGER.info("Executing query [{}]", preparedStatement.toString());
         try (ResultSet resultSet = preparedStatement.executeQuery()){
             return getResults(resultSet);
         } catch (SQLException e) {
-            LOGGER.error("Could not execute query {}", preparedStatement.toString(), e);
+            LOGGER.error("Could not execute query [{}]", preparedStatement.toString(), e);
             return new ArrayList<>();
         }
     }
 
     protected boolean executeUpdate(PreparedStatement preparedStatement) {
-        LOGGER.info("Executing updateSingle {}", preparedStatement.toString());
+        LOGGER.info("Executing update [{}]", preparedStatement.toString());
         try {
             int rowsAffected = preparedStatement.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
-            LOGGER.error("Could not execute updateSingle {}", preparedStatement.toString(), e);
+            LOGGER.error("Could not execute update [{}]", preparedStatement.toString(), e);
             return false;
         }
     }
 
     protected boolean executeBatch(PreparedStatement preparedStatement) {
-        LOGGER.info("Executing batch {}", preparedStatement.toString());
+        LOGGER.info("Executing batch [{}]", preparedStatement.toString());
         try {
             int[] results = preparedStatement.executeBatch();
             return Arrays.stream(results).allMatch(rowsAffected -> rowsAffected > 0);
         } catch (SQLException e) {
-            LOGGER.error("Could not execute batch {}", preparedStatement.toString(), e);
+            LOGGER.error("Could not execute batch [{}]", preparedStatement.toString(), e);
             return false;
         }
     }
 
 
     protected abstract List<T> getResults(ResultSet resultSet);
+
+    protected abstract boolean isRequiredFieldsValid(T t);
 
 }
