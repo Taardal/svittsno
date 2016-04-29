@@ -1,4 +1,4 @@
-package no.svitts.core.builder;
+package no.svitts.core.testdatabuilder;
 
 import no.svitts.core.date.KeyDate;
 import no.svitts.core.id.Id;
@@ -8,7 +8,7 @@ import no.svitts.core.movie.Movie;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovieBuilder implements Builder<Movie> {
+public class MovieTestDataBuilder implements TestDataBuilder<Movie> {
 
     private String id;
     private String name;
@@ -19,7 +19,7 @@ public class MovieBuilder implements Builder<Movie> {
     private KeyDate releaseDate;
     private List<Genre> genres;
 
-    public MovieBuilder() {
+    public MovieTestDataBuilder() {
         id = Id.get();
         name = "name";
         imdbId = "imdbId";
@@ -42,47 +42,47 @@ public class MovieBuilder implements Builder<Movie> {
         return movie;
     }
 
-    public MovieBuilder id(String id) {
+    public MovieTestDataBuilder id(String id) {
         this.id = id;
         return this;
     }
 
-    public MovieBuilder name(String name) {
+    public MovieTestDataBuilder name(String name) {
         this.name = name;
         return this;
     }
 
-    public MovieBuilder imdbId(String imdbId) {
+    public MovieTestDataBuilder imdbId(String imdbId) {
         this.imdbId = imdbId;
         return this;
     }
 
-    public MovieBuilder tagline(String tagline) {
+    public MovieTestDataBuilder tagline(String tagline) {
         this.tagline = tagline;
         return this;
     }
 
-    public MovieBuilder overview(String overview) {
+    public MovieTestDataBuilder overview(String overview) {
         this.overview = overview;
         return this;
     }
 
-    public MovieBuilder runtime(int runtime) {
+    public MovieTestDataBuilder runtime(int runtime) {
         this.runtime = runtime;
         return this;
     }
 
-    public MovieBuilder releaseDate(KeyDate releaseDate) {
+    public MovieTestDataBuilder releaseDate(KeyDate releaseDate) {
         this.releaseDate = releaseDate;
         return this;
     }
 
-    public MovieBuilder genres(List<Genre> genres) {
+    public MovieTestDataBuilder genres(List<Genre> genres) {
         this.genres = genres;
         return this;
     }
 
-    public MovieBuilder sherlockHolmes() {
+    public MovieTestDataBuilder sherlockHolmes() {
         id = Id.get();
         name = "Sherlock Holmes";
         imdbId = "tt0988045";
@@ -94,7 +94,7 @@ public class MovieBuilder implements Builder<Movie> {
         return this;
     }
 
-    public MovieBuilder sherlockHolmesAGameOfShadows() {
+    public MovieTestDataBuilder sherlockHolmesAGameOfShadows() {
         id = Id.get();
         name = "Sherlock Holmes: A Game of Shadows";
         imdbId = "tt1515091";

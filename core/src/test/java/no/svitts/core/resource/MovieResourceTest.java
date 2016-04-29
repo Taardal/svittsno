@@ -2,7 +2,7 @@ package no.svitts.core.resource;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import no.svitts.core.builder.MovieBuilder;
+import no.svitts.core.testdatabuilder.MovieTestDataBuilder;
 import no.svitts.core.gson.deserializer.MovieDeserializer;
 import no.svitts.core.gson.serializer.MovieSerializer;
 import no.svitts.core.movie.Movie;
@@ -24,13 +24,13 @@ import static org.mockito.Mockito.*;
 public class MovieResourceTest extends JerseyTest {
 
     private Gson gson;
-    private MovieBuilder movieBuilder;
+    private MovieTestDataBuilder movieTestDataBuilder;
     private MovieService mockMovieService;
 
     @Override
     protected Application configure() {
         gson = getGson();
-        movieBuilder = new MovieBuilder();
+        movieTestDataBuilder = new MovieTestDataBuilder();
         mockMovieService = mock(MovieService.class);
         ResourceConfig resourceConfig = new ResourceConfig();
         resourceConfig.register(new MovieResource(mockMovieService));
@@ -39,7 +39,7 @@ public class MovieResourceTest extends JerseyTest {
 
     @Test
     public void getMovieByName_ShouldReturnExpectedMovieAsJson() {
-        Movie sherlockHolmes = movieBuilder.sherlockHolmes().build();
+        Movie sherlockHolmes = movieTestDataBuilder.sherlockHolmes().build();
         when(mockMovieService.getMovieByName(sherlockHolmes.getName())).thenReturn(sherlockHolmes);
         String expectedJson = gson.toJson(sherlockHolmes);
 
@@ -51,7 +51,7 @@ public class MovieResourceTest extends JerseyTest {
 
     @Test
     public void getMovieById_ShouldReturnExpectedMovieAsJson() {
-        Movie sherlockHolmes = movieBuilder.sherlockHolmes().build();
+        Movie sherlockHolmes = movieTestDataBuilder.sherlockHolmes().build();
         when(mockMovieService.getMovieById(sherlockHolmes.getId())).thenReturn(sherlockHolmes);
         String expectedJson = gson.toJson(sherlockHolmes);
 
@@ -64,8 +64,8 @@ public class MovieResourceTest extends JerseyTest {
     @Test
     public void getAllMovies_ShouldReturnExpectedMoviesAsJson() {
         List<Movie> movies = new ArrayList<>();
-        movies.add(movieBuilder.sherlockHolmes().build());
-        movies.add(movieBuilder.sherlockHolmesAGameOfShadows().build());
+        movies.add(movieTestDataBuilder.sherlockHolmes().build());
+        movies.add(movieTestDataBuilder.sherlockHolmesAGameOfShadows().build());
         when(mockMovieService.getAll()).thenReturn(movies);
         String expectedJson = gson.toJson(movies);
 
@@ -77,7 +77,7 @@ public class MovieResourceTest extends JerseyTest {
 
     @Test
     public void createMovie_ServiceReturnsTrue_ShouldReturnOk() {
-        Movie sherlockHolmes = movieBuilder.sherlockHolmes().build();
+        Movie sherlockHolmes = movieTestDataBuilder.sherlockHolmes().build();
         when(mockMovieService.createMovie(any(Movie.class))).thenReturn(true);
         Entity<String> jsonEntity = Entity.entity(gson.toJson(sherlockHolmes), MediaType.APPLICATION_JSON);
 
@@ -89,7 +89,7 @@ public class MovieResourceTest extends JerseyTest {
 
     @Test
     public void createMovie_ServiceReturnsFalse_ShouldReturnServerError() {
-        Movie sherlockHolmes = movieBuilder.sherlockHolmes().build();
+        Movie sherlockHolmes = movieTestDataBuilder.sherlockHolmes().build();
         when(mockMovieService.createMovie(any(Movie.class))).thenReturn(false);
         Entity<String> jsonEntity = Entity.entity(gson.toJson(sherlockHolmes), MediaType.APPLICATION_JSON);
 
@@ -101,7 +101,7 @@ public class MovieResourceTest extends JerseyTest {
 
     @Test
     public void updateMovie_ServiceReturnsTrue_ShouldReturnOk() {
-        Movie sherlockHolmes = movieBuilder.sherlockHolmes().build();
+        Movie sherlockHolmes = movieTestDataBuilder.sherlockHolmes().build();
         when(mockMovieService.updateMovie(any(Movie.class))).thenReturn(true);
         Entity<String> jsonEntity = Entity.entity(gson.toJson(sherlockHolmes), MediaType.APPLICATION_JSON);
 
@@ -113,7 +113,7 @@ public class MovieResourceTest extends JerseyTest {
 
     @Test
     public void updateMovie_ServiceReturnsFalse_ShouldReturnServerError() {
-        Movie sherlockHolmes = movieBuilder.sherlockHolmes().build();
+        Movie sherlockHolmes = movieTestDataBuilder.sherlockHolmes().build();
         when(mockMovieService.updateMovie(any(Movie.class))).thenReturn(false);
         Entity<String> jsonEntity = Entity.entity(gson.toJson(sherlockHolmes), MediaType.APPLICATION_JSON);
 
@@ -125,7 +125,7 @@ public class MovieResourceTest extends JerseyTest {
 
     @Test
     public void deleteMovie_ServiceReturnsTrue_ShouldReturnOk() {
-        Movie sherlockHolmes = movieBuilder.sherlockHolmes().build();
+        Movie sherlockHolmes = movieTestDataBuilder.sherlockHolmes().build();
         when(mockMovieService.deleteMovie(sherlockHolmes.getId())).thenReturn(true);
 
         Response response = target("movie").path("delete").path(sherlockHolmes.getId()).request().delete();
@@ -136,7 +136,7 @@ public class MovieResourceTest extends JerseyTest {
 
     @Test
     public void deleteMovie_ServiceReturnsFalse_ShouldReturnServerError() {
-        Movie sherlockHolmes = movieBuilder.sherlockHolmes().build();
+        Movie sherlockHolmes = movieTestDataBuilder.sherlockHolmes().build();
         when(mockMovieService.deleteMovie(sherlockHolmes.getId())).thenReturn(false);
 
         Response response = target("movie").path("delete").path(sherlockHolmes.getId()).request().delete();

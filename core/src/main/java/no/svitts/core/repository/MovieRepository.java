@@ -69,22 +69,18 @@ public class MovieRepository extends SqlRepository<Movie> implements Repository<
     }
 
     @Override
-    protected List<Movie> getResults(ResultSet resultSet) {
+    protected List<Movie> getResults(ResultSet resultSet) throws SQLException {
         List<Movie> movies = new ArrayList<>();
-        try {
-            while (resultSet.next()) {
-                String id = resultSet.getString(ID);
-                String name = resultSet.getString(NAME);
-                String imdbId = resultSet.getString(IMDB_ID);
-                String tagline = resultSet.getString(TAGLINE);
-                String overview = resultSet.getString(OVERVIEW);
-                int runtime = resultSet.getInt(RUNTIME);
-                KeyDate releaseDate = new KeyDate(resultSet.getDate(RELEASE_DATE));
-                List<Genre> genres = Genre.fromString(resultSet.getString(GENRES));
-                movies.add(new Movie(id, name, imdbId, tagline, overview, runtime, releaseDate, genres));
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Could not get results from result set [{}]", resultSet.toString(), e);
+        while (resultSet.next()) {
+            String id = resultSet.getString(ID);
+            String name = resultSet.getString(NAME);
+            String imdbId = resultSet.getString(IMDB_ID);
+            String tagline = resultSet.getString(TAGLINE);
+            String overview = resultSet.getString(OVERVIEW);
+            int runtime = resultSet.getInt(RUNTIME);
+            KeyDate releaseDate = new KeyDate(resultSet.getDate(RELEASE_DATE));
+            List<Genre> genres = Genre.fromString(resultSet.getString(GENRES));
+            movies.add(new Movie(id, name, imdbId, tagline, overview, runtime, releaseDate, genres));
         }
         LOGGER.info("Got movie(s) [{}]", movies.toString());
         return movies;

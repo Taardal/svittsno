@@ -204,7 +204,19 @@
                                 </goals>
                                 <configuration>
                                     <srcFiles>
-                                        <srcFile>${resources.directory}/database.sql</srcFile>
+                                        <srcFile>${resources.directory}/${profile.id}/database.sql</srcFile>
+                                    </srcFiles>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>insert-test-data</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>execute</goal>
+                                </goals>
+                                <configuration>
+                                    <srcFiles>
+                                        <srcFile>${resources.directory}/${profile.id}/test_data.sql</srcFile>
                                     </srcFiles>
                                 </configuration>
                             </execution>

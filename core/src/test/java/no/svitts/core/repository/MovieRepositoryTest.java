@@ -1,6 +1,6 @@
 package no.svitts.core.repository;
 
-import no.svitts.core.builder.MovieBuilder;
+import no.svitts.core.testdatabuilder.MovieTestDataBuilder;
 import no.svitts.core.datasource.DataSource;
 import no.svitts.core.datasource.SqlDataSource;
 import no.svitts.core.id.Id;
@@ -28,7 +28,7 @@ public class MovieRepositoryTest {
     private PreparedStatement mockPreparedStatement;
     private ResultSet mockResultSet;
     private MovieRepository movieRepository;
-    private MovieBuilder movieBuilder;
+    private MovieTestDataBuilder movieTestDataBuilder;
 
     @Before
     public void setUp() throws SQLException {
@@ -44,12 +44,12 @@ public class MovieRepositoryTest {
         when(mockPreparedStatement.executeBatch()).thenReturn(new int[]{1});
 
         movieRepository = new MovieRepository(mockDataSource);
-        movieBuilder = new MovieBuilder();
+        movieTestDataBuilder = new MovieTestDataBuilder();
     }
 
     @Test
     public void getAll_ShouldExecuteQueryAndReturnListWithExpectedMovies() throws SQLException {
-        Movie sherlockHolmes = movieBuilder.sherlockHolmes().build();
+        Movie sherlockHolmes = movieTestDataBuilder.sherlockHolmes().build();
         setupMockResultSetForMovie(sherlockHolmes);
 
         List<Movie> movies = movieRepository.getAll();
@@ -75,7 +75,7 @@ public class MovieRepositoryTest {
 
     @Test
     public void getById_ShouldExecuteQueryAndReturnExpectedMovie() throws SQLException {
-        Movie sherlockHolmes = movieBuilder.sherlockHolmes().build();
+        Movie sherlockHolmes = movieTestDataBuilder.sherlockHolmes().build();
         setupMockResultSetForMovie(sherlockHolmes);
 
         Movie movie = movieRepository.getById(sherlockHolmes.getId());
@@ -100,7 +100,7 @@ public class MovieRepositoryTest {
 
     @Test
     public void getByAttributes_ShouldExecuteQueryAndReturnExpectedMovie() throws SQLException {
-        Movie sherlockHolmes = movieBuilder.sherlockHolmes().build();
+        Movie sherlockHolmes = movieTestDataBuilder.sherlockHolmes().build();
         setupMockResultSetForMovie(sherlockHolmes);
 
         Movie movie = movieRepository.getByAttributes(sherlockHolmes.getName());
@@ -125,7 +125,7 @@ public class MovieRepositoryTest {
 
     @Test
     public void insertSingle_ShouldExecuteStatementsAndReturnTrue() throws SQLException {
-        Movie sherlockHolmes = movieBuilder.sherlockHolmes().build();
+        Movie sherlockHolmes = movieTestDataBuilder.sherlockHolmes().build();
 
         boolean success = movieRepository.insertSingle(sherlockHolmes);
 
@@ -138,7 +138,7 @@ public class MovieRepositoryTest {
 
     @Test
     public void insertSingle_RequiredFieldsInvalid_ShouldNotExecuteStatementsAndReturnFalse() throws SQLException {
-        Movie movie = movieBuilder.id("").name("").build();
+        Movie movie = movieTestDataBuilder.id("").name("").build();
 
         boolean success = movieRepository.insertSingle(movie);
 
@@ -153,7 +153,7 @@ public class MovieRepositoryTest {
     public void insertSingle_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnFalse() throws SQLException {
         when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException());
 
-        boolean success = movieRepository.insertSingle(movieBuilder.build());
+        boolean success = movieRepository.insertSingle(movieTestDataBuilder.build());
 
         assertFalse(success);
         verify(mockDataSource, times(1)).getConnection();
@@ -162,7 +162,7 @@ public class MovieRepositoryTest {
 
     @Test
     public void updateSingle_ShouldExecuteStatementsAndReturnTrue() throws SQLException {
-        Movie movie = movieBuilder.build();
+        Movie movie = movieTestDataBuilder.build();
         
         boolean success = movieRepository.updateSingle(movie);
 
@@ -176,7 +176,7 @@ public class MovieRepositoryTest {
     public void updateSingle_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnFalse() throws SQLException {
         when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException());
 
-        boolean success = movieRepository.updateSingle(movieBuilder.build());
+        boolean success = movieRepository.updateSingle(movieTestDataBuilder.build());
 
         assertFalse(success);
         verify(mockDataSource, times(1)).getConnection();
@@ -186,7 +186,7 @@ public class MovieRepositoryTest {
 
     @Test
     public void deleteSingle_ShouldExecuteStatementsAndReturnTrue() throws SQLException {
-        Movie movie = movieBuilder.build();
+        Movie movie = movieTestDataBuilder.build();
 
         boolean success = movieRepository.deleteSingle(movie.getId());
 
