@@ -104,13 +104,23 @@
             <artifactId>mockito-all</artifactId>
             <version>${mockito.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-jersey2-jaxrs</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
         <resources>
             <resource>
                 <filtering>true</filtering>
-                <directory>${resources.directory}/${build.profile.id}</directory>
+                <directory>${resources.directory}/${profile.id}</directory>
             </resource>
         </resources>
         <plugins>
@@ -146,7 +156,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <build.profile.id>dev</build.profile.id>
+                <profile.id>dev</profile.id>
                 <db.driver>org.h2.Driver</db.driver>
                 <db.url>jdbc:h2:file:./target/database;MODE=MySQL</db.url>
                 <db.username>root</db.username>

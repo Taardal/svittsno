@@ -1,5 +1,7 @@
 package no.svitts.core.resource;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.service.MovieService;
 import org.slf4j.Logger;
@@ -9,6 +11,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+@Api(value = "MovieResource")
 @Path("/movie")
 @Produces(MediaType.APPLICATION_JSON)
 public class MovieResource extends CoreResource {
@@ -26,6 +29,7 @@ public class MovieResource extends CoreResource {
         return gson.toJson(movieService.getMovieByName(name));
     }
 
+    @ApiOperation(value = "Foo", notes = "Bar", response = Response.class)
     @GET
     @Path("/{id}")
     public String getMovieByID(@PathParam("id") String id) {
