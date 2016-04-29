@@ -1,6 +1,8 @@
 package no.svitts.core;
 
 import io.swagger.jaxrs.config.BeanConfig;
+import io.swagger.jaxrs.listing.ApiListingResource;
+import io.swagger.jaxrs.listing.SwaggerSerializers;
 import no.svitts.core.application.ApplicationProperties;
 import no.svitts.core.datasource.DataSource;
 import no.svitts.core.datasource.SqlDataSource;
@@ -16,11 +18,9 @@ public class CoreApplication extends ResourceConfig {
 
     public CoreApplication() {
         ApplicationProperties applicationProperties = new ApplicationProperties();
-        createSwaggerBean(applicationProperties);
         DataSource dataSource = new SqlDataSource(applicationProperties);
         register(getMovieResource(dataSource));
-        register(io.swagger.jaxrs.listing.ApiListingResource.class);
-        register(io.swagger.jaxrs.listing.SwaggerSerializers.class);
+        initializeSwagger(applicationProperties);
     }
 
     private MovieResource getMovieResource(DataSource dataSource) {
@@ -29,13 +29,17 @@ public class CoreApplication extends ResourceConfig {
         return new MovieResource(movieService);
     }
 
+    private void initializeSwagger(ApplicationProperties applicationProperties) {
+        register(ApiListingResource.class);
+        register(SwaggerSerializers.class);
+        createSwaggerBean(applicationProperties);
+    }
+
     private void createSwaggerBean(ApplicationProperties applicationProperties) {
         BeanConfig beanConfig = new BeanConfig();
         beanConfig.setTitle("Svitts API");
-        beanConfig.setDescription("Such description...");
-        beanConfig.setTermsOfServiceUrl("http://swagger.io/terms/");
-        beanConfig.setContact("torbjorn.aardal@gmail.com");
-        beanConfig.setLicense("Very license...");
+        beanConfig.setDescription("This is the API for the Svitts movie library application.");
+        beanConfig.setContact("Torbjørn Årdal - torbjorn.aardal@gmail.com");
         beanConfig.setVersion(applicationProperties.get("swagger.version"));
         beanConfig.setSchemes(new String[]{"http"});
         beanConfig.setHost("localhost:8080");

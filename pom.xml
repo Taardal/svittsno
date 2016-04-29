@@ -13,6 +13,14 @@
         <module>player</module>
     </modules>
 
+    <developers>
+        <developer>
+            <id>taardal</id>
+            <name>Torbjørn Årdal</name>
+            <email>torbjorn.aardal@gmail.com</email>
+        </developer>
+    </developers>
+
     <properties>
         <java-sdk.version>1.8</java-sdk.version>
         <maven-compiler.version>3.3</maven-compiler.version>
