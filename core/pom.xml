@@ -129,6 +129,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler.version}</version>
                 <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                     <source>${java-sdk.version}</source>
                     <target>${java-sdk.version}</target>
                 </configuration>
@@ -137,13 +138,16 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
+                <configuration>
+                    <argLine>-Dfile.encoding=${project.build.sourceEncoding}</argLine>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>${maven-resources-plugin.version}</version>
                 <configuration>
-                    <encoding>UTF-8</encoding>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
         </plugins>
@@ -158,9 +162,10 @@
             <properties>
                 <profile.id>dev</profile.id>
                 <db.driver>org.h2.Driver</db.driver>
-                <db.url>jdbc:h2:file:./target/database;MODE=MySQL</db.url>
                 <db.username>root</db.username>
                 <db.password>svitts</db.password>
+                <db.main.url>jdbc:h2:file:./target/main;MODE=MySQL</db.main.url>
+                <db.itest.url>jdbc:h2:file:./target/itest;MODE=MySQL</db.itest.url>
             </properties>
             <build>
                 <plugins>
@@ -168,6 +173,9 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
                         <version>${maven-failsafe-plugin.version}</version>
+                        <configuration>
+                            <encoding>${project.build.sourceEncoding}</encoding>
+                        </configuration>
                         <executions>
                             <execution>
                                 <goals>
@@ -189,34 +197,41 @@
                             </dependency>
                         </dependencies>
                         <configuration>
-                            <driver>${db.driver}</driver>
-                            <url>${db.url}</url>
-                            <username>${db.username}</username>
-                            <password>${db.password}</password>
-                            <autocommit>true</autocommit>
+                            <encoding>${project.build.sourceEncoding}</encoding>
                         </configuration>
                         <executions>
                             <execution>
-                                <id>create-db</id>
+                                <id>create-main-database</id>
                                 <phase>process-test-resources</phase>
                                 <goals>
                                     <goal>execute</goal>
                                 </goals>
                                 <configuration>
+                                    <driver>${db.driver}</driver>
+                                    <username>${db.username}</username>
+                                    <password>${db.password}</password>
+                                    <url>${db.main.url}</url>
+                                    <autocommit>true</autocommit>
                                     <srcFiles>
                                         <srcFile>${resources.directory}/${profile.id}/database.sql</srcFile>
+                                        <srcFile>${resources.directory}/${profile.id}/test_data.sql</srcFile>
                                     </srcFiles>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>insert-test-data</id>
-                                <phase>post-integration-test</phase>
+                                <id>create-integration-test-database</id>
+                                <phase>pre-integration-test</phase>
                                 <goals>
                                     <goal>execute</goal>
                                 </goals>
                                 <configuration>
+                                    <driver>${db.driver}</driver>
+                                    <username>${db.username}</username>
+                                    <password>${db.password}</password>
+                                    <url>${db.itest.url}</url>
+                                    <autocommit>true</autocommit>
                                     <srcFiles>
-                                        <srcFile>${resources.directory}/${profile.id}/test_data.sql</srcFile>
+                                        <srcFile>${resources.directory}/${profile.id}/database.sql</srcFile>
                                     </srcFiles>
                                 </configuration>
                             </execution>
