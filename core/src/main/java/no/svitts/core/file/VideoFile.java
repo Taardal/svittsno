@@ -9,9 +9,9 @@ public class VideoFile extends File {
     private String name;
     private String format;
     private String quality;
-    private int size;
+    private long size;
 
-    public VideoFile(String pathname, String id, String movieId, String name, String format, String quality, int size) {
+    public VideoFile(String pathname, String id, String movieId, String name, String format, String quality, long size) {
         super(pathname);
         this.id = id;
         this.movieId = movieId;
@@ -58,7 +58,7 @@ public class VideoFile extends File {
         this.quality = quality;
     }
 
-    public int getSize() {
+    public long getSize() {
         return size;
     }
 
@@ -69,7 +69,7 @@ public class VideoFile extends File {
     @Override
     public String toString() {
         return "VideoFile{" +
-                "id='" + id + '\'' +
+                "util='" + id + '\'' +
                 ", movieId='" + movieId + '\'' +
                 ", name='" + name + '\'' +
                 ", format='" + format + '\'' +

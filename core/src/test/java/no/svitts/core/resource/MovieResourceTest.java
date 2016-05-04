@@ -37,18 +37,6 @@ public class MovieResourceTest extends JerseyTest {
     }
 
     @Test
-    public void getMovieByName_ShouldReturnExpectedMovieAsJson() {
-        Movie sherlockHolmes = movieTestDataBuilder.sherlockHolmes().build();
-        when(mockMovieRepository.getByAttributes(sherlockHolmes.getName())).thenReturn(sherlockHolmes);
-        String expectedJson = gson.toJson(sherlockHolmes);
-
-        String json = target("movie").queryParam("name", sherlockHolmes.getName()).request().get(String.class);
-
-        assertEquals(expectedJson, json);
-        verify(mockMovieRepository, times(1)).getByAttributes(sherlockHolmes.getName());
-    }
-
-    @Test
     public void getMovieById_ShouldReturnExpectedMovieAsJson() {
         Movie sherlockHolmes = movieTestDataBuilder.sherlockHolmes().build();
         when(mockMovieRepository.getById(sherlockHolmes.getId())).thenReturn(sherlockHolmes);

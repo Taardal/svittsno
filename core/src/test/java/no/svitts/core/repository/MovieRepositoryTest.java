@@ -98,31 +98,6 @@ public class MovieRepositoryTest {
     }
 
     @Test
-    public void getByAttributes_ShouldExecuteQueryAndReturnExpectedMovie() throws SQLException {
-        Movie sherlockHolmes = movieTestDataBuilder.sherlockHolmes().build();
-        setupMockResultSetForMovie(sherlockHolmes);
-
-        Movie movie = movieRepository.getByAttributes(sherlockHolmes.getName());
-
-        assertMovie(sherlockHolmes, movie);
-        verify(mockDataSource, times(1)).getConnection();
-        verify(mockConnection, times(1)).prepareStatement(anyString());
-        verify(mockPreparedStatement, times(1)).executeQuery();
-        verify(mockResultSet, times(2)).next();
-    }
-
-    @Test
-    public void getByAttributes_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnUnknownMovie() throws SQLException {
-        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException());
-
-        Movie movie = movieRepository.getByAttributes("MovieName");
-
-        assertEquals(UNKNOWN_MOVIE_ID, movie.getId());
-        verify(mockDataSource, times(1)).getConnection();
-        verify(mockConnection, times(1)).prepareStatement(anyString());
-    }
-
-    @Test
     public void insertSingle_ShouldExecuteStatementsAndReturnTrue() throws SQLException {
         Movie sherlockHolmes = movieTestDataBuilder.sherlockHolmes().build();
 
@@ -182,7 +157,6 @@ public class MovieRepositoryTest {
         verify(mockConnection, times(1)).prepareStatement(anyString());
     }
 
-
     @Test
     public void deleteSingle_ShouldExecuteStatementsAndReturnTrue() throws SQLException {
         Movie movie = movieTestDataBuilder.build();
@@ -195,7 +169,6 @@ public class MovieRepositoryTest {
         verify(mockPreparedStatement, times(1)).executeUpdate();
     }
 
-
     @Test
     public void deleteSingle_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnFalse() throws SQLException {
         when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException());
@@ -206,7 +179,6 @@ public class MovieRepositoryTest {
         verify(mockDataSource, times(1)).getConnection();
         verify(mockConnection, times(1)).prepareStatement(anyString());
     }
-
 
     private void setupMockResultSetForMovie(Movie movie) throws SQLException {
         when(mockResultSet.next()).thenReturn(true, false);

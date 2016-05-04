@@ -23,16 +23,10 @@ public class MovieResource extends CoreResource {
         this.movieRepository = movieRepository;
     }
 
-    @GET
-    public String getMovieByName(@QueryParam("name") String name) {
-        LOGGER.info("Received request to GET movie with name {}", name);
-        return gson.toJson(movieRepository.getByAttributes(name));
-    }
-
     @ApiOperation(value = "Foo", notes = "Bar", response = Response.class)
     @GET
     @Path("/{id}")
-    public String getMovieByID(@PathParam("id") String id) {
+    public String getMovieById(@PathParam("id") String id) {
         LOGGER.info("Received request to GET movie with ID {}", id);
         return gson.toJson(movieRepository.getById(id));
     }

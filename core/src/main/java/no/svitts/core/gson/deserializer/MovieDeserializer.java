@@ -20,15 +20,19 @@ public class MovieDeserializer extends CoreDeserializer implements JsonDeseriali
         String tagline = jsonObject.get("tagline").getAsString();
         String overview = jsonObject.get("overview").getAsString();
         int runtime = jsonObject.get("runtime").getAsInt();
-        KeyDate releaseDate = new KeyDate(jsonObject.get("releaseDate").getAsString());
+        KeyDate releaseDate = getKeyDate(jsonObject.get("releaseDate").getAsString());
         List<Genre> genres = getGenres(jsonObject.get("genres").getAsJsonArray());
         return new Movie(id, name, imdbId, tagline, overview, runtime, releaseDate, genres);
+    }
+
+    private KeyDate getKeyDate(String releaseDate) {
+        return releaseDate != null && !releaseDate.equals("null") ? new KeyDate(releaseDate) : null;
     }
 
     private List<Genre> getGenres(JsonArray jsonArray) {
         List<Genre> genres = new ArrayList<>();
         for (JsonElement jsonElement : jsonArray) {
-            String genreString = jsonElement.getAsString().toUpperCase();
+            String genreString = jsonElement.getAsString().toUpperCase().replaceAll("-", "_");
             genres.add(Genre.valueOf(genreString));
         }
         return genres;

@@ -4,7 +4,7 @@ import com.google.gson.*;
 import no.svitts.core.date.KeyDate;
 import no.svitts.core.person.Gender;
 import no.svitts.core.person.Person;
-import no.svitts.core.util.Id;
+import no.svitts.core.id.Id;
 
 import java.lang.reflect.Type;
 

@@ -1,6 +1,7 @@
 package no.svitts.core.gson.serializer;
 
 import com.google.gson.*;
+import no.svitts.core.date.KeyDate;
 import no.svitts.core.movie.Genre;
 import no.svitts.core.movie.Movie;
 
@@ -12,21 +13,35 @@ public class MovieSerializer implements JsonSerializer<Movie> {
     @Override
     public JsonElement serialize(Movie movie, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.add("id", new JsonPrimitive(movie.getId()));
-        jsonObject.add("name", new JsonPrimitive(movie.getName()));
-        jsonObject.add("imdbId", new JsonPrimitive(movie.getImdbId()));
-        jsonObject.add("tagline", new JsonPrimitive(movie.getTagline()));
-        jsonObject.add("overview", new JsonPrimitive(movie.getOverview()));
-        jsonObject.add("runtime", new JsonPrimitive(movie.getRuntime()));
-        jsonObject.add("releaseDate", new JsonPrimitive(movie.getReleaseDate().toString()));
+        jsonObject.add("id", getJsonPrimitive(movie.getId()));
+        jsonObject.add("name", getJsonPrimitive(movie.getName()));
+        jsonObject.add("imdbId", getJsonPrimitive(movie.getImdbId()));
+        jsonObject.add("tagline", getJsonPrimitive(movie.getTagline()));
+        jsonObject.add("overview", getJsonPrimitive(movie.getOverview()));
+        jsonObject.add("runtime", getJsonPrimitive(movie.getRuntime()));
+        jsonObject.add("releaseDate", getJsonPrimitive(movie.getReleaseDate()));
         jsonObject.add("genres", getGenresAsJsonArray(movie.getGenres()));
         return jsonObject;
     }
 
+    private JsonPrimitive getJsonPrimitive(String string) {
+        return string != null ? new JsonPrimitive(string) : new JsonPrimitive("null");
+    }
+
+    private JsonPrimitive getJsonPrimitive(int integer) {
+        return integer >= 0 ? new JsonPrimitive(integer) : new JsonPrimitive(0);
+    }
+
+    private JsonPrimitive getJsonPrimitive(KeyDate keyDate) {
+        return keyDate != null ? getJsonPrimitive(keyDate.toString()) : new JsonPrimitive("null");
+    }
+
     private JsonArray getGenresAsJsonArray(List<Genre> genres) {
         JsonArray jsonArray = new JsonArray();
-        for (Genre genre : genres) {
-            jsonArray.add(genre.getValue());
+        if (genres != null && !genres.isEmpty()) {
+            for (Genre genre : genres) {
+                jsonArray.add(genre.getValue());
+            }
         }
         return jsonArray;
     }
