@@ -1,12 +1,11 @@
 package no.svitts.core.repository;
 
-import no.svitts.core.testdatabuilder.MovieTestDataBuilder;
 import no.svitts.core.datasource.DataSource;
 import no.svitts.core.datasource.SqlDataSource;
 import no.svitts.core.id.Id;
 import no.svitts.core.movie.Genre;
 import no.svitts.core.movie.Movie;
-import no.svitts.core.movie.UnknownMovie;
+import no.svitts.core.testdatabuilder.MovieTestDataBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -93,7 +92,7 @@ public class MovieRepositoryTest {
 
         Movie movie = movieRepository.getById(Id.get());
 
-        assertTrue(movie instanceof UnknownMovie);
+        assertEquals(UNKNOWN_MOVIE_ID, movie.getId());
         verify(mockDataSource, times(1)).getConnection();
         verify(mockConnection, times(1)).prepareStatement(anyString());
     }
@@ -118,7 +117,7 @@ public class MovieRepositoryTest {
 
         Movie movie = movieRepository.getByAttributes("MovieName");
 
-        assertTrue(movie instanceof UnknownMovie);
+        assertEquals(UNKNOWN_MOVIE_ID, movie.getId());
         verify(mockDataSource, times(1)).getConnection();
         verify(mockConnection, times(1)).prepareStatement(anyString());
     }

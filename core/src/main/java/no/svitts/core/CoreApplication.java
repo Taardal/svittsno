@@ -5,12 +5,10 @@ import io.swagger.jaxrs.listing.ApiListingResource;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
 import no.svitts.core.application.ApplicationProperties;
 import no.svitts.core.datasource.DataSource;
+import no.svitts.core.datasource.DataSourceConfig;
 import no.svitts.core.datasource.SqlDataSource;
-import no.svitts.core.movie.Movie;
 import no.svitts.core.repository.MovieRepository;
-import no.svitts.core.repository.Repository;
 import no.svitts.core.resource.MovieResource;
-import no.svitts.core.service.MovieService;
 import org.glassfish.jersey.server.ResourceConfig;
 
 
@@ -18,15 +16,22 @@ public class CoreApplication extends ResourceConfig {
 
     public CoreApplication() {
         ApplicationProperties applicationProperties = new ApplicationProperties();
-        DataSource dataSource = new SqlDataSource(applicationProperties);
+        DataSource dataSource = new SqlDataSource(getDataSourceConfig(applicationProperties));
         register(getMovieResource(dataSource));
         initializeSwagger(applicationProperties);
     }
 
+    private DataSourceConfig getDataSourceConfig(ApplicationProperties applicationProperties) {
+        return new DataSourceConfig(
+                applicationProperties.get("db.driver"),
+                applicationProperties.get("db.username"),
+                applicationProperties.get("db.password"),
+                applicationProperties.get("db.main.url")
+        );
+    }
+
     private MovieResource getMovieResource(DataSource dataSource) {
-        Repository<Movie> movieRepository = new MovieRepository(dataSource);
-        MovieService movieService = new MovieService(movieRepository);
-        return new MovieResource(movieService);
+        return new MovieResource(new MovieRepository(dataSource));
     }
 
     private void initializeSwagger(ApplicationProperties applicationProperties) {
