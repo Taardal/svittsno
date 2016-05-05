@@ -13,14 +13,6 @@ import java.util.List;
 
 public class MovieRepository extends SqlRepository<Movie> implements Repository<Movie> {
 
-    public static final String ID = "id";
-    public static final String NAME = "name";
-    public static final String IMDB_ID = "imdb_id";
-    public static final String TAGLINE = "tagline";
-    public static final String OVERVIEW = "overview";
-    public static final String RUNTIME = "runtime";
-    public static final String RELEASE_DATE = "release_date";
-    public static final String GENRES = "genres";
     public static final String UNKNOWN_MOVIE_ID = "Unknown-Movie-ID";
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieRepository.class);
 
@@ -56,7 +48,7 @@ public class MovieRepository extends SqlRepository<Movie> implements Repository<
     }
 
     @Override
-    public boolean insertSingle(Movie movie) {
+    public boolean insert(Movie movie) {
         if (isRequiredFieldsValid(movie)) {
             return insertMovie(movie) && insertMovieGenreRelations(movie);
         } else {
@@ -66,7 +58,7 @@ public class MovieRepository extends SqlRepository<Movie> implements Repository<
     }
 
     @Override
-    public boolean updateSingle(Movie movie) {
+    public boolean update(Movie movie) {
         LOGGER.info("Updating movie [{}]", movie.toString());
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement preparedStatement = getUpdateMoviePreparedStatement(connection, movie)) {
@@ -79,7 +71,7 @@ public class MovieRepository extends SqlRepository<Movie> implements Repository<
     }
 
     @Override
-    public boolean deleteSingle(String id) {
+    public boolean delete(String id) {
         LOGGER.info("Deleting movie with ID [{}]", id);
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement preparedStatement = getDeleteMoviePreparedStatement(connection, id)) {
@@ -96,14 +88,14 @@ public class MovieRepository extends SqlRepository<Movie> implements Repository<
         List<Movie> movies = new ArrayList<>();
         try {
             while (resultSet.next()) {
-                String id = resultSet.getString(ID);
-                String name = resultSet.getString(NAME);
-                String imdbId = resultSet.getString(IMDB_ID);
-                String tagline = resultSet.getString(TAGLINE);
-                String overview = resultSet.getString(OVERVIEW);
-                int runtime = resultSet.getInt(RUNTIME);
-                KeyDate releaseDate = new KeyDate(resultSet.getDate(RELEASE_DATE));
-                List<Genre> genres = getGenres(resultSet.getString(GENRES));
+                String id = resultSet.getString("id");
+                String name = resultSet.getString("name");
+                String imdbId = resultSet.getString("imdb_id");
+                String tagline = resultSet.getString("tagline");
+                String overview = resultSet.getString("overview");
+                int runtime = resultSet.getInt("runtime");
+                KeyDate releaseDate = new KeyDate(resultSet.getDate("release_date"));
+                List<Genre> genres = getGenres(resultSet.getString("genres"));
                 movies.add(new Movie(id, name, imdbId, tagline, overview, runtime, releaseDate, genres));
             }
         } catch (SQLException e) {

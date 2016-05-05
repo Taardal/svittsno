@@ -25,9 +25,9 @@ public class MovieTestDataBuilder implements TestDataBuilder<Movie> {
         imdbId = "imdbId";
         tagline = "tagline";
         overview = "overview";
-        runtime = 120;
+        runtime = 0;
         releaseDate = new KeyDate();
-        genres = new ArrayList<>();
+        genres = getDefaultGenres();
     }
 
     @Override
@@ -104,6 +104,13 @@ public class MovieTestDataBuilder implements TestDataBuilder<Movie> {
         releaseDate = new KeyDate(2011, 12, 16);
         genres = getSherlockHolmesAGameOfShadowsGenres();
         return this;
+    }
+
+    private List<Genre> getDefaultGenres() {
+        List<Genre> genres = new ArrayList<>();
+        genres.add(Genre.FILM_NOIR);
+        genres.add(Genre.MUSICAL);
+        return genres;
     }
 
     private List<Genre> getSherlockHolmesGenres() {

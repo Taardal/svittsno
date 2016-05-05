@@ -15,7 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import static no.svitts.core.repository.MovieRepository.*;
+import static no.svitts.core.repository.MovieRepository.UNKNOWN_MOVIE_ID;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
@@ -101,7 +101,7 @@ public class MovieRepositoryTest {
     public void insertSingle_ShouldExecuteStatementsAndReturnTrue() throws SQLException {
         Movie sherlockHolmes = movieTestDataBuilder.sherlockHolmes().build();
 
-        boolean success = movieRepository.insertSingle(sherlockHolmes);
+        boolean success = movieRepository.insert(sherlockHolmes);
 
         assertTrue(success);
         verify(mockDataSource, times(2)).getConnection();
@@ -114,7 +114,7 @@ public class MovieRepositoryTest {
     public void insertSingle_RequiredFieldsInvalid_ShouldNotExecuteStatementsAndReturnFalse() throws SQLException {
         Movie movie = movieTestDataBuilder.id("").name("").build();
 
-        boolean success = movieRepository.insertSingle(movie);
+        boolean success = movieRepository.insert(movie);
 
         assertFalse(success);
         verify(mockDataSource, times(0)).getConnection();
@@ -127,7 +127,7 @@ public class MovieRepositoryTest {
     public void insertSingle_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnFalse() throws SQLException {
         when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException());
 
-        boolean success = movieRepository.insertSingle(movieTestDataBuilder.build());
+        boolean success = movieRepository.insert(movieTestDataBuilder.build());
 
         assertFalse(success);
         verify(mockDataSource, times(1)).getConnection();
@@ -138,7 +138,7 @@ public class MovieRepositoryTest {
     public void updateSingle_ShouldExecuteStatementsAndReturnTrue() throws SQLException {
         Movie movie = movieTestDataBuilder.build();
         
-        boolean success = movieRepository.updateSingle(movie);
+        boolean success = movieRepository.update(movie);
 
         assertTrue(success);
         verify(mockDataSource, times(1)).getConnection();
@@ -150,7 +150,7 @@ public class MovieRepositoryTest {
     public void updateSingle_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnFalse() throws SQLException {
         when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException());
 
-        boolean success = movieRepository.updateSingle(movieTestDataBuilder.build());
+        boolean success = movieRepository.update(movieTestDataBuilder.build());
 
         assertFalse(success);
         verify(mockDataSource, times(1)).getConnection();
@@ -161,7 +161,7 @@ public class MovieRepositoryTest {
     public void deleteSingle_ShouldExecuteStatementsAndReturnTrue() throws SQLException {
         Movie movie = movieTestDataBuilder.build();
 
-        boolean success = movieRepository.deleteSingle(movie.getId());
+        boolean success = movieRepository.delete(movie.getId());
 
         assertTrue(success);
         verify(mockDataSource, times(1)).getConnection();
@@ -173,7 +173,7 @@ public class MovieRepositoryTest {
     public void deleteSingle_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnFalse() throws SQLException {
         when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException());
 
-        boolean success = movieRepository.deleteSingle(Id.get());
+        boolean success = movieRepository.delete(Id.get());
 
         assertFalse(success);
         verify(mockDataSource, times(1)).getConnection();
@@ -182,14 +182,14 @@ public class MovieRepositoryTest {
 
     private void setupMockResultSetForMovie(Movie movie) throws SQLException {
         when(mockResultSet.next()).thenReturn(true, false);
-        when(mockResultSet.getString(ID)).thenReturn(movie.getId());
-        when(mockResultSet.getString(NAME)).thenReturn(movie.getName());
-        when(mockResultSet.getString(IMDB_ID)).thenReturn(movie.getImdbId());
-        when(mockResultSet.getString(TAGLINE)).thenReturn(movie.getTagline());
-        when(mockResultSet.getString(OVERVIEW)).thenReturn(movie.getOverview());
-        when(mockResultSet.getInt(RUNTIME)).thenReturn(movie.getRuntime());
-        when(mockResultSet.getDate(RELEASE_DATE)).thenReturn(movie.getReleaseDate().toSqlDate());
-        when(mockResultSet.getString(GENRES)).thenReturn(Genre.toString(movie.getGenres()));
+        when(mockResultSet.getString("id")).thenReturn(movie.getId());
+        when(mockResultSet.getString("name")).thenReturn(movie.getName());
+        when(mockResultSet.getString("imdb_id")).thenReturn(movie.getImdbId());
+        when(mockResultSet.getString("tagline")).thenReturn(movie.getTagline());
+        when(mockResultSet.getString("overview")).thenReturn(movie.getOverview());
+        when(mockResultSet.getInt("runtime")).thenReturn(movie.getRuntime());
+        when(mockResultSet.getDate("release_date")).thenReturn(movie.getReleaseDate().toSqlDate());
+        when(mockResultSet.getString("genres")).thenReturn(Genre.toString(movie.getGenres()));
     }
 
     private void assertMovie(Movie expectedMovie, Movie actualMovie) {

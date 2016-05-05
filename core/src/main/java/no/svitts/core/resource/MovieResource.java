@@ -27,7 +27,7 @@ public class MovieResource extends CoreResource {
     @GET
     @Path("/{id}")
     public String getMovieById(@PathParam("id") String id) {
-        LOGGER.info("Received request to GET movie with ID {}", id);
+        LOGGER.info("Received request to GET movie with ID [{}]", id);
         return gson.toJson(movieRepository.getById(id));
     }
 
@@ -42,26 +42,26 @@ public class MovieResource extends CoreResource {
     @Path("/create")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createMovie(String json) {
-        LOGGER.info("Received request to CREATE movie by json {}", json);
+        LOGGER.info("Received request to POST movie by json [{}]", json);
         Movie movie = gson.fromJson(json, Movie.class);
-        return getResponse(movieRepository.insertSingle(movie));
+        return getResponse(movieRepository.insert(movie));
     }
 
     @PUT
     @Path("/update/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateMovie(@PathParam("id") String id, String json) {
-        LOGGER.info("Received request to UPDATE movie by json {}", json);
+        LOGGER.info("Received request to PUT movie by json [{}]", json);
         Movie movie = gson.fromJson(json, Movie.class);
-        return getResponse(movieRepository.updateSingle(movie));
+        return getResponse(movieRepository.update(movie));
     }
 
     @DELETE
     @Path("/delete/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response deleteMovie(@PathParam("id") String id) {
-        LOGGER.info("Received request to DELETE movie with ID {}", id);
-        return getResponse(movieRepository.deleteSingle(id));
+        LOGGER.info("Received request to DELETE movie with ID [{}]", id);
+        return getResponse(movieRepository.delete(id));
     }
 
 }

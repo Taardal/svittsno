@@ -1,81 +1,51 @@
 package no.svitts.core.file;
 
 import java.io.File;
+import java.text.DecimalFormat;
 
 public class VideoFile extends File {
 
-    private final String id;
-    private String movieId;
-    private String name;
-    private String format;
-    private String quality;
-    private long size;
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
-    public VideoFile(String pathname, String id, String movieId, String name, String format, String quality, long size) {
-        super(pathname);
+    private final String id;
+
+    public VideoFile(String id, String path) {
+        super(path);
         this.id = id;
-        this.movieId = movieId;
-        this.name = name;
-        this.format = format;
-        this.quality = quality;
-        this.size = size;
     }
 
     public String getId() {
         return id;
     }
 
-    public String getMovieId() {
-        return movieId;
-    }
-
-    public void setMovieId(String movieId) {
-        this.movieId = movieId;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getFormat() {
-        return format;
-    }
-
-    public void setFormat(String format) {
-        this.format = format;
-    }
-
-    public String getQuality() {
-        return quality;
-    }
-
-    public void setQuality(String quality) {
-        this.quality = quality;
-    }
-
     public long getSize() {
-        return size;
+        return length();
     }
 
-    public void setSize(int size) {
-        this.size = size;
+    public String getPrettySize() {
+        double bytes = length();
+        double kilobytes = bytes / 1024;
+        double megabytes = kilobytes / 1024;
+        double gigabytes = megabytes / 1024;
+        if (gigabytes > 1) {
+            return DECIMAL_FORMAT.format(gigabytes) + " GB";
+        } else if (megabytes > 1) {
+            return DECIMAL_FORMAT.format(megabytes) + " MB";
+        } else if (kilobytes > 1) {
+            return DECIMAL_FORMAT.format(kilobytes) + " KB";
+        } else {
+            return DECIMAL_FORMAT.format(bytes) + " B";
+        }
     }
 
     @Override
     public String toString() {
         return "VideoFile{" +
-                "util='" + id + '\'' +
-                ", movieId='" + movieId + '\'' +
-                ", name='" + name + '\'' +
-                ", format='" + format + '\'' +
-                ", quality='" + quality + '\'' +
+                "id='" + id + '\'' +
+                ", name='" + getName() + '\'' +
                 ", path='" + getPath() + '\'' +
-                ", size=" + size +
+                ", size=" + getPrettySize() +
                 '}';
     }
+
 }

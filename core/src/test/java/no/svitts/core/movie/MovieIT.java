@@ -48,7 +48,6 @@ public class MovieIT {
         assertEquals(MovieRepository.UNKNOWN_MOVIE_ID, movie.getId());
     }
 
-
     @Test
     public void createMovie_NameTooLong_ShouldAbortAndReturnServerError() {
         Movie movie = movieTestDataBuilder.name(getRandomString(DEFAULT_MAX_LENGTH + 1)).build();
