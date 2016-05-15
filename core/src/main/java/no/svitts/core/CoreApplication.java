@@ -7,8 +7,12 @@ import no.svitts.core.application.ApplicationProperties;
 import no.svitts.core.datasource.DataSource;
 import no.svitts.core.datasource.DataSourceConfig;
 import no.svitts.core.datasource.SqlDataSource;
+import no.svitts.core.repository.ImageFileRepository;
 import no.svitts.core.repository.MovieRepository;
+import no.svitts.core.repository.VideoFileRepository;
+import no.svitts.core.resource.ImageFileResource;
 import no.svitts.core.resource.MovieResource;
+import no.svitts.core.resource.VideoFileResource;
 import org.glassfish.jersey.server.ResourceConfig;
 
 
@@ -17,7 +21,9 @@ public class CoreApplication extends ResourceConfig {
     public CoreApplication() {
         ApplicationProperties applicationProperties = new ApplicationProperties();
         DataSource dataSource = new SqlDataSource(getDataSourceConfig(applicationProperties));
-        register(getMovieResource(dataSource));
+        register(new MovieResource(new MovieRepository(dataSource)));
+        register(new VideoFileResource(new VideoFileRepository(dataSource)));
+        register(new ImageFileResource(new ImageFileRepository(dataSource)));
         initializeSwagger(applicationProperties);
     }
 
@@ -27,10 +33,6 @@ public class CoreApplication extends ResourceConfig {
                 applicationProperties.get("db.username"),
                 applicationProperties.get("db.password"),
                 applicationProperties.get("db.driver"));
-    }
-
-    private MovieResource getMovieResource(DataSource dataSource) {
-        return new MovieResource(new MovieRepository(dataSource));
     }
 
     private void initializeSwagger(ApplicationProperties applicationProperties) {

@@ -11,9 +11,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Api(value = "ImageFileResource")
 @Path("imagefile")
 @Produces(MediaType.APPLICATION_JSON)
+@Api(value = "ImageFileResource")
 public class ImageFileResource extends CoreResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageFileResource.class);
@@ -23,9 +23,9 @@ public class ImageFileResource extends CoreResource {
         this.imageFileRepository = imageFileRepository;
     }
 
-    @ApiOperation(value = "Get all image files.", notes = "Lists all the image files stored in the database as JSON", response = Response.class)
     @GET
     @Path("all")
+    @ApiOperation(value = "Get all image files.", notes = "Lists all the image files stored in the database as JSON", response = Response.class)
     public String getAllImageFiles() {
         LOGGER.info("Received request to GET all image files");
         return gson.toJson(imageFileRepository.getAll());
