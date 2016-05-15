@@ -3,17 +3,14 @@ package no.svitts.core.date;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class KeyDate {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KeyDate.class);
     private static final String KEY_DATE_REGEX = "((19|20)(\\d)(\\d))(0?[1-9]|1[012])(0?[1-9]|[12][0-9]|3[01])";
     private static final String SQL_DATE_REGEX = "((19|20)(\\d)(\\d))(-)(0?[1-9]|1[012])(-)(0?[1-9]|[12][0-9]|3[01])";
     private static final DateTimeFormatter KEY_DATE_PATTERN = DateTimeFormat.forPattern("yyyyMMdd");
     private static final DateTimeFormatter SQL_DATE_PATTERN = DateTimeFormat.forPattern("yyyy-MM-dd");
-    private static final DateTimeFormatter PRETTY_PATTERN = DateTimeFormat.forPattern("dd.MMMM.yyyy");
+
     private DateTime dateTime;
 
     public KeyDate() {
@@ -28,12 +25,12 @@ public class KeyDate {
         dateTime = new DateTime(year, monthOfYear, dayOfMonth, 0, 0);
     }
 
-    public KeyDate(DateTime dateTime) {
-        this.dateTime = dateTime;
-    }
-
     public KeyDate(java.sql.Date date) {
         dateTime = new DateTime(date);
+    }
+
+    private KeyDate(DateTime dateTime) {
+        this.dateTime = dateTime;
     }
 
     public java.sql.Date toSqlDate() {
@@ -83,17 +80,13 @@ public class KeyDate {
         return KEY_DATE_PATTERN.print(getTime());
     }
 
-    public String toPrettyString() {
-        return PRETTY_PATTERN.print(getTime());
-    }
-
     private DateTime parseDateTime(String date) {
         if (date.matches(KEY_DATE_REGEX)) {
             return KEY_DATE_PATTERN.parseDateTime(date);
         } else if (date.matches(SQL_DATE_REGEX)) {
             return SQL_DATE_PATTERN.parseDateTime(date);
         } else {
-            throw new RuntimeException("Could not parse date [" + date + "]");
+            throw new RuntimeException("Could not parse date [" + date + "]. Did not match any regex.");
         }
     }
 
