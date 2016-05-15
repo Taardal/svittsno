@@ -98,7 +98,7 @@ public class VideoFileRepositoryTest {
 
     @Test
     public void insertSingle_ShouldExecuteStatementsAndReturnTrue() throws SQLException {
-        VideoFile videoFile = videoFileTestDataBuilder.build();
+        VideoFile videoFile = videoFileTestDataBuilder.path("test").build();
 
         boolean success = videoFileRepository.insert(videoFile);
 
@@ -125,7 +125,7 @@ public class VideoFileRepositoryTest {
     public void insertSingle_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnFalse() throws SQLException {
         when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException());
 
-        boolean success = videoFileRepository.insert(videoFileTestDataBuilder.build());
+        boolean success = videoFileRepository.insert(videoFileTestDataBuilder.path("test").build());
 
         assertFalse(success);
         verify(mockDataSource, times(1)).getConnection();

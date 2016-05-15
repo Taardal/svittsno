@@ -15,11 +15,11 @@ public abstract class CoreResource {
 
     protected Gson gson;
 
-    protected CoreResource() {
+    CoreResource() {
         gson = getGson();
     }
 
-    protected Response getResponse(boolean success) {
+    Response getResponse(boolean success) {
         return success ?  Response.ok().build() : Response.serverError().build();
     }
 

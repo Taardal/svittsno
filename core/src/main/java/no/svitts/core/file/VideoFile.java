@@ -3,6 +3,7 @@ package no.svitts.core.file;
 import java.io.File;
 import java.text.DecimalFormat;
 
+
 public class VideoFile extends File {
 
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
@@ -22,7 +23,17 @@ public class VideoFile extends File {
         return length();
     }
 
-    public String getPrettySize() {
+    @Override
+    public String toString() {
+        return "VideoFile{" +
+                "id='" + id + '\'' +
+                ", name='" + getName() + '\'' +
+                ", path='" + getPath() + '\'' +
+                ", size=" + getSize() +
+                '}';
+    }
+
+    private String getPrettySize() {
         double bytes = length();
         double kilobytes = bytes / 1024;
         double megabytes = kilobytes / 1024;
@@ -36,16 +47,6 @@ public class VideoFile extends File {
         } else {
             return DECIMAL_FORMAT.format(bytes) + " B";
         }
-    }
-
-    @Override
-    public String toString() {
-        return "VideoFile{" +
-                "id='" + id + '\'' +
-                ", name='" + getName() + '\'' +
-                ", path='" + getPath() + '\'' +
-                ", size=" + getPrettySize() +
-                '}';
     }
 
 }

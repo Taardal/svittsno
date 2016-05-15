@@ -36,10 +36,15 @@ public class VideoFileRepository extends SqlRepository<VideoFile> implements Rep
 
     @Override
     public VideoFile getById(String id) {
+        return getVideoFileById(id);
+    }
+
+    private VideoFile getVideoFileById(String id) {
         LOGGER.info("Getting video file with ID [{}]", id);
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement preparedStatement = getSelectVideoFilePreparedStatement(connection, id)) {
-                return executeQuery(preparedStatement).get(0);
+                List<VideoFile> videoFiles = executeQuery(preparedStatement);
+                return videoFiles.isEmpty() ? getUnknownVideoFile() : videoFiles.get(0);
             }
         } catch (SQLException e) {
             LOGGER.error("Could not get video file with ID [{}]", id, e);
@@ -61,8 +66,8 @@ public class VideoFileRepository extends SqlRepository<VideoFile> implements Rep
     public boolean update(VideoFile videoFile) {
         LOGGER.info("Updating video file [" + videoFile.toString() + "]");
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement updateVideoFilePreparedStatement = getUpdateVideoFilePreparedStatement(connection, videoFile)) {
-                return executeUpdate(updateVideoFilePreparedStatement);
+            try (PreparedStatement preparedStatement = getUpdateVideoFilePreparedStatement(connection, videoFile)) {
+                return executeUpdate(preparedStatement);
             }
         } catch (SQLException e) {
             LOGGER.error("Could not update videoFile [{}]", videoFile.toString(), e);
@@ -72,15 +77,7 @@ public class VideoFileRepository extends SqlRepository<VideoFile> implements Rep
 
     @Override
     public boolean delete(String id) {
-        LOGGER.info("Deleting video file with ID [{}]", id);
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement deleteVideoFilePreparedStatement = getDeleteVideoFilePreparedStatement(connection, id)) {
-                return executeUpdate(deleteVideoFilePreparedStatement);
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Could not delete video file with ID [{}]", id, e);
-            return false;
-        }
+        return id != null && !id.isEmpty() && deleteVideoFile(id);
     }
 
     @Override
@@ -99,7 +96,9 @@ public class VideoFileRepository extends SqlRepository<VideoFile> implements Rep
 
     @Override
     protected boolean isRequiredFieldsValid(VideoFile videoFile) {
-        return videoFile.getId() != null && !videoFile.getId().isEmpty() && !videoFile.getName().isEmpty() && !videoFile.getPath().isEmpty();
+        return videoFile.getId() != null && !videoFile.getId().isEmpty()
+                && !videoFile.getName().isEmpty() && !videoFile.getName().equals("null")
+                && !videoFile.getPath().isEmpty() && !videoFile.getName().equals("null");
     }
 
     private PreparedStatement getSelectAllVideoFilesPreparedStatement(Connection connection) throws SQLException {
@@ -141,6 +140,18 @@ public class VideoFileRepository extends SqlRepository<VideoFile> implements Rep
         preparedStatement.setString(i++, videoFile.getPath());
         preparedStatement.setString(i, videoFile.getId());
         return preparedStatement;
+    }
+
+    private boolean deleteVideoFile(String id) {
+        LOGGER.info("Deleting video file with ID [{}]", id);
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement preparedStatement = getDeleteVideoFilePreparedStatement(connection, id)) {
+                return executeUpdate(preparedStatement);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Could not delete video file with ID [{}]", id, e);
+            return false;
+        }
     }
 
     private PreparedStatement getDeleteVideoFilePreparedStatement(Connection connection, String id) throws SQLException {

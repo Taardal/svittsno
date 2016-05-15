@@ -17,13 +17,14 @@ import javax.ws.rs.core.Response;
 public class MovieResource extends CoreResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieResource.class);
+
     private Repository<Movie> movieRepository;
 
     public MovieResource(Repository<Movie> movieRepository) {
         this.movieRepository = movieRepository;
     }
 
-    @ApiOperation(value = "Foo", notes = "Bar", response = Response.class)
+    @ApiOperation(value = "MovieResource", notes = "Lists a specific movie stored in the database as JSON. Invalid/non-existing ID will list an unknown movie", response = Response.class)
     @GET
     @Path("/{id}")
     public String getMovieById(@PathParam("id") String id) {

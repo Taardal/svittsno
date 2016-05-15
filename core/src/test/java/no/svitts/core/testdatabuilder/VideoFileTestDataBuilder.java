@@ -13,7 +13,7 @@ public class VideoFileTestDataBuilder implements TestDataBuilder<VideoFile> {
 
     public VideoFileTestDataBuilder() {
         id = Id.get();
-        path = "path\\to\\videoFile";
+        path = "path";
     }
 
     @Override
@@ -32,7 +32,7 @@ public class VideoFileTestDataBuilder implements TestDataBuilder<VideoFile> {
     }
 
     public VideoFileTestDataBuilder tempFile() throws IOException {
-        path = File.createTempFile("tempFile", ".txt").getPath();
+        path = File.createTempFile("temp", ".txt").getPath();
         return this;
     }
 

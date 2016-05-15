@@ -52,20 +52,17 @@ public class MovieRepository extends SqlRepository<Movie> implements Repository<
         if (isRequiredFieldsValid(movie)) {
             return insertMovie(movie) && insertMovieGenreRelations(movie);
         } else {
-            LOGGER.warn("Required fields INVALID for movie [{}]", movie);
+            LOGGER.warn("Required fields was INVALID when trying to insert movie [{}]", movie);
             return false;
         }
     }
 
     @Override
     public boolean update(Movie movie) {
-        LOGGER.info("Updating movie [{}]", movie.toString());
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement preparedStatement = getUpdateMoviePreparedStatement(connection, movie)) {
-                return executeUpdate(preparedStatement);
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Could not update movie [{}]", movie.toString(), e);
+        if (isRequiredFieldsValid(movie)) {
+            return updateMovie(movie);
+        } else {
+            LOGGER.warn("Required fields was INVALID when trying to update movie [{}]", movie);
             return false;
         }
     }
@@ -108,7 +105,7 @@ public class MovieRepository extends SqlRepository<Movie> implements Repository<
     @Override
     protected boolean isRequiredFieldsValid(Movie movie) {
         return movie.getId() != null && !movie.getId().isEmpty()
-                && movie.getName() != null && !movie.getName().isEmpty()
+                && movie.getName() != null && !movie.getName().isEmpty() && !movie.getName().equals("null")
                 && movie.getGenres() != null && !movie.getGenres().isEmpty();
     }
 
@@ -186,6 +183,18 @@ public class MovieRepository extends SqlRepository<Movie> implements Repository<
             preparedStatement.addBatch();
         }
         return preparedStatement;
+    }
+
+    private boolean updateMovie(Movie movie) {
+        LOGGER.info("Updating movie [{}]", movie.toString());
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement preparedStatement = getUpdateMoviePreparedStatement(connection, movie)) {
+                return executeUpdate(preparedStatement);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Could not update movie [{}]", movie.toString(), e);
+            return false;
+        }
     }
 
     private PreparedStatement getUpdateMoviePreparedStatement(Connection connection, Movie movie) throws SQLException {
