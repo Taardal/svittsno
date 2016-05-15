@@ -3,11 +3,8 @@ package no.svitts.core.movie;
 import no.svitts.core.date.KeyDate;
 import no.svitts.core.file.ImageFile;
 import no.svitts.core.file.VideoFile;
-import no.svitts.core.person.Job;
-import no.svitts.core.person.Person;
 
 import java.util.List;
-import java.util.Map;
 
 public class Movie {
 
@@ -19,7 +16,6 @@ public class Movie {
     private int runtime;
     private KeyDate releaseDate;
     private List<Genre> genres;
-    private Map<Job, List<Person>> persons;
     private VideoFile videoFile;
     private ImageFile poster;
     private ImageFile backdrop;
@@ -100,14 +96,6 @@ public class Movie {
         this.genres = genres;
     }
 
-    public Map<Job, List<Person>> getPersons() {
-        return persons;
-    }
-
-    public void setPersons(Map<Job, List<Person>> persons) {
-        this.persons = persons;
-    }
-
     public VideoFile getVideoFile() {
         return videoFile;
     }
@@ -127,7 +115,6 @@ public class Movie {
                 ", runtime=" + runtime +
                 ", releaseDate=" + releaseDate +
                 ", genres=" + genres +
-                ", persons=" + persons +
                 ", videoFile=" + videoFile +
                 ", poster=" + poster +
                 ", backdrop=" + backdrop +

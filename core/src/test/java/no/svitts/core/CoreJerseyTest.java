@@ -27,11 +27,10 @@ public abstract class CoreJerseyTest extends JerseyTest {
 
     private DataSourceConfig getDataSourceConfig(ApplicationProperties applicationProperties) {
         return new DataSourceConfig(
-                applicationProperties.get("db.driver"),
+                applicationProperties.get("db.itest.url"),
                 applicationProperties.get("db.username"),
                 applicationProperties.get("db.password"),
-                applicationProperties.get("db.itest.url")
-        );
+                applicationProperties.get("db.driver"));
     }
 
     protected String getRandomString(int length) {

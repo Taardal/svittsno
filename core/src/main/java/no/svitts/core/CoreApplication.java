@@ -23,11 +23,10 @@ public class CoreApplication extends ResourceConfig {
 
     private DataSourceConfig getDataSourceConfig(ApplicationProperties applicationProperties) {
         return new DataSourceConfig(
-                applicationProperties.get("db.driver"),
+                applicationProperties.get("db.main.url"),
                 applicationProperties.get("db.username"),
                 applicationProperties.get("db.password"),
-                applicationProperties.get("db.main.url")
-        );
+                applicationProperties.get("db.driver"));
     }
 
     private MovieResource getMovieResource(DataSource dataSource) {
