@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VideoFileRepository extends SqlRepository<VideoFile> implements Repository<VideoFile> {
+public class VideoFileRepository extends CoreRepository<VideoFile> implements Repository<VideoFile> {
 
     public static final String UNKNOWN_VIDEO_FILE_ID = "Unknown-VideoFile-ID";
     private static final Logger LOGGER = LoggerFactory.getLogger(VideoFileRepository.class);
@@ -57,20 +57,17 @@ public class VideoFileRepository extends SqlRepository<VideoFile> implements Rep
         if (isRequiredFieldsValid(videoFile)) {
             return insertVideoFile(videoFile);
         } else {
-            LOGGER.warn("Required fields INVALID for videoFile [{}]", videoFile);
+            LOGGER.warn("Required fields INVALID when trying to insert videoFile [{}]", videoFile);
             return false;
         }
     }
 
     @Override
     public boolean update(VideoFile videoFile) {
-        LOGGER.info("Updating video file [" + videoFile.toString() + "]");
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement preparedStatement = getUpdateVideoFilePreparedStatement(connection, videoFile)) {
-                return executeUpdate(preparedStatement);
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Could not update videoFile [{}]", videoFile.toString(), e);
+        if (isRequiredFieldsValid(videoFile)) {
+            return updateVideoFile(videoFile);
+        } else {
+            LOGGER.warn("Required fields INVALID when trying to update videoFile [{}]", videoFile);
             return false;
         }
     }
@@ -88,7 +85,7 @@ public class VideoFileRepository extends SqlRepository<VideoFile> implements Rep
                 videoFiles.add(new VideoFile(resultSet.getString("id"), resultSet.getString("path")));
             }
         } catch (SQLException e) {
-            LOGGER.error("Could not get result(s) from result set [[{}]]", resultSet.toString(), e);
+            LOGGER.error("Could not get result(s) from result set [{}]", resultSet.toString(), e);
         }
         LOGGER.info("Got video file(s) [{}]", videoFiles.toString());
         return videoFiles;
@@ -113,7 +110,7 @@ public class VideoFileRepository extends SqlRepository<VideoFile> implements Rep
     }
 
     private boolean insertVideoFile(VideoFile videoFile) {
-        LOGGER.info("Inserting video file [" + videoFile.toString() + "]");
+        LOGGER.info("Inserting video file [{}]", videoFile.toString());
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement preparedStatement = getInsertVideoFilePreparedStatement(connection, videoFile)) {
                 return executeUpdate(preparedStatement);
@@ -131,6 +128,18 @@ public class VideoFileRepository extends SqlRepository<VideoFile> implements Rep
         preparedStatement.setString(i++, videoFile.getId());
         preparedStatement.setString(i, videoFile.getPath());
         return preparedStatement;
+    }
+
+    private boolean updateVideoFile(VideoFile videoFile) {
+        LOGGER.info("Updating video file [{}]", videoFile.toString());
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement preparedStatement = getUpdateVideoFilePreparedStatement(connection, videoFile)) {
+                return executeUpdate(preparedStatement);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Could not update videoFile [{}]", videoFile.toString(), e);
+            return false;
+        }
     }
 
     private PreparedStatement getUpdateVideoFilePreparedStatement(Connection connection, VideoFile videoFile) throws SQLException {

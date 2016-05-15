@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class SqlRepository<T> {
+public abstract class CoreRepository<T> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SqlRepository.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CoreRepository.class);
     protected DataSource dataSource;
 
-    protected SqlRepository(DataSource dataSource) {
+    protected CoreRepository(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 

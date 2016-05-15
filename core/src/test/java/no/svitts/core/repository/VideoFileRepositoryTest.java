@@ -75,10 +75,10 @@ public class VideoFileRepositoryTest {
         VideoFile videoFile = videoFileTestDataBuilder.build();
         setupMockResultSet(videoFile);
 
-        VideoFile videoFileFromDataSource = videoFileRepository.getById(videoFile.getId());
+        VideoFile videoFileFromRepository = videoFileRepository.getById(videoFile.getId());
 
 
-        assertVideoFile(videoFile, videoFileFromDataSource);
+        assertVideoFile(videoFile, videoFileFromRepository);
         verify(mockDataSource, times(1)).getConnection();
         verify(mockConnection, times(1)).prepareStatement(anyString());
         verify(mockPreparedStatement, times(1)).executeQuery();
@@ -125,7 +125,7 @@ public class VideoFileRepositoryTest {
     public void insertSingle_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnFalse() throws SQLException {
         when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException());
 
-        boolean success = videoFileRepository.insert(videoFileTestDataBuilder.path("test").build());
+        boolean success = videoFileRepository.insert(videoFileTestDataBuilder.build());
 
         assertFalse(success);
         verify(mockDataSource, times(1)).getConnection();

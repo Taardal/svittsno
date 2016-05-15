@@ -2,13 +2,13 @@ package no.svitts.core.resource;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import no.svitts.core.CoreJerseyTest;
 import no.svitts.core.file.VideoFile;
 import no.svitts.core.gson.serializer.VideoFileSerializer;
 import no.svitts.core.repository.Repository;
 import no.svitts.core.repository.VideoFileRepository;
 import no.svitts.core.testdatabuilder.VideoFileTestDataBuilder;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.test.JerseyTest;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.ws.rs.client.Entity;
@@ -21,19 +21,26 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
-public class VideoFileResourceTest extends JerseyTest {
+public class VideoFileResourceTest extends CoreJerseyTest {
 
     private static final String VIDEO_FILE_RESOURCE = "videofile";
+
     private Gson gson;
     private VideoFileTestDataBuilder videoFileTestDataBuilder;
     private Repository<VideoFile> mockVideoFileRepository;
 
     @Override
     protected Application configure() {
+        mockVideoFileRepository =  mock(VideoFileRepository.class);
+        return getResourceConfig(new VideoFileResource(mockVideoFileRepository));
+    }
+
+    @Override
+    @Before
+    public void setUp() throws Exception {
         gson = getGson();
         videoFileTestDataBuilder = new VideoFileTestDataBuilder();
-        mockVideoFileRepository =  mock(VideoFileRepository.class);
-        return getResourceConfig(mockVideoFileRepository);
+        super.setUp();
     }
 
     @Test
@@ -132,12 +139,7 @@ public class VideoFileResourceTest extends JerseyTest {
         verify(mockVideoFileRepository, times(1)).delete(videoFile.getId());
     }
 
-    private Application getResourceConfig(Repository<VideoFile> videoFileRepository) {
-        ResourceConfig resourceConfig = new ResourceConfig();
-        resourceConfig.register(new VideoFileResource(videoFileRepository));
-        return resourceConfig;
-    }
-
+    @Override
     public Gson getGson() {
         return new GsonBuilder()
                 .registerTypeAdapter(VideoFile.class, new VideoFileSerializer())

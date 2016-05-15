@@ -34,7 +34,7 @@ public class KeyDate {
     }
 
     public java.sql.Date toSqlDate() {
-        return new java.sql.Date(dateTime.toInstant().getMillis());
+        return new java.sql.Date(getTime());
     }
 
     public long getTime() {
