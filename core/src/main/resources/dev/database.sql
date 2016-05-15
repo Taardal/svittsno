@@ -40,8 +40,6 @@ CREATE TABLE movie_video_file (
 DROP TABLE IF EXISTS image_file;
 CREATE TABLE image_file (
   id VARCHAR(255) NOT NULL,
-  name VARCHAR(255) DEFAULT NULL,
-  fileType VARCHAR(10) DEFAULT NULL,
   path VARCHAR(255) NOT NULL,
   PRIMARY KEY (id)
 );
