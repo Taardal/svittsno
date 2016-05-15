@@ -61,13 +61,12 @@ public class VideoFileRepositoryTest {
 
     @Test
     public void getAll_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnEmptyList() throws SQLException {
-        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException());
+        when(mockDataSource.getConnection()).thenThrow(new SQLException());
 
         List<VideoFile> videoFiles = videoFileRepository.getAll();
 
         assertEquals(0, videoFiles.size());
         verify(mockDataSource, times(1)).getConnection();
-        verify(mockConnection, times(1)).prepareStatement(anyString());
     }
 
     @Test
@@ -87,13 +86,12 @@ public class VideoFileRepositoryTest {
 
     @Test
     public void getByID_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnUnknownVideoFile() throws SQLException {
-        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException());
+        when(mockDataSource.getConnection()).thenThrow(new SQLException());
 
         VideoFile videoFile = videoFileRepository.getById(Id.get());
 
         assertEquals(VideoFileRepository.UNKNOWN_VIDEO_FILE_ID, videoFile.getId());
         verify(mockDataSource, times(1)).getConnection();
-        verify(mockConnection, times(1)).prepareStatement(anyString());
     }
 
     @Test
@@ -123,13 +121,12 @@ public class VideoFileRepositoryTest {
 
     @Test
     public void insertSingle_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnFalse() throws SQLException {
-        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException());
+        when(mockDataSource.getConnection()).thenThrow(new SQLException());
 
         boolean success = videoFileRepository.insert(videoFileTestDataBuilder.build());
 
         assertFalse(success);
         verify(mockDataSource, times(1)).getConnection();
-        verify(mockConnection, times(1)).prepareStatement(anyString());
     }
 
     @Test
@@ -146,13 +143,12 @@ public class VideoFileRepositoryTest {
 
     @Test
     public void updateSingle_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnFalse() throws SQLException {
-        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException());
+        when(mockDataSource.getConnection()).thenThrow(new SQLException());
 
         boolean success = videoFileRepository.update(videoFileTestDataBuilder.build());
 
         assertFalse(success);
         verify(mockDataSource, times(1)).getConnection();
-        verify(mockConnection, times(1)).prepareStatement(anyString());
     }
 
     @Test
@@ -169,13 +165,12 @@ public class VideoFileRepositoryTest {
 
     @Test
     public void deleteSingle_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnFalse() throws SQLException {
-        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException());
+        when(mockDataSource.getConnection()).thenThrow(new SQLException());
 
         boolean success = videoFileRepository.delete(Id.get());
 
         assertFalse(success);
         verify(mockDataSource, times(1)).getConnection();
-        verify(mockConnection, times(1)).prepareStatement(anyString());
     }
 
     private void setupMockResultSet(VideoFile videoFile) throws SQLException {

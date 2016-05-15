@@ -63,13 +63,12 @@ public class MovieRepositoryTest {
 
     @Test
     public void getAll_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnEmptyList() throws SQLException {
-        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException());
+        when(mockDataSource.getConnection()).thenThrow(new SQLException());
 
         List<Movie> movies = movieRepository.getAll();
 
         assertEquals(0, movies.size());
         verify(mockDataSource, times(1)).getConnection();
-        verify(mockConnection, times(1)).prepareStatement(anyString());
     }
 
     @Test
@@ -88,13 +87,12 @@ public class MovieRepositoryTest {
 
     @Test
     public void getByID_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnUnknownMovie() throws SQLException {
-        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException());
+        when(mockDataSource.getConnection()).thenThrow(new SQLException());
 
         Movie movie = movieRepository.getById(Id.get());
 
         assertEquals(UNKNOWN_MOVIE_ID, movie.getId());
         verify(mockDataSource, times(1)).getConnection();
-        verify(mockConnection, times(1)).prepareStatement(anyString());
     }
 
     @Test
@@ -125,13 +123,12 @@ public class MovieRepositoryTest {
 
     @Test
     public void insertSingle_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnFalse() throws SQLException {
-        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException());
+        when(mockDataSource.getConnection()).thenThrow(new SQLException());
 
         boolean success = movieRepository.insert(movieTestDataBuilder.build());
 
         assertFalse(success);
         verify(mockDataSource, times(1)).getConnection();
-        verify(mockConnection, times(1)).prepareStatement(anyString());
     }
 
     @Test
@@ -148,13 +145,12 @@ public class MovieRepositoryTest {
 
     @Test
     public void updateSingle_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnFalse() throws SQLException {
-        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException());
+        when(mockDataSource.getConnection()).thenThrow(new SQLException());
 
         boolean success = movieRepository.update(movieTestDataBuilder.build());
 
         assertFalse(success);
         verify(mockDataSource, times(1)).getConnection();
-        verify(mockConnection, times(1)).prepareStatement(anyString());
     }
 
     @Test
@@ -171,13 +167,12 @@ public class MovieRepositoryTest {
 
     @Test
     public void deleteSingle_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnFalse() throws SQLException {
-        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException());
+        when(mockDataSource.getConnection()).thenThrow(new SQLException());
 
         boolean success = movieRepository.delete(Id.get());
 
         assertFalse(success);
         verify(mockDataSource, times(1)).getConnection();
-        verify(mockConnection, times(1)).prepareStatement(anyString());
     }
 
     private void setupMockResultSetForMovie(Movie movie) throws SQLException {

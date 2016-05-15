@@ -129,13 +129,12 @@ public class ImageFileRepositoryTest {
 
     @Test
     public void deleteSingle_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnFalse() throws SQLException {
-        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException());
+        when(mockDataSource.getConnection()).thenThrow(new SQLException());
 
         boolean success = imageFileRepository.delete(Id.get());
 
         assertFalse(success);
         verify(mockDataSource, times(1)).getConnection();
-        verify(mockConnection, times(1)).prepareStatement(anyString());
     }
 
     private void setupMockResultSet(ImageFile imageFile) throws SQLException {

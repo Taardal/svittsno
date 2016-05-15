@@ -110,19 +110,19 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
     }
 
     private PreparedStatement getSelectAllMoviesPreparedStatement(Connection connection) throws SQLException {
-        String query = "SELECT movie.*, GROUP_CONCAT(genre.name) AS genres FROM movie " +
+        String sql = "SELECT movie.*, GROUP_CONCAT(genre.name) AS genres FROM movie " +
                 "JOIN movie_genre ON movie.id = movie_genre.movie_id " +
                 "JOIN genre ON genre.id = movie_genre.genre_id " +
                 "GROUP BY movie.id;";
-        return connection.prepareStatement(query);
+        return connection.prepareStatement(sql);
     }
 
     private PreparedStatement getSelectMoviePreparedStatement(Connection connection, String id) throws SQLException {
-        String query = "SELECT movie.*, GROUP_CONCAT(DISTINCT genre.name) AS genres FROM movie " +
+        String sql = "SELECT movie.*, GROUP_CONCAT(DISTINCT genre.name) AS genres FROM movie " +
                 "JOIN movie_genre ON movie.id = movie_genre.movie_id " +
                 "JOIN genre ON genre.id = movie_genre.genre_id " +
                 "WHERE movie.id = ? GROUP BY movie.id;";
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, id);
         return preparedStatement;
     }
@@ -144,8 +144,8 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
     }
 
     private PreparedStatement getInsertMoviePreparedStatement(Connection connection, Movie movie) throws SQLException {
-        String statement = "INSERT INTO movie (id, name, imdb_id, tagline, overview, runtime, release_date) VALUES (?, ?, ?, ?, ?, ?, ?);";
-        PreparedStatement preparedStatement = connection.prepareStatement(statement);
+        String sql = "INSERT INTO movie (id, name, imdb_id, tagline, overview, runtime, release_date) VALUES (?, ?, ?, ?, ?, ?, ?);";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
         int i = 1;
         preparedStatement.setString(i++, movie.getId());
         preparedStatement.setString(i++, movie.getName());
@@ -174,8 +174,8 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
     }
 
     private PreparedStatement getInsertMovieGenreRelations(Connection connection, Movie movie) throws SQLException {
-        String statement = "INSERT INTO movie_genre (movie_id, genre_id) VALUES (?, ?);";
-        PreparedStatement preparedStatement = connection.prepareStatement(statement);
+        String sql = "INSERT INTO movie_genre (movie_id, genre_id) VALUES (?, ?);";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
         for (Genre genre : movie.getGenres()) {
             int i = 1;
             preparedStatement.setString(i++, movie.getId());
@@ -198,8 +198,8 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
     }
 
     private PreparedStatement getUpdateMoviePreparedStatement(Connection connection, Movie movie) throws SQLException {
-        String statement = "UPDATE movie SET imdb_id = ?, name = ?, tagline = ?, overview = ?, runtime = ?, release_date = ? WHERE id = ?;";
-        PreparedStatement preparedStatement = connection.prepareStatement(statement);
+        String sql = "UPDATE movie SET imdb_id = ?, name = ?, tagline = ?, overview = ?, runtime = ?, release_date = ? WHERE id = ?;";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
         int i = 1;
         preparedStatement.setString(i++, movie.getImdbId());
         preparedStatement.setString(i++, movie.getName());
@@ -212,8 +212,8 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
     }
 
     private PreparedStatement getDeleteMoviePreparedStatement(Connection connection, String id) throws SQLException {
-        String statement = "DELETE FROM movie WHERE movie.id = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(statement);
+        String sql = "DELETE FROM movie WHERE movie.id = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, id);
         return preparedStatement;
     }

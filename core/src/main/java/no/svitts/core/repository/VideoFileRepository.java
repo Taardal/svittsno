@@ -103,8 +103,7 @@ public class VideoFileRepository extends CoreRepository<VideoFile> implements Re
     }
 
     private PreparedStatement getSelectVideoFilePreparedStatement(Connection connection, String id) throws SQLException {
-        String query = "SELECT * FROM video_file WHERE id = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM video_file WHERE id = ?");
         preparedStatement.setString(1, id);
         return preparedStatement;
     }
@@ -122,8 +121,7 @@ public class VideoFileRepository extends CoreRepository<VideoFile> implements Re
     }
 
     private PreparedStatement getInsertVideoFilePreparedStatement(Connection connection, VideoFile videoFile) throws SQLException {
-        String statement = "INSERT INTO video_file VALUES (?, ?);";
-        PreparedStatement preparedStatement = connection.prepareStatement(statement);
+        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO video_file VALUES (?, ?);");
         int i = 1;
         preparedStatement.setString(i++, videoFile.getId());
         preparedStatement.setString(i, videoFile.getPath());
@@ -143,8 +141,7 @@ public class VideoFileRepository extends CoreRepository<VideoFile> implements Re
     }
 
     private PreparedStatement getUpdateVideoFilePreparedStatement(Connection connection, VideoFile videoFile) throws SQLException {
-        String statement = "UPDATE video_file SET path = ? WHERE id = ?;";
-        PreparedStatement preparedStatement = connection.prepareStatement(statement);
+        PreparedStatement preparedStatement = connection.prepareStatement("UPDATE video_file SET path = ? WHERE id = ?;");
         int i = 1;
         preparedStatement.setString(i++, videoFile.getPath());
         preparedStatement.setString(i, videoFile.getId());
@@ -164,8 +161,7 @@ public class VideoFileRepository extends CoreRepository<VideoFile> implements Re
     }
 
     private PreparedStatement getDeleteVideoFilePreparedStatement(Connection connection, String id) throws SQLException {
-        String statement = "DELETE FROM video_file WHERE id = ?;";
-        PreparedStatement preparedStatement = connection.prepareStatement(statement);
+        PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM video_file WHERE id = ?;");
         preparedStatement.setString(1, id);
         return preparedStatement;
     }

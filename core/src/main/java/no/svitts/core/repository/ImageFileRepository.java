@@ -97,8 +97,7 @@ public class ImageFileRepository extends CoreRepository<ImageFile> implements Re
     }
 
     private PreparedStatement getSelectImageFilePreparedStatement(Connection connection, String id) throws SQLException {
-        String sql = "SELECT * FROM image_file WHERE id = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM image_file WHERE id = ?;");
         preparedStatement.setString(1, id);
         return preparedStatement;
     }
@@ -120,8 +119,7 @@ public class ImageFileRepository extends CoreRepository<ImageFile> implements Re
     }
 
     private PreparedStatement getInsertImageFilePreparedStatement(Connection connection, ImageFile imageFile) throws SQLException {
-        String sql = "INSERT INTO image_file VALUES (?, ?);";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO image_file VALUES (?, ?);");
         int i = 1;
         preparedStatement.setString(i++, imageFile.getId());
         preparedStatement.setString(i, imageFile.getPath());
@@ -141,8 +139,7 @@ public class ImageFileRepository extends CoreRepository<ImageFile> implements Re
     }
 
     private PreparedStatement getUpdateImageFilePreparedStatement(Connection connection, ImageFile imageFile) throws SQLException {
-        String sql = "UPDATE image_file SET path = ? WHERE id = ?;";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        PreparedStatement preparedStatement = connection.prepareStatement("UPDATE image_file SET path = ? WHERE id = ?;");
         int i = 1;
         preparedStatement.setString(i++, imageFile.getPath());
         preparedStatement.setString(i, imageFile.getId());
@@ -162,8 +159,7 @@ public class ImageFileRepository extends CoreRepository<ImageFile> implements Re
     }
 
     private PreparedStatement getDeleteImageFilePreparedStatement(Connection connection, String id) throws SQLException {
-        String sql = "DELETE FROM image_file WHERE id = ?;";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM image_file WHERE id = ?;");
         preparedStatement.setString(1, id);
         return preparedStatement;
     }
