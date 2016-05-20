@@ -1,7 +1,8 @@
 package no.svitts.core.resource;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import no.svitts.core.criteria.SearchCriteria;
+import no.svitts.core.criteria.SearchKey;
 import no.svitts.core.file.VideoFile;
 import no.svitts.core.repository.Repository;
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Api
 @Path("videofile")
@@ -24,20 +26,19 @@ public class VideoFileResource extends CoreResource {
         this.videoFileRepository = videoFileRepository;
     }
 
-    @ApiOperation(value = "Get all video files.", notes = "Lists all the video files stored in the database as JSON", response = Response.class)
-    @GET
-    @Path("all")
-    public String getAllVideoFiles() {
-        LOGGER.info("Received request to GET all video files");
-        return gson.toJson(videoFileRepository.getAll());
-    }
-
     @GET
     @Path("{id}")
     public Response getVideoFileById(@PathParam("id") String id) {
         LOGGER.info("Received request to GET video file with ID [{}]", id);
-        String json = gson.toJson(videoFileRepository.getById(id));
-        return Response.ok().entity(json).build();
+        return Response.ok().entity(gson.toJson(videoFileRepository.getById(id))).build();
+    }
+
+    @GET
+    @Path("name")
+    public Response getVideoFilesByName(@QueryParam("name") String name, @QueryParam("limit") int limit) {
+        LOGGER.info("Received request to GET max [{}] video file(s) with name [{}]", limit, name);
+        List<VideoFile> videoFiles = videoFileRepository.search(new SearchCriteria(SearchKey.NAME, name, limit));
+        return Response.ok().entity(gson.toJson(videoFiles)).build();
     }
 
     @POST

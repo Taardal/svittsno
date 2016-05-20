@@ -1,5 +1,7 @@
 package no.svitts.core.repository;
 
+import no.svitts.core.criteria.SearchCriteria;
+import no.svitts.core.criteria.SearchKey;
 import no.svitts.core.datasource.DataSource;
 import no.svitts.core.file.VideoFile;
 import org.slf4j.Logger;
@@ -12,7 +14,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VideoFileRepository extends CoreRepository<VideoFile> implements Repository<VideoFile> {
+public class VideoFileRepository extends CoreRepository<VideoFile> {
 
     public static final String UNKNOWN_VIDEO_FILE_ID = "Unknown-VideoFile-ID";
     private static final Logger LOGGER = LoggerFactory.getLogger(VideoFileRepository.class);
@@ -22,34 +24,8 @@ public class VideoFileRepository extends CoreRepository<VideoFile> implements Re
     }
 
     @Override
-    public List<VideoFile> getAll() {
-        LOGGER.info("Getting all video files");
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement preparedStatement = getSelectAllVideoFilesPreparedStatement(connection)) {
-                return executeQuery(preparedStatement);
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Could not get all video files", e);
-            return new ArrayList<>();
-        }
-    }
-
-    @Override
     public VideoFile getById(String id) {
-        return getVideoFileById(id);
-    }
-
-    private VideoFile getVideoFileById(String id) {
-        LOGGER.info("Getting video file with ID [{}]", id);
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement preparedStatement = getSelectVideoFilePreparedStatement(connection, id)) {
-                List<VideoFile> videoFiles = executeQuery(preparedStatement);
-                return videoFiles.isEmpty() ? getUnknownVideoFile() : videoFiles.get(0);
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Could not get video file with ID [{}]", id, e);
-            return getUnknownVideoFile();
-        }
+        return getVideoFile(id);
     }
 
     @Override
@@ -57,7 +33,7 @@ public class VideoFileRepository extends CoreRepository<VideoFile> implements Re
         if (isRequiredFieldsValid(videoFile)) {
             return insertVideoFile(videoFile);
         } else {
-            LOGGER.warn("Required fields INVALID when trying to insert videoFile [{}]", videoFile);
+            LOGGER.warn("Could not validate required fields when asked to insert videoFile [{}]", videoFile);
             return false;
         }
     }
@@ -67,7 +43,7 @@ public class VideoFileRepository extends CoreRepository<VideoFile> implements Re
         if (isRequiredFieldsValid(videoFile)) {
             return updateVideoFile(videoFile);
         } else {
-            LOGGER.warn("Required fields INVALID when trying to update videoFile [{}]", videoFile);
+            LOGGER.warn("Could not validate required fields when asked to update videoFile [{}]", videoFile);
             return false;
         }
     }
@@ -75,6 +51,16 @@ public class VideoFileRepository extends CoreRepository<VideoFile> implements Re
     @Override
     public boolean delete(String id) {
         return id != null && !id.isEmpty() && deleteVideoFile(id);
+    }
+
+    @Override
+    public List<VideoFile> search(SearchCriteria searchCriteria) {
+        if (searchCriteria.getKey() == SearchKey.NAME) {
+            return searchVideoFilesByName(searchCriteria);
+        } else {
+            LOGGER.warn("Could not resolve search criteria [{}] when asked to search video files", searchCriteria);
+            return new ArrayList<>();
+        }
     }
 
     @Override
@@ -98,8 +84,21 @@ public class VideoFileRepository extends CoreRepository<VideoFile> implements Re
                 && !videoFile.getPath().isEmpty() && !videoFile.getName().equals("null");
     }
 
-    private PreparedStatement getSelectAllVideoFilesPreparedStatement(Connection connection) throws SQLException {
-        return connection.prepareStatement("SELECT * FROM video_file;");
+    private VideoFile getVideoFile(String id) {
+        LOGGER.info("Getting video file with ID [{}]", id);
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement preparedStatement = getSelectVideoFilePreparedStatement(connection, id)) {
+                List<VideoFile> videoFiles = executeQuery(preparedStatement);
+                return videoFiles.isEmpty() ? getUnknownVideoFile() : videoFiles.get(0);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Could not get video file with ID [{}]", id, e);
+            return getUnknownVideoFile();
+        }
+    }
+
+    private VideoFile getUnknownVideoFile() {
+        return new VideoFile(UNKNOWN_VIDEO_FILE_ID, "");
     }
 
     private PreparedStatement getSelectVideoFilePreparedStatement(Connection connection, String id) throws SQLException {
@@ -166,8 +165,25 @@ public class VideoFileRepository extends CoreRepository<VideoFile> implements Re
         return preparedStatement;
     }
 
-    private VideoFile getUnknownVideoFile() {
-        return new VideoFile(UNKNOWN_VIDEO_FILE_ID, "");
+    private List<VideoFile> searchVideoFilesByName(SearchCriteria searchCriteria) {
+        LOGGER.info("Searching video files by name [{}]", searchCriteria.getValue());
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement preparedStatement = getSelectVideoFilesByNamePreparedStatement(connection, searchCriteria)) {
+                return executeQuery(preparedStatement);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Could not search video files by name", e);
+            return new ArrayList<>();
+        }
+    }
+
+    private PreparedStatement getSelectVideoFilesByNamePreparedStatement(Connection connection, SearchCriteria searchCriteria) throws SQLException {
+        String sql = "SELECT * FROM video_file WHERE name LIKE ? LIMIT ?;";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        int i = 1;
+        preparedStatement.setString(i++, "%" + searchCriteria.getValue() + "%");
+        preparedStatement.setInt(i, searchCriteria.getLimit());
+        return preparedStatement;
     }
 
 }

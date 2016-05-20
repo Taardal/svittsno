@@ -1,5 +1,7 @@
 package no.svitts.core.repository;
 
+import no.svitts.core.criteria.SearchCriteria;
+import no.svitts.core.criteria.SearchKey;
 import no.svitts.core.datasource.DataSource;
 import no.svitts.core.file.ImageFile;
 import org.slf4j.Logger;
@@ -12,7 +14,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImageFileRepository extends CoreRepository<ImageFile> implements Repository<ImageFile> {
+public class ImageFileRepository extends CoreRepository<ImageFile> {
 
     public static final String UNKNOWN_IMAGE_FILE_ID = "Unknown-ImageFile-ID";
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageFileRepository.class);
@@ -22,30 +24,8 @@ public class ImageFileRepository extends CoreRepository<ImageFile> implements Re
     }
 
     @Override
-    public List<ImageFile> getAll() {
-        LOGGER.info("Getting all image files");
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement preparedStatement = getSelectAllImageFilesPreparedStatement(connection)) {
-                return executeQuery(preparedStatement);
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Could not get all image files", e);
-            return new ArrayList<>();
-        }
-    }
-
-    @Override
     public ImageFile getById(String id) {
-        LOGGER.info("Getting image file by ID [{}]", id);
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement preparedStatement = getSelectImageFilePreparedStatement(connection, id)) {
-                List<ImageFile> imageFiles = executeQuery(preparedStatement);
-                return imageFiles.isEmpty() ? getUnknownImageFile() : imageFiles.get(0);
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Could not get all image files", e);
-            return getUnknownImageFile();
-        }
+        return getImageFile(id);
     }
 
     @Override
@@ -53,7 +33,7 @@ public class ImageFileRepository extends CoreRepository<ImageFile> implements Re
         if (isRequiredFieldsValid(imageFile)) {
             return insertImageFile(imageFile);
         } else {
-            LOGGER.warn("Required fields INVALID when trying to insert imageFile [{}]", imageFile);
+            LOGGER.warn("Could not validate required fields when asked to insert imageFile [{}]", imageFile);
             return false;
         }
     }
@@ -63,7 +43,7 @@ public class ImageFileRepository extends CoreRepository<ImageFile> implements Re
         if (isRequiredFieldsValid(imageFile)) {
             return updateImageFile(imageFile);
         } else {
-            LOGGER.warn("Required fields INVALID when trying to update imageFile [{}]", imageFile);
+            LOGGER.warn("Could not validate required fields when asked to update imageFile [{}]", imageFile);
             return false;
         }
     }
@@ -71,6 +51,16 @@ public class ImageFileRepository extends CoreRepository<ImageFile> implements Re
     @Override
     public boolean delete(String id) {
         return id != null && !id.isEmpty() && deleteImageFile(id);
+    }
+
+    @Override
+    public List<ImageFile> search(SearchCriteria searchCriteria) {
+        if (searchCriteria.getKey() == SearchKey.NAME) {
+            return searchImageFilesByName(searchCriteria);
+        } else {
+            LOGGER.warn("Could not resolve search criteria [{}] when asked to search image files", searchCriteria);
+            return new ArrayList<>();
+        }
     }
 
     @Override
@@ -92,8 +82,17 @@ public class ImageFileRepository extends CoreRepository<ImageFile> implements Re
         return imageFile.getId() != null && !imageFile.getId().isEmpty() && !imageFile.getPath().isEmpty();
     }
 
-    private PreparedStatement getSelectAllImageFilesPreparedStatement(Connection connection) throws SQLException {
-        return connection.prepareStatement("SELECT * FROM image_file;");
+    private ImageFile getImageFile(String id) {
+        LOGGER.info("Getting image file by ID [{}]", id);
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement preparedStatement = getSelectImageFilePreparedStatement(connection, id)) {
+                List<ImageFile> imageFiles = executeQuery(preparedStatement);
+                return imageFiles.isEmpty() ? getUnknownImageFile() : imageFiles.get(0);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Could not get image file by ID", e);
+            return getUnknownImageFile();
+        }
     }
 
     private PreparedStatement getSelectImageFilePreparedStatement(Connection connection, String id) throws SQLException {
@@ -161,6 +160,27 @@ public class ImageFileRepository extends CoreRepository<ImageFile> implements Re
     private PreparedStatement getDeleteImageFilePreparedStatement(Connection connection, String id) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM image_file WHERE id = ?;");
         preparedStatement.setString(1, id);
+        return preparedStatement;
+    }
+
+    private List<ImageFile> searchImageFilesByName(SearchCriteria searchCriteria) {
+        LOGGER.info("Searching image files by name [{}]", searchCriteria.getValue());
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement preparedStatement = getSelectImageFilesByNamePreparedStatement(connection, searchCriteria)) {
+                return executeQuery(preparedStatement);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Could not search image files by name", e);
+            return new ArrayList<>();
+        }
+    }
+
+    private PreparedStatement getSelectImageFilesByNamePreparedStatement(Connection connection, SearchCriteria searchCriteria) throws SQLException {
+        String sql = "SELECT * FROM image_file WHERE name LIKE ? LIMIT ?;";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        int i = 1;
+        preparedStatement.setString(i++, "%" + searchCriteria.getValue() + "%");
+        preparedStatement.setInt(i, searchCriteria.getLimit());
         return preparedStatement;
     }
 }

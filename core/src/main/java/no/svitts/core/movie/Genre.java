@@ -56,6 +56,14 @@ public enum Genre {
     }
 
     public static List<Genre> fromString(String genresString) {
+        if (genresString != null && !genresString.isEmpty()) {
+            return getGenres(genresString);
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    private static List<Genre> getGenres(String genresString) {
         String[] genreStrings = genresString.split(",");
         List<Genre> genres = new ArrayList<>();
         for (String genreString : genreStrings) {
