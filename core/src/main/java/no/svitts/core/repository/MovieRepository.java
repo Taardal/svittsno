@@ -13,7 +13,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovieRepository extends CoreRepository<Movie> implements Repository<Movie> {
+public class MovieRepository extends CoreRepository<Movie> {
 
     public static final String UNKNOWN_MOVIE_ID = "Unknown-Movie-ID";
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieRepository.class);

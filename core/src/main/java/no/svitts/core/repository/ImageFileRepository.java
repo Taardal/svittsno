@@ -14,7 +14,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImageFileRepository extends CoreRepository<ImageFile> implements Repository<ImageFile> {
+public class ImageFileRepository extends CoreRepository<ImageFile> {
 
     public static final String UNKNOWN_IMAGE_FILE_ID = "Unknown-ImageFile-ID";
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageFileRepository.class);

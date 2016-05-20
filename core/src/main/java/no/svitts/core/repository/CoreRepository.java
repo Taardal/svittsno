@@ -11,12 +11,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class CoreRepository<T> {
+abstract class CoreRepository<T> implements Repository<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CoreRepository.class);
-    protected DataSource dataSource;
 
-    protected CoreRepository(DataSource dataSource) {
+    DataSource dataSource;
+
+    CoreRepository(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
@@ -24,7 +25,7 @@ public abstract class CoreRepository<T> {
 
     protected abstract boolean isRequiredFieldsValid(T t);
 
-    protected List<T> executeQuery(PreparedStatement preparedStatement) {
+    List<T> executeQuery(PreparedStatement preparedStatement) {
         LOGGER.info("Executing query [{}]", preparedStatement.toString());
         try (ResultSet resultSet = preparedStatement.executeQuery()){
             return getResults(resultSet);
@@ -34,7 +35,7 @@ public abstract class CoreRepository<T> {
         }
     }
 
-    protected boolean executeUpdate(PreparedStatement preparedStatement) {
+    boolean executeUpdate(PreparedStatement preparedStatement) {
         LOGGER.info("Executing update [{}]", preparedStatement.toString());
         try {
             int rowsAffected = preparedStatement.executeUpdate();
@@ -46,7 +47,7 @@ public abstract class CoreRepository<T> {
     }
 
 
-    protected boolean executeBatch(PreparedStatement preparedStatement) {
+    boolean executeBatch(PreparedStatement preparedStatement) {
         LOGGER.info("Executing batch [{}]", preparedStatement.toString());
         try {
             int[] results = preparedStatement.executeBatch();

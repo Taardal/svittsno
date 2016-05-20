@@ -14,7 +14,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VideoFileRepository extends CoreRepository<VideoFile> implements Repository<VideoFile> {
+public class VideoFileRepository extends CoreRepository<VideoFile> {
 
     public static final String UNKNOWN_VIDEO_FILE_ID = "Unknown-VideoFile-ID";
     private static final Logger LOGGER = LoggerFactory.getLogger(VideoFileRepository.class);
