@@ -1,7 +1,8 @@
 package no.svitts.core.resource;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import no.svitts.core.criteria.SearchCriteria;
+import no.svitts.core.criteria.SearchKey;
 import no.svitts.core.file.ImageFile;
 import no.svitts.core.repository.Repository;
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Path("imagefile")
 @Produces(MediaType.APPLICATION_JSON)
@@ -17,18 +19,11 @@ import javax.ws.rs.core.Response;
 public class ImageFileResource extends CoreResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageFileResource.class);
+
     private Repository<ImageFile> imageFileRepository;
 
     public ImageFileResource(Repository<ImageFile> imageFileRepository) {
         this.imageFileRepository = imageFileRepository;
-    }
-
-    @GET
-    @Path("all")
-    @ApiOperation(value = "Get all image files.", notes = "Lists all the image files stored in the database as JSON", response = Response.class)
-    public String getAllImageFiles() {
-        LOGGER.info("Received request to GET all image files");
-        return gson.toJson(imageFileRepository.getAll());
     }
 
     @GET
@@ -37,6 +32,14 @@ public class ImageFileResource extends CoreResource {
         LOGGER.info("Received request to GET image file with ID [{}]", id);
         String json = gson.toJson(imageFileRepository.getById(id));
         return Response.ok().entity(json).build();
+    }
+
+    @GET
+    @Path("name")
+    public Response getImageFilesByName(@QueryParam("name") String name, @QueryParam("limit") int limit) {
+        LOGGER.info("Received request to GET max [{}] image file(s) with name [{}]", limit, name);
+        List<ImageFile> imageFiles = imageFileRepository.search(new SearchCriteria(SearchKey.NAME, name, limit));
+        return Response.ok().entity(gson.toJson(imageFiles)).build();
     }
 
     @POST

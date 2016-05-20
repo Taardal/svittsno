@@ -1,5 +1,7 @@
 package no.svitts.core.repository;
 
+import no.svitts.core.criteria.SearchCriteria;
+import no.svitts.core.criteria.SearchKey;
 import no.svitts.core.datasource.DataSource;
 import no.svitts.core.date.KeyDate;
 import no.svitts.core.movie.Genre;
@@ -21,30 +23,8 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
     }
 
     @Override
-    public List<Movie> getAll() {
-        LOGGER.info("Getting all movies");
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement preparedStatement = getSelectAllMoviesPreparedStatement(connection)) {
-                return executeQuery(preparedStatement);
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Could not get all movies", e);
-            return new ArrayList<>();
-        }
-    }
-
-    @Override
     public Movie getById(String id) {
-        LOGGER.info("Getting movie by ID [{}]", id);
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement preparedStatement = getSelectMoviePreparedStatement(connection, id)) {
-                List<Movie> movies = executeQuery(preparedStatement);
-                return movies.isEmpty() ? getUnknownMovie() : movies.get(0);
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Could not get movie by ID [{}]", id, e);
-            return getUnknownMovie();
-        }
+        return getMovie(id);
     }
 
     @Override
@@ -52,7 +32,7 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
         if (isRequiredFieldsValid(movie)) {
             return insertMovie(movie) && insertMovieGenreRelations(movie);
         } else {
-            LOGGER.warn("Required fields was INVALID when trying to insert movie [{}]", movie);
+            LOGGER.warn("Could not validate required fields when asked to insert movie [{}]", movie);
             return false;
         }
     }
@@ -62,21 +42,25 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
         if (isRequiredFieldsValid(movie)) {
             return updateMovie(movie);
         } else {
-            LOGGER.warn("Required fields was INVALID when trying to update movie [{}]", movie);
+            LOGGER.warn("Could not validate required fields when asked to update movie [{}]", movie);
             return false;
         }
     }
 
     @Override
     public boolean delete(String id) {
-        LOGGER.info("Deleting movie with ID [{}]", id);
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement preparedStatement = getDeleteMoviePreparedStatement(connection, id)) {
-                return executeUpdate(preparedStatement);
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Could not delete movie with ID [{}]", id, e);
-            return false;
+        return deleteMovie(id);
+    }
+
+    @Override
+    public List<Movie> search(SearchCriteria searchCriteria) {
+        if (searchCriteria.getKey() == SearchKey.NAME) {
+            return searchMoviesByName(searchCriteria);
+        } else if (searchCriteria.getKey() == SearchKey.GENRE) {
+            return searchMoviesByGenre(searchCriteria);
+        } else {
+            LOGGER.warn("Could not resolve search criteria [{}] when asked to search movies", searchCriteria);
+            return new ArrayList<>();
         }
     }
 
@@ -92,7 +76,7 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
                 String overview = resultSet.getString("overview");
                 int runtime = resultSet.getInt("runtime");
                 KeyDate releaseDate = new KeyDate(resultSet.getDate("release_date"));
-                List<Genre> genres = getGenres(resultSet.getString("genres"));
+                List<Genre> genres = Genre.fromString(resultSet.getString("genres"));
                 movies.add(new Movie(id, name, imdbId, tagline, overview, runtime, releaseDate, genres));
             }
         } catch (SQLException e) {
@@ -109,19 +93,22 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
                 && movie.getGenres() != null && !movie.getGenres().isEmpty();
     }
 
-    private PreparedStatement getSelectAllMoviesPreparedStatement(Connection connection) throws SQLException {
-        String sql = "SELECT movie.*, GROUP_CONCAT(genre.name) AS genres FROM movie " +
-                "JOIN movie_genre ON movie.id = movie_genre.movie_id " +
-                "JOIN genre ON genre.id = movie_genre.genre_id " +
-                "GROUP BY movie.id;";
-        return connection.prepareStatement(sql);
+    private Movie getMovie(String id) {
+        LOGGER.info("Getting movie by ID [{}]", id);
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement preparedStatement = getSelectMoviePreparedStatement(connection, id)) {
+                List<Movie> movies = executeQuery(preparedStatement);
+                return movies.isEmpty() ? getUnknownMovie() : movies.get(0);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Could not get movie by ID [{}]", id, e);
+            return getUnknownMovie();
+        }
     }
 
     private PreparedStatement getSelectMoviePreparedStatement(Connection connection, String id) throws SQLException {
-        String sql = "SELECT movie.*, GROUP_CONCAT(DISTINCT genre.name) AS genres FROM movie " +
-                "JOIN movie_genre ON movie.id = movie_genre.movie_id " +
-                "JOIN genre ON genre.id = movie_genre.genre_id " +
-                "WHERE movie.id = ? GROUP BY movie.id;";
+        String sql = "SELECT movie.*, GROUP_CONCAT(DISTINCT genre.name) AS genres FROM movie JOIN movie_genre ON movie.id = movie_genre.movie_id " +
+                "JOIN genre ON genre.id = movie_genre.genre_id WHERE movie.id = ? GROUP BY movie.id;";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, id);
         return preparedStatement;
@@ -211,6 +198,18 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
         return preparedStatement;
     }
 
+    private boolean deleteMovie(String id) {
+        LOGGER.info("Deleting movie with ID [{}]", id);
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement preparedStatement = getDeleteMoviePreparedStatement(connection, id)) {
+                return executeUpdate(preparedStatement);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Could not delete movie with ID [{}]", id, e);
+            return false;
+        }
+    }
+
     private PreparedStatement getDeleteMoviePreparedStatement(Connection connection, String id) throws SQLException {
         String sql = "DELETE FROM movie WHERE movie.id = ?";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -218,8 +217,48 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
         return preparedStatement;
     }
 
-    private List<Genre> getGenres(String genreString) {
-        return genreString != null ? Genre.fromString(genreString) : new ArrayList<>();
+    private List<Movie> searchMoviesByName(SearchCriteria searchCriteria) {
+        LOGGER.info("Searching movies by name [{}]", searchCriteria.getValue());
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement preparedStatement = getSelectMoviesByNamePreparedStatement(connection, searchCriteria)) {
+                return executeQuery(preparedStatement);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Could not search movies by name", e);
+            return new ArrayList<>();
+        }
+    }
+
+    private PreparedStatement getSelectMoviesByNamePreparedStatement(Connection connection, SearchCriteria searchCriteria) throws SQLException {
+        String sql = "SELECT movie.*, GROUP_CONCAT(genre.name) AS genres FROM movie JOIN movie_genre ON movie.id = movie_genre.movie_id " +
+                "JOIN genre ON genre.id = movie_genre.genre_id WHERE movie.name LIKE ? GROUP BY movie.id LIMIT ?;";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        int i = 1;
+        preparedStatement.setString(i++, "%" + searchCriteria.getValue() + "%");
+        preparedStatement.setInt(i, searchCriteria.getLimit());
+        return preparedStatement;
+    }
+
+    private List<Movie> searchMoviesByGenre(SearchCriteria searchCriteria) {
+        LOGGER.info("Searching movies by genre [{}]", searchCriteria.getValue());
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement preparedStatement = getSelectMoviesByGenrePreparedStatement(connection, searchCriteria)) {
+                return executeQuery(preparedStatement);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Could not search movies by genre", e);
+            return new ArrayList<>();
+        }
+    }
+
+    private PreparedStatement getSelectMoviesByGenrePreparedStatement(Connection connection, SearchCriteria searchCriteria) throws SQLException {
+        String sql = "SELECT movie.*, GROUP_CONCAT(genre.name) AS genres FROM movie JOIN movie_genre ON movie.id = movie_genre.movie_id " +
+                "JOIN genre ON genre.id = movie_genre.genre_id WHERE genre.name LIKE ? GROUP BY movie.id LIMIT ?;";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        int i = 1;
+        preparedStatement.setString(i++, "%" + searchCriteria.getValue() + "%");
+        preparedStatement.setInt(i, searchCriteria.getLimit());
+        return preparedStatement;
     }
 
 }
