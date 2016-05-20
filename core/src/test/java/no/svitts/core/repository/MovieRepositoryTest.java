@@ -42,7 +42,7 @@ public class MovieRepositoryTest {
         when(mockPreparedStatement.executeUpdate()).thenReturn(1);
         when(mockPreparedStatement.executeBatch()).thenReturn(new int[]{1});
 
-        movieRepository = new MovieRepository(mockDataSource);
+        movieRepository = new MovieRepository(mockDataSource, videoFileRepository, imageFileRepository);
         movieTestDataBuilder = new MovieTestDataBuilder();
     }
 

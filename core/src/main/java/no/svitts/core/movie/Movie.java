@@ -2,9 +2,11 @@ package no.svitts.core.movie;
 
 import no.svitts.core.date.KeyDate;
 import no.svitts.core.file.ImageFile;
+import no.svitts.core.file.ImageType;
 import no.svitts.core.file.VideoFile;
 
 import java.util.List;
+import java.util.Map;
 
 public class Movie {
 
@@ -17,8 +19,7 @@ public class Movie {
     private KeyDate releaseDate;
     private List<Genre> genres;
     private VideoFile videoFile;
-    private ImageFile poster;
-    private ImageFile backdrop;
+    private Map<ImageType, ImageFile> images;
 
     public Movie(String id, String name) {
         this.id = id;
@@ -104,6 +105,14 @@ public class Movie {
         this.videoFile = videoFile;
     }
 
+    public Map<ImageType, ImageFile> getImages() {
+        return images;
+    }
+
+    public void setImages(Map<ImageType, ImageFile> images) {
+        this.images = images;
+    }
+
     @Override
     public String toString() {
         return "Movie{" +
@@ -116,9 +125,7 @@ public class Movie {
                 ", releaseDate=" + releaseDate +
                 ", genres=" + genres +
                 ", videoFile=" + videoFile +
-                ", poster=" + poster +
-                ", backdrop=" + backdrop +
+                ", images=" + images +
                 '}';
     }
-
 }

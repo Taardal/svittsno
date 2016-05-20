@@ -4,6 +4,9 @@ import no.svitts.core.criteria.SearchCriteria;
 import no.svitts.core.criteria.SearchKey;
 import no.svitts.core.datasource.DataSource;
 import no.svitts.core.date.KeyDate;
+import no.svitts.core.file.ImageFile;
+import no.svitts.core.file.ImageType;
+import no.svitts.core.file.VideoFile;
 import no.svitts.core.movie.Genre;
 import no.svitts.core.movie.Movie;
 import org.slf4j.Logger;
@@ -11,15 +14,22 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MovieRepository extends CoreRepository<Movie> {
 
     public static final String UNKNOWN_MOVIE_ID = "Unknown-Movie-ID";
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieRepository.class);
 
-    public MovieRepository(DataSource dataSource) {
+    private Repository<VideoFile> videoFileRepository;
+    private Repository<ImageFile> imageFileRepository;
+
+    public MovieRepository(DataSource dataSource, Repository<VideoFile> videoFileRepository, Repository<ImageFile> imageFileRepository) {
         super(dataSource);
+        this.videoFileRepository = videoFileRepository;
+        this.imageFileRepository = imageFileRepository;
     }
 
     @Override
@@ -77,6 +87,11 @@ public class MovieRepository extends CoreRepository<Movie> {
                 int runtime = resultSet.getInt("runtime");
                 KeyDate releaseDate = new KeyDate(resultSet.getDate("release_date"));
                 List<Genre> genres = Genre.fromString(resultSet.getString("genres"));
+                VideoFile videoFile = videoFileRepository.getById(resultSet.getString("video_file_id"));
+
+                String imagesString = resultSet.getString("images");
+                Map<ImageType, ImageFile> images = getImages(imagesString);
+
                 movies.add(new Movie(id, name, imdbId, tagline, overview, runtime, releaseDate, genres));
             }
         } catch (SQLException e) {
@@ -84,6 +99,27 @@ public class MovieRepository extends CoreRepository<Movie> {
         }
         LOGGER.info("Got movie(s) [{}]", movies.toString());
         return movies;
+    }
+
+    private Map<ImageType, ImageFile> getImages(String imagesString) {
+        if (imagesString != null && !imagesString.isEmpty()) {
+            Map<ImageType, ImageFile> images = new HashMap<>();
+            String[] split = imagesString.split(",");
+            for (String imageId : split) {
+                ImageFile imageFile = imageFileRepository.getById(imageId);
+                if (imageFile.getImageType() == ImageType.POSTER) {
+                    images.put(ImageType.POSTER, imageFile);
+                } else if (imageFile.getImageType() == ImageType.BACKDROP) {
+                    images.put(ImageType.BACKDROP, imageFile);
+                } else {
+                    LOGGER.warn("Could not validate image type for image file [{}]", imageFile);
+                }
+            }
+            return images;
+        } else {
+            LOGGER.warn("Image string was null or empty");
+            return new HashMap<>();
+        }
     }
 
     @Override
@@ -107,8 +143,11 @@ public class MovieRepository extends CoreRepository<Movie> {
     }
 
     private PreparedStatement getSelectMoviePreparedStatement(Connection connection, String id) throws SQLException {
-        String sql = "SELECT movie.*, GROUP_CONCAT(DISTINCT genre.name) AS genres FROM movie JOIN movie_genre ON movie.id = movie_genre.movie_id " +
-                "JOIN genre ON genre.id = movie_genre.genre_id WHERE movie.id = ? GROUP BY movie.id;";
+        String sql = "SELECT movie.*, GROUP_CONCAT(DISTINCT genre.name) AS genres, video_file.id AS video_file_id, GROUP_CONCAT(DISTINCT image_file.id) AS images FROM movie " +
+                "JOIN movie_genre ON movie.id = movie_genre.movie_id JOIN genre ON genre.id = movie_genre.genre_id " +
+                "JOIN movie_video_file ON movie.id = movie_video_file.movie_id JOIN video_file ON video_file.id = movie_video_file.video_file_id " +
+                "JOIN movie_image_file ON movie.id = movie_image_file.movie_id JOIN image_file ON image_file.id = movie_image_file.image_file_id " +
+                "WHERE movie.id = ? GROUP BY movie.id;";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, id);
         return preparedStatement;

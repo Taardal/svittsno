@@ -21,7 +21,7 @@ public class CoreApplication extends ResourceConfig {
     public CoreApplication() {
         ApplicationProperties applicationProperties = new ApplicationProperties();
         DataSource dataSource = new SqlDataSource(getDataSourceConfig(applicationProperties));
-        register(new MovieResource(new MovieRepository(dataSource)));
+        register(new MovieResource(new MovieRepository(dataSource, videoFileRepository, imageFileRepository)));
         register(new VideoFileResource(new VideoFileRepository(dataSource)));
         register(new ImageFileResource(new ImageFileRepository(dataSource)));
         initializeSwagger(applicationProperties);

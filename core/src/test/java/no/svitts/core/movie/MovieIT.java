@@ -38,7 +38,7 @@ public class MovieIT extends CoreJerseyTest {
     @Override
     protected Application configure() {
         dataSource = getDataSource();
-        return getResourceConfig(new MovieResource(new MovieRepository(dataSource)));
+        return getResourceConfig(new MovieResource(new MovieRepository(dataSource, videoFileRepository, imageFileRepository)));
     }
 
     @Override

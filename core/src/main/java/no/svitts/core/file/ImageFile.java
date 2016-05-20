@@ -5,6 +5,7 @@ import java.io.File;
 public class ImageFile extends File {
 
     private final String id;
+    private ImageType imageType;
 
     public ImageFile(String id, String path) {
         super(path);
@@ -13,6 +14,10 @@ public class ImageFile extends File {
 
     public String getId() {
         return id;
+    }
+
+    public ImageType getImageType() {
+        return imageType;
     }
 
     @Override

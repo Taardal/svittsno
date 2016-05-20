@@ -41,7 +41,16 @@ DROP TABLE IF EXISTS image_file;
 CREATE TABLE image_file (
   id VARCHAR(255) NOT NULL,
   path VARCHAR(255) NOT NULL,
+  type VARCHAR(255) NOT NULL,
   PRIMARY KEY (id)
+);
+DROP TABLE IF EXISTS movie_image_file;
+CREATE TABLE movie_image_file (
+  movie_id VARCHAR(255) NOT NULL,
+  image_file_id VARCHAR(255) NOT NULL,
+  PRIMARY KEY (movie_id,image_file_id),
+  KEY image_file_id (image_file_id),
+  CONSTRAINT movie_image_file_ibfk_1 FOREIGN KEY (movie_id) REFERENCES movie (id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS person;
 CREATE TABLE person (
