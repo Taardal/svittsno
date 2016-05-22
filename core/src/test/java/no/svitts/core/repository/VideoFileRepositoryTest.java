@@ -12,7 +12,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
@@ -42,31 +41,6 @@ public class VideoFileRepositoryTest {
 
         videoFileRepository = new VideoFileRepository(mockDataSource);
         videoFileTestDataBuilder = new VideoFileTestDataBuilder();
-    }
-
-    @Test
-    public void getAll_ShouldExecuteQueryAndReturnListWithExpectedVideoFiles() throws SQLException {
-        VideoFile videoFile = videoFileTestDataBuilder.build();
-        setupMockResultSet(videoFile);
-
-        List<VideoFile> videoFiles = videoFileRepository.getAll();
-
-        assertEquals(1, videoFiles.size());
-        assertEquals(videoFile.getId(), videoFiles.get(0).getId());
-        verify(mockDataSource, times(1)).getConnection();
-        verify(mockConnection, times(1)).prepareStatement(anyString());
-        verify(mockPreparedStatement, times(1)).executeQuery();
-        verify(mockResultSet, times(2)).next();
-    }
-
-    @Test
-    public void getAll_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnEmptyList() throws SQLException {
-        when(mockDataSource.getConnection()).thenThrow(new SQLException());
-
-        List<VideoFile> videoFiles = videoFileRepository.getAll();
-
-        assertEquals(0, videoFiles.size());
-        verify(mockDataSource, times(1)).getConnection();
     }
 
     @Test

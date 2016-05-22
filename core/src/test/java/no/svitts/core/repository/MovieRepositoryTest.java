@@ -13,7 +13,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 import static no.svitts.core.repository.MovieRepository.UNKNOWN_MOVIE_ID;
 import static org.junit.Assert.*;
@@ -42,33 +41,8 @@ public class MovieRepositoryTest {
         when(mockPreparedStatement.executeUpdate()).thenReturn(1);
         when(mockPreparedStatement.executeBatch()).thenReturn(new int[]{1});
 
-        movieRepository = new MovieRepository(mockDataSource, videoFileRepository, imageFileRepository);
+        movieRepository = new MovieRepository(mockDataSource, null, null);
         movieTestDataBuilder = new MovieTestDataBuilder();
-    }
-
-    @Test
-    public void getAll_ShouldExecuteQueryAndReturnListWithExpectedMovies() throws SQLException {
-        Movie sherlockHolmes = movieTestDataBuilder.sherlockHolmes().build();
-        setupMockResultSetForMovie(sherlockHolmes);
-
-        List<Movie> movies = movieRepository.getAll();
-
-        assertEquals(1, movies.size());
-        assertMovie(sherlockHolmes, movies.get(0));
-        verify(mockDataSource, times(1)).getConnection();
-        verify(mockConnection, times(1)).prepareStatement(anyString());
-        verify(mockPreparedStatement, times(1)).executeQuery();
-        verify(mockResultSet, times(2)).next();
-    }
-
-    @Test
-    public void getAll_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnEmptyList() throws SQLException {
-        when(mockDataSource.getConnection()).thenThrow(new SQLException());
-
-        List<Movie> movies = movieRepository.getAll();
-
-        assertEquals(0, movies.size());
-        verify(mockDataSource, times(1)).getConnection();
     }
 
     @Test

@@ -21,10 +21,17 @@ public class CoreApplication extends ResourceConfig {
     public CoreApplication() {
         ApplicationProperties applicationProperties = new ApplicationProperties();
         DataSource dataSource = new SqlDataSource(getDataSourceConfig(applicationProperties));
-        register(new MovieResource(new MovieRepository(dataSource, videoFileRepository, imageFileRepository)));
-        register(new VideoFileResource(new VideoFileRepository(dataSource)));
-        register(new ImageFileResource(new ImageFileRepository(dataSource)));
+        ImageFileRepository imageFileRepository = new ImageFileRepository(dataSource);
+        VideoFileRepository videoFileRepository = new VideoFileRepository(dataSource);
+        MovieRepository movieRepository = new MovieRepository(dataSource, videoFileRepository, imageFileRepository);
+        registerResources(imageFileRepository, videoFileRepository, movieRepository);
         initializeSwagger(applicationProperties);
+    }
+
+    private void registerResources(ImageFileRepository imageFileRepository, VideoFileRepository videoFileRepository, MovieRepository movieRepository) {
+        register(new MovieResource(movieRepository));
+        register(new VideoFileResource(videoFileRepository));
+        register(new ImageFileResource(imageFileRepository));
     }
 
     private DataSourceConfig getDataSourceConfig(ApplicationProperties applicationProperties) {

@@ -17,9 +17,6 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -36,20 +33,6 @@ public class MovieResourceTest extends JerseyTest {
         movieTestDataBuilder = new MovieTestDataBuilder();
         mockMovieRepository = mock(MovieRepository.class);
         return getResourceConfig(mockMovieRepository);
-    }
-
-    @Test
-    public void getAllMovies_ShouldReturnExpectedMoviesAsJson() {
-        List<Movie> movies = new ArrayList<>();
-        movies.add(movieTestDataBuilder.sherlockHolmes().build());
-        movies.add(movieTestDataBuilder.sherlockHolmesAGameOfShadows().build());
-        when(mockMovieRepository.getAll()).thenReturn(movies);
-        String expectedJson = gson.toJson(movies);
-
-        String json = target(MOVIE_RESOURCE).path("all").request().get(String.class);
-
-        assertEquals(expectedJson, json);
-        verify(mockMovieRepository, times(1)).getAll();
     }
 
     @Test

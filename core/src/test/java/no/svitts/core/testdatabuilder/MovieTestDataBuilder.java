@@ -1,12 +1,17 @@
 package no.svitts.core.testdatabuilder;
 
 import no.svitts.core.date.KeyDate;
+import no.svitts.core.file.ImageFile;
+import no.svitts.core.file.ImageType;
+import no.svitts.core.file.VideoFile;
 import no.svitts.core.id.Id;
 import no.svitts.core.movie.Genre;
 import no.svitts.core.movie.Movie;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MovieTestDataBuilder implements TestDataBuilder<Movie> {
 
@@ -18,6 +23,8 @@ public class MovieTestDataBuilder implements TestDataBuilder<Movie> {
     private int runtime;
     private KeyDate releaseDate;
     private List<Genre> genres;
+    private VideoFile videoFile;
+    private Map<ImageType, ImageFile> imageFiles;
 
     public MovieTestDataBuilder() {
         id = Id.get();
@@ -28,18 +35,13 @@ public class MovieTestDataBuilder implements TestDataBuilder<Movie> {
         runtime = 0;
         releaseDate = new KeyDate();
         genres = getDefaultGenres();
+        videoFile = new VideoFile(Id.get(), "path");
+        imageFiles = new HashMap<>();
     }
 
     @Override
     public Movie build() {
-        Movie movie = new Movie(id, name);
-        movie.setImdbId(imdbId);
-        movie.setTagline(tagline);
-        movie.setOverview(overview);
-        movie.setRuntime(runtime);
-        movie.setReleaseDate(releaseDate);
-        movie.setGenres(genres);
-        return movie;
+        return new Movie(id, name, imdbId, tagline, overview, runtime, releaseDate, genres, videoFile, imageFiles);
     }
 
     public MovieTestDataBuilder id(String id) {

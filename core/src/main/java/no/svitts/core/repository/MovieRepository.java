@@ -7,6 +7,7 @@ import no.svitts.core.date.KeyDate;
 import no.svitts.core.file.ImageFile;
 import no.svitts.core.file.ImageType;
 import no.svitts.core.file.VideoFile;
+import no.svitts.core.id.Id;
 import no.svitts.core.movie.Genre;
 import no.svitts.core.movie.Movie;
 import org.slf4j.Logger;
@@ -87,39 +88,15 @@ public class MovieRepository extends CoreRepository<Movie> {
                 int runtime = resultSet.getInt("runtime");
                 KeyDate releaseDate = new KeyDate(resultSet.getDate("release_date"));
                 List<Genre> genres = Genre.fromString(resultSet.getString("genres"));
-                VideoFile videoFile = videoFileRepository.getById(resultSet.getString("video_file_id"));
-
-                String imagesString = resultSet.getString("images");
-                Map<ImageType, ImageFile> images = getImages(imagesString);
-
-                movies.add(new Movie(id, name, imdbId, tagline, overview, runtime, releaseDate, genres));
+                VideoFile videoFile = videoFileRepository.getById(resultSet.getString("video_file"));
+                Map<ImageType, ImageFile> imageFiles = getImageFiles(resultSet.getString("image_files"));
+                movies.add(new Movie(id, name, imdbId, tagline, overview, runtime, releaseDate, genres, videoFile, imageFiles));
             }
         } catch (SQLException e) {
             LOGGER.error("Could not get movie(s) from result set [{}]", resultSet.toString(), e);
         }
         LOGGER.info("Got movie(s) [{}]", movies.toString());
         return movies;
-    }
-
-    private Map<ImageType, ImageFile> getImages(String imagesString) {
-        if (imagesString != null && !imagesString.isEmpty()) {
-            Map<ImageType, ImageFile> images = new HashMap<>();
-            String[] split = imagesString.split(",");
-            for (String imageId : split) {
-                ImageFile imageFile = imageFileRepository.getById(imageId);
-                if (imageFile.getImageType() == ImageType.POSTER) {
-                    images.put(ImageType.POSTER, imageFile);
-                } else if (imageFile.getImageType() == ImageType.BACKDROP) {
-                    images.put(ImageType.BACKDROP, imageFile);
-                } else {
-                    LOGGER.warn("Could not validate image type for image file [{}]", imageFile);
-                }
-            }
-            return images;
-        } else {
-            LOGGER.warn("Image string was null or empty");
-            return new HashMap<>();
-        }
     }
 
     @Override
@@ -143,18 +120,14 @@ public class MovieRepository extends CoreRepository<Movie> {
     }
 
     private PreparedStatement getSelectMoviePreparedStatement(Connection connection, String id) throws SQLException {
-        String sql = "SELECT movie.*, GROUP_CONCAT(DISTINCT genre.name) AS genres, video_file.id AS video_file_id, GROUP_CONCAT(DISTINCT image_file.id) AS images FROM movie " +
-                "JOIN movie_genre ON movie.id = movie_genre.movie_id JOIN genre ON genre.id = movie_genre.genre_id " +
-                "JOIN movie_video_file ON movie.id = movie_video_file.movie_id JOIN video_file ON video_file.id = movie_video_file.video_file_id " +
-                "JOIN movie_image_file ON movie.id = movie_image_file.movie_id JOIN image_file ON image_file.id = movie_image_file.image_file_id " +
-                "WHERE movie.id = ? GROUP BY movie.id;";
+        String sql = "SELECT movie.*, GROUP_CONCAT(DISTINCT genre.name) AS genres, video_file.id AS video_file_id, GROUP_CONCAT(DISTINCT image_file.id) AS image_ids FROM movie JOIN movie_genre ON movie.id = movie_genre.movie_id JOIN genre ON genre.id = movie_genre.genre_id JOIN movie_video_file ON movie.id = movie_video_file.movie_id JOIN video_file ON video_file.id = movie_video_file.video_file_id JOIN movie_image_file ON movie.id = movie_image_file.movie_id JOIN image_file ON image_file.id = movie_image_file.image_file_id WHERE movie.id = ? GROUP BY movie.id;";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, id);
         return preparedStatement;
     }
 
     private Movie getUnknownMovie() {
-        return new Movie(UNKNOWN_MOVIE_ID, "Unknown", "Unknown", "Unknown", "Unknown", 0, new KeyDate(), new ArrayList<>());
+        return new Movie(UNKNOWN_MOVIE_ID, "Unknown", "Unknown", "Unknown", "Unknown", 0, new KeyDate(), new ArrayList<>(), new VideoFile(Id.get(), "unknown"), new HashMap<>());
     }
 
     private boolean insertMovie(Movie movie) {
@@ -298,6 +271,24 @@ public class MovieRepository extends CoreRepository<Movie> {
         preparedStatement.setString(i++, "%" + searchCriteria.getValue() + "%");
         preparedStatement.setInt(i, searchCriteria.getLimit());
         return preparedStatement;
+    }
+
+    private Map<ImageType, ImageFile> getImageFiles(String imagesString) {
+        if (imagesString != null && !imagesString.isEmpty()) {
+            return getImageFiles(imagesString.split(","));
+        } else {
+            LOGGER.warn("Could not find any image files");
+            return new HashMap<>();
+        }
+    }
+
+    private Map<ImageType, ImageFile> getImageFiles(String[] imageFileIds) {
+        Map<ImageType, ImageFile> images = new HashMap<>();
+        for (String imageFileId : imageFileIds) {
+            ImageFile imageFile = imageFileRepository.getById(imageFileId);
+            images.put(imageFile.getImageType(), imageFile);
+        }
+        return images;
     }
 
 }

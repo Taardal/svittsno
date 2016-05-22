@@ -4,6 +4,7 @@ import no.svitts.core.criteria.SearchCriteria;
 import no.svitts.core.criteria.SearchKey;
 import no.svitts.core.datasource.DataSource;
 import no.svitts.core.file.ImageFile;
+import no.svitts.core.file.ImageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +69,7 @@ public class ImageFileRepository extends CoreRepository<ImageFile> {
         List<ImageFile> imageFiles = new ArrayList<>();
         try {
             while (resultSet.next()) {
-                imageFiles.add(new ImageFile(resultSet.getString("id"), resultSet.getString("path")));
+                imageFiles.add(new ImageFile(resultSet.getString("id"), resultSet.getString("path"), ImageType.valueOf("type")));
             }
         } catch (SQLException e) {
             LOGGER.error("Could not get result(s) from result set [{}]", resultSet.toString(), e);
@@ -102,7 +103,7 @@ public class ImageFileRepository extends CoreRepository<ImageFile> {
     }
 
     private ImageFile getUnknownImageFile() {
-        return new ImageFile(UNKNOWN_IMAGE_FILE_ID, "");
+        return new ImageFile(UNKNOWN_IMAGE_FILE_ID, "", ImageType.POSTER);
     }
 
     private boolean insertImageFile(ImageFile imageFile) {

@@ -7,7 +7,7 @@ public class ImageFile extends File {
     private final String id;
     private ImageType imageType;
 
-    public ImageFile(String id, String path) {
+    public ImageFile(String id, String path, ImageType type) {
         super(path);
         this.id = id;
     }

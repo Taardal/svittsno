@@ -13,8 +13,6 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -39,20 +37,6 @@ public class ImageFileResourceTest extends CoreJerseyTest {
         gson = getGson();
         imageFileTestDataBuilder = new ImageFileTestDataBuilder();
         super.setUp();
-    }
-
-    @Test
-    public void getAllImageFiles_ShouldReturnExpectedImageFilesAsJson() {
-        List<ImageFile> imageFiles = new ArrayList<>();
-        imageFiles.add(imageFileTestDataBuilder.path("path1").build());
-        imageFiles.add(imageFileTestDataBuilder.path("path2").build());
-        when(mockImageFileRepository.getAll()).thenReturn(imageFiles);
-        String expectedJson = gson.toJson(imageFiles);
-
-        String json = target(IMAGE_FILE_RESOURCE).path("all").request().get(String.class);
-
-        assertEquals(expectedJson, json);
-        verify(mockImageFileRepository, times(1)).getAll();
     }
 
     @Test

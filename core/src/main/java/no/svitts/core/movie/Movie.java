@@ -19,14 +19,9 @@ public class Movie {
     private KeyDate releaseDate;
     private List<Genre> genres;
     private VideoFile videoFile;
-    private Map<ImageType, ImageFile> images;
+    private Map<ImageType, ImageFile> imageFiles;
 
-    public Movie(String id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public Movie(String id, String name, String imdbId, String tagline, String overview, int runtime, KeyDate releaseDate, List<Genre> genres) {
+    public Movie(String id, String name, String imdbId, String tagline, String overview, int runtime, KeyDate releaseDate, List<Genre> genres, VideoFile videoFile, Map<ImageType, ImageFile> imageFiles) {
         this.id = id;
         this.name = name;
         this.imdbId = imdbId;
@@ -35,6 +30,8 @@ public class Movie {
         this.runtime = runtime;
         this.releaseDate = releaseDate;
         this.genres = genres;
+        this.videoFile = videoFile;
+        this.imageFiles = imageFiles;
     }
 
     public String getId() {
@@ -105,12 +102,12 @@ public class Movie {
         this.videoFile = videoFile;
     }
 
-    public Map<ImageType, ImageFile> getImages() {
-        return images;
+    public Map<ImageType, ImageFile> getImageFiles() {
+        return imageFiles;
     }
 
-    public void setImages(Map<ImageType, ImageFile> images) {
-        this.images = images;
+    public void setImageFiles(Map<ImageType, ImageFile> imageFiles) {
+        this.imageFiles = imageFiles;
     }
 
     @Override
@@ -125,7 +122,7 @@ public class Movie {
                 ", releaseDate=" + releaseDate +
                 ", genres=" + genres +
                 ", videoFile=" + videoFile +
-                ", images=" + images +
+                ", imageFiles=" + imageFiles +
                 '}';
     }
 }

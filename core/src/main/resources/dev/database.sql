@@ -52,31 +52,6 @@ CREATE TABLE movie_image_file (
   KEY image_file_id (image_file_id),
   CONSTRAINT movie_image_file_ibfk_1 FOREIGN KEY (movie_id) REFERENCES movie (id) ON UPDATE CASCADE ON DELETE CASCADE
 );
-DROP TABLE IF EXISTS person;
-CREATE TABLE person (
-  id VARCHAR(255) NOT NULL,
-  first_name VARCHAR(255) NOT NULL,
-  last_name VARCHAR(255) NOT NULL,
-  date_of_birth DATE NOT NULL,
-  gender VARCHAR(15) NOT NULL,
-  PRIMARY KEY (id)
-);
-DROP TABLE IF EXISTS job;
-CREATE TABLE job (
-  id TINYINT NOT NULL,
-  name VARCHAR(255) DEFAULT NULL,
-  PRIMARY KEY (id)
-);
-DROP TABLE IF EXISTS person_movie_job;
-CREATE TABLE person_movie_job (
-  movie_id VARCHAR(255) NOT NULL,
-  person_id VARCHAR(255) NOT NULL,
-  job_id TINYINT NOT NULL,
-  PRIMARY KEY (movie_id, person_id, job_id),
-  KEY person_id (person_id),
-  KEY job_id (job_id),
-  CONSTRAINT person_movie_job_ibfk_2 FOREIGN KEY (movie_id) REFERENCES movie (id) ON UPDATE CASCADE ON DELETE CASCADE
-);
 
 INSERT INTO genre (id, name) VALUES (1, 'ACTION');
 INSERT INTO genre (id, name) VALUES (2, 'ADVENTURE');

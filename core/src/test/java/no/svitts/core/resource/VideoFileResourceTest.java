@@ -15,8 +15,6 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -41,20 +39,6 @@ public class VideoFileResourceTest extends CoreJerseyTest {
         gson = getGson();
         videoFileTestDataBuilder = new VideoFileTestDataBuilder();
         super.setUp();
-    }
-
-    @Test
-    public void getAllVideoFiles_ShouldReturnExpectedVideoFilesAsJson() {
-        List<VideoFile> videoFiles = new ArrayList<>();
-        videoFiles.add(videoFileTestDataBuilder.path("path1").build());
-        videoFiles.add(videoFileTestDataBuilder.path("path2").build());
-        when(mockVideoFileRepository.getAll()).thenReturn(videoFiles);
-        String expectedJson = gson.toJson(videoFiles);
-
-        String json = target(VIDEO_FILE_RESOURCE).path("all").request().get(String.class);
-
-        assertEquals(expectedJson, json);
-        verify(mockVideoFileRepository, times(1)).getAll();
     }
 
     @Test
