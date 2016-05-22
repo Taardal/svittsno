@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/js/bootstrap.js"></script>
-    <script src="js/getStuff.js"></script>
+    <script src="https://www.atlasestateagents.co.uk/javascript/tether.min.js"></script>
+    <script src="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/js/bootstrap.min.js"></script>
 
     <link rel="stylesheet" href="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/css/bootstrap.css">
     <link rel="stylesheet" href="css/main.css">
@@ -17,6 +17,8 @@
     <link rel="stylesheet" href="css/preview-small.css">
     <link rel="stylesheet" href="css/preview-medium.css">
     <link rel="stylesheet" href="css/preview-large.css">
+
+    <script fileType="text/javascript" src="js/movieService.js"></script>
 
 </head>
 <body>
@@ -42,8 +44,8 @@
                 </li>
             </ul>
             <form class="form-inline pull-xs-right">
-                <input class="form-control" type="text" placeholder="Search">
-                <button class="btn btn-primary" type="submit">Search</button>
+                <input class="form-control" fileType="text" placeholder="Search">
+                <button class="btn btn-primary" fileType="submit">Search</button>
             </form>
         </div>
     </div>
@@ -56,11 +58,11 @@
     </ol>
     <div class="carousel-inner" role="listbox">
         <div class="carousel-item active">
-            <img id="first-slide" class="img-responsive" src="img/forthebirds-backdrop.jpg" alt="First slide">
+            <img id="first-slide" class="img-responsive" src="http://placehold.it/1920x1080" alt="First slide">
             <div class="jumbotron carousel-caption">
                 <h1>Title 1</h1>
                 <p>Tagline 1</p>
-                <button class="btn btn-lg btn-primary" onclick="playMovie()" role="button">Play movie</button>
+                <button class="btn btn-lg btn-primary" role="button">Play movie</button>
                 <a href="#" class="btn btn-lg btn-secondary" role="button">Details</a>
             </div>
         </div>
@@ -92,14 +94,15 @@
         </div>
     </div>
     <div class="row">
+        <div id="movie-cards"></div>
         <div class="col-md-4">
             <div class="card card-inverse small">
-                <img class="card-img small" src="http://placehold.it/350x200">
+                <img class="card-img" src="http://placehold.it/350x200">
                 <div class="card-img-overlay">
                     <div class="overlay">
-                        <div class="overlay-content">
-                            <h4 class="card-title">Title</h4>
-                            <p class="card-text">Tagline</p>
+                        <div id="movie-info" class="overlay-content">
+                            <h4 class="card-title"></h4>
+                            <p class="card-text"></p>
                             <a href="#" class="btn btn-primary" role="button">Play movie</a>
                             <a href="#" class="btn btn-secondary" role="button">Details</a>
                         </div>
@@ -112,24 +115,9 @@
                 <img class="card-img" src="http://placehold.it/350x200">
                 <div class="card-img-overlay">
                     <div class="overlay">
-                        <div class="overlay-content">
-                            <h4 class="card-title">Title</h4>
-                            <p class="card-text">Tagline</p>
-                            <a href="#" class="btn btn-primary" role="button">Play movie</a>
-                            <a href="#" class="btn btn-secondary" role="button">Details</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card card-inverse small">
-                <img class="card-img" src="http://placehold.it/350x200">
-                <div class="card-img-overlay">
-                    <div class="overlay">
-                        <div class="overlay-content">
-                            <h4 class="card-title">Title</h4>
-                            <p class="card-text">Tagline</p>
+                        <div id="movie-info2" class="overlay-content">
+                            <h4 class="card-title"></h4>
+                            <p class="card-text"></p>
                             <a href="#" class="btn btn-primary" role="button">Play movie</a>
                             <a href="#" class="btn btn-secondary" role="button">Details</a>
                         </div>
@@ -238,8 +226,6 @@
         </footer>
     </div>
 </div>
-
-<script>getMovie()</script>
 
 </body>
 </html>
