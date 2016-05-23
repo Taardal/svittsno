@@ -35,7 +35,7 @@ public class MovieRepository extends CoreRepository<Movie> {
 
     @Override
     public Movie getById(String id) {
-        return getMovie(id);
+        return selectMovie(id);
     }
 
     @Override
@@ -66,9 +66,9 @@ public class MovieRepository extends CoreRepository<Movie> {
     @Override
     public List<Movie> search(SearchCriteria searchCriteria) {
         if (searchCriteria.getKey() == SearchKey.NAME) {
-            return searchMoviesByName(searchCriteria);
+            return selectMoviesByName(searchCriteria);
         } else if (searchCriteria.getKey() == SearchKey.GENRE) {
-            return searchMoviesByGenre(searchCriteria);
+            return selectMoviesByGenre(searchCriteria);
         } else {
             LOGGER.warn("Could not resolve search criteria [{}] when asked to search movies", searchCriteria);
             return new ArrayList<>();
@@ -106,7 +106,7 @@ public class MovieRepository extends CoreRepository<Movie> {
                 && movie.getGenres() != null && !movie.getGenres().isEmpty();
     }
 
-    private Movie getMovie(String id) {
+    private Movie selectMovie(String id) {
         LOGGER.info("Getting movie by ID [{}]", id);
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement preparedStatement = getSelectMoviePreparedStatement(connection, id)) {
@@ -229,7 +229,7 @@ public class MovieRepository extends CoreRepository<Movie> {
         return preparedStatement;
     }
 
-    private List<Movie> searchMoviesByName(SearchCriteria searchCriteria) {
+    private List<Movie> selectMoviesByName(SearchCriteria searchCriteria) {
         LOGGER.info("Searching movies by name [{}]", searchCriteria.getValue());
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement preparedStatement = getSelectMoviesByNamePreparedStatement(connection, searchCriteria)) {
@@ -251,7 +251,7 @@ public class MovieRepository extends CoreRepository<Movie> {
         return preparedStatement;
     }
 
-    private List<Movie> searchMoviesByGenre(SearchCriteria searchCriteria) {
+    private List<Movie> selectMoviesByGenre(SearchCriteria searchCriteria) {
         LOGGER.info("Searching movies by genre [{}]", searchCriteria.getValue());
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement preparedStatement = getSelectMoviesByGenrePreparedStatement(connection, searchCriteria)) {
@@ -283,12 +283,12 @@ public class MovieRepository extends CoreRepository<Movie> {
     }
 
     private Map<ImageType, ImageFile> getImageFiles(String[] imageFileIds) {
-        Map<ImageType, ImageFile> images = new HashMap<>();
+        Map<ImageType, ImageFile> imageFiles = new HashMap<>();
         for (String imageFileId : imageFileIds) {
             ImageFile imageFile = imageFileRepository.getById(imageFileId);
-            images.put(imageFile.getImageType(), imageFile);
+            imageFiles.put(imageFile.getImageType(), imageFile);
         }
-        return images;
+        return imageFiles;
     }
 
 }

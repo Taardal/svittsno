@@ -26,7 +26,7 @@ public class ImageFileRepository extends CoreRepository<ImageFile> {
 
     @Override
     public ImageFile getById(String id) {
-        return getImageFile(id);
+        return selectImageFile(id);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class ImageFileRepository extends CoreRepository<ImageFile> {
     @Override
     public List<ImageFile> search(SearchCriteria searchCriteria) {
         if (searchCriteria.getKey() == SearchKey.NAME) {
-            return searchImageFilesByName(searchCriteria);
+            return selectImageFilesByName(searchCriteria);
         } else {
             LOGGER.warn("Could not resolve search criteria [{}] when asked to search image files", searchCriteria);
             return new ArrayList<>();
@@ -83,7 +83,7 @@ public class ImageFileRepository extends CoreRepository<ImageFile> {
         return imageFile.getId() != null && !imageFile.getId().isEmpty() && !imageFile.getPath().isEmpty();
     }
 
-    private ImageFile getImageFile(String id) {
+    private ImageFile selectImageFile(String id) {
         LOGGER.info("Getting image file by ID [{}]", id);
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement preparedStatement = getSelectImageFilePreparedStatement(connection, id)) {
@@ -164,7 +164,7 @@ public class ImageFileRepository extends CoreRepository<ImageFile> {
         return preparedStatement;
     }
 
-    private List<ImageFile> searchImageFilesByName(SearchCriteria searchCriteria) {
+    private List<ImageFile> selectImageFilesByName(SearchCriteria searchCriteria) {
         LOGGER.info("Searching image files by name [{}]", searchCriteria.getValue());
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement preparedStatement = getSelectImageFilesByNamePreparedStatement(connection, searchCriteria)) {

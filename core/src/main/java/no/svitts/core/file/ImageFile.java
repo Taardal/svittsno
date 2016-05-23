@@ -7,9 +7,10 @@ public class ImageFile extends File {
     private final String id;
     private ImageType imageType;
 
-    public ImageFile(String id, String path, ImageType type) {
+    public ImageFile(String id, String path, ImageType imageType) {
         super(path);
         this.id = id;
+        this.imageType = imageType;
     }
 
     public String getId() {

@@ -25,7 +25,7 @@ public class VideoFileRepository extends CoreRepository<VideoFile> {
 
     @Override
     public VideoFile getById(String id) {
-        return getVideoFile(id);
+        return selectVideoFile(id);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class VideoFileRepository extends CoreRepository<VideoFile> {
     @Override
     public List<VideoFile> search(SearchCriteria searchCriteria) {
         if (searchCriteria.getKey() == SearchKey.NAME) {
-            return searchVideoFilesByName(searchCriteria);
+            return selectVideoFilesByName(searchCriteria);
         } else {
             LOGGER.warn("Could not resolve search criteria [{}] when asked to search video files", searchCriteria);
             return new ArrayList<>();
@@ -84,7 +84,7 @@ public class VideoFileRepository extends CoreRepository<VideoFile> {
                 && !videoFile.getPath().isEmpty() && !videoFile.getName().equals("null");
     }
 
-    private VideoFile getVideoFile(String id) {
+    private VideoFile selectVideoFile(String id) {
         LOGGER.info("Getting video file with ID [{}]", id);
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement preparedStatement = getSelectVideoFilePreparedStatement(connection, id)) {
@@ -165,7 +165,7 @@ public class VideoFileRepository extends CoreRepository<VideoFile> {
         return preparedStatement;
     }
 
-    private List<VideoFile> searchVideoFilesByName(SearchCriteria searchCriteria) {
+    private List<VideoFile> selectVideoFilesByName(SearchCriteria searchCriteria) {
         LOGGER.info("Searching video files by name [{}]", searchCriteria.getValue());
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement preparedStatement = getSelectVideoFilesByNamePreparedStatement(connection, searchCriteria)) {
