@@ -6,6 +6,8 @@ import no.svitts.core.criteria.SearchCriteria;
 import no.svitts.core.criteria.SearchKey;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.repository.Repository;
+import no.svitts.core.status.ServerResponse;
+import no.svitts.core.status.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +34,13 @@ public class MovieResource extends CoreResource {
     @Path("{id}")
     public Response getMovieById(@PathParam("id") String id) {
         LOGGER.info("Received request to GET movie with ID [{}]", id);
-        return Response.ok().entity(gson.toJson(movieRepository.getById(id))).build();
+        ServerResponse serverResponse = movieRepository.getById(id);
+        if (serverResponse.getStatus() == Status.OK && serverResponse.getPayload() != null) {
+            return Response.ok().entity(gson.toJson(serverResponse.getPayload())).build();
+        } else {
+            return Response.serverError().entity(serverResponse.getMessage()).build();
+        }
+
     }
 
     @GET

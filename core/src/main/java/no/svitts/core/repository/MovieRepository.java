@@ -10,6 +10,9 @@ import no.svitts.core.file.VideoFile;
 import no.svitts.core.id.Id;
 import no.svitts.core.movie.Genre;
 import no.svitts.core.movie.Movie;
+import no.svitts.core.status.ServerResponse;
+import no.svitts.core.status.ServerResponseBuilder;
+import no.svitts.core.status.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +37,13 @@ public class MovieRepository extends CoreRepository<Movie> {
     }
 
     @Override
-    public Movie getById(String id) {
-        return selectMovie(id);
+    public ServerResponse getById(String id) {
+        Movie movie = selectMovie(id);
+        if (movie != null) {
+            return new ServerResponseBuilder().ok().payload(movie).build();
+        } else {
+            return new ServerResponseBuilder().failure().build();
+        }
     }
 
     @Override
@@ -111,11 +119,11 @@ public class MovieRepository extends CoreRepository<Movie> {
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement preparedStatement = getSelectMoviePreparedStatement(connection, id)) {
                 List<Movie> movies = executeQuery(preparedStatement);
-                return movies.isEmpty() ? getUnknownMovie() : movies.get(0);
+                return movies.isEmpty() ? null : movies.get(0);
             }
         } catch (SQLException e) {
             LOGGER.error("Could not get movie by ID [{}]", id, e);
-            return getUnknownMovie();
+            return null;
         }
     }
 
