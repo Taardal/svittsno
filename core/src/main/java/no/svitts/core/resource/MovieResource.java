@@ -6,12 +6,15 @@ import no.svitts.core.criteria.SearchCriteria;
 import no.svitts.core.criteria.SearchKey;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.repository.Repository;
+import no.svitts.core.status.ServerResponse;
+import no.svitts.core.status.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Api(value = "MovieResource")
 @Path("movie")
@@ -31,23 +34,29 @@ public class MovieResource extends CoreResource {
     @Path("{id}")
     public Response getMovieById(@PathParam("id") String id) {
         LOGGER.info("Received request to GET movie with ID [{}]", id);
-        return getResponse(movieRepository.getById(id));
+        ServerResponse<Movie> serverResponse = movieRepository.getById(id);
+        if (serverResponse.getStatus() == Status.OK && serverResponse.containsPayload()) {
+            Movie movie = serverResponse.getPayload();
+            return Response.ok().entity(gson.toJson(movie)).build();
+        } else {
+            return Response.serverError().header("SERVER_RESPONSE", serverResponse.getMessage()).build();
+        }
     }
 
     @GET
     @Path("name")
     public Response getMoviesByName(@QueryParam("name") String name, @QueryParam("limit") int limit) {
         LOGGER.info("Received request to GET max [{}] movie(s) with name [{}]", limit, name);
-        SearchCriteria searchCriteria = new SearchCriteria(SearchKey.NAME, name, limit);
-        return getResponse(movieRepository.search(searchCriteria));
+        ServerResponse<List<Movie>> search = movieRepository.search(new SearchCriteria(SearchKey.NAME, name, limit));
+        return Response.ok().entity(gson.toJson(movies)).build();
     }
 
     @GET
     @Path("genre")
     public Response getMoviesByGenre(@QueryParam("genre") String genre, @QueryParam("limit") int limit) {
         LOGGER.info("Received request to GET max [{}] movie(s) with genre [{}]", limit, genre);
-        SearchCriteria searchCriteria = new SearchCriteria(SearchKey.GENRE, genre, limit);
-        return getResponse(movieRepository.search(searchCriteria));
+        List<Movie> movies = movieRepository.search(new SearchCriteria(SearchKey.GENRE, genre, limit));
+        return Response.ok().entity(gson.toJson(movies)).build();
     }
 
     @POST

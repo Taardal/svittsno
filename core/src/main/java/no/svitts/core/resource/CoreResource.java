@@ -8,14 +8,10 @@ import no.svitts.core.gson.deserializer.MovieDeserializer;
 import no.svitts.core.gson.serializer.MovieSerializer;
 import no.svitts.core.gson.serializer.VideoFileSerializer;
 import no.svitts.core.movie.Movie;
-import no.svitts.core.status.ServerResponse;
-import no.svitts.core.status.Status;
 
 import javax.ws.rs.core.Response;
 
 public abstract class CoreResource {
-
-    private static final String SERVER_MESSAGE = "SERVER_MESSAGE";
 
     protected Gson gson;
 
@@ -23,17 +19,8 @@ public abstract class CoreResource {
         gson = getGson();
     }
 
-    Response getResponse(ServerResponse serverResponse) {
-        Response.ResponseBuilder responseBuilder;
-        if (serverResponse.getStatus() == Status.OK) {
-            responseBuilder = Response.ok();
-            if (serverResponse.containsPayload()) {
-                responseBuilder.entity(gson.toJson(serverResponse.getPayload()));
-            }
-        } else {
-            responseBuilder = Response.serverError();
-        }
-        return responseBuilder.header(SERVER_MESSAGE, serverResponse.getMessage()).build();
+    Response getResponse(boolean success) {
+        return success ?  Response.ok().build() : Response.serverError().build();
     }
 
     private Gson getGson() {
