@@ -7,10 +7,12 @@ import no.svitts.core.date.KeyDate;
 import no.svitts.core.file.ImageFile;
 import no.svitts.core.file.ImageType;
 import no.svitts.core.file.VideoFile;
+import no.svitts.core.id.Id;
 import no.svitts.core.movie.Genre;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.status.ServerResponse;
 import no.svitts.core.status.ServerResponseBuilder;
+import no.svitts.core.status.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +24,7 @@ import java.util.Map;
 
 public class MovieRepository extends CoreRepository<Movie> {
 
+    public static final String UNKNOWN_MOVIE_ID = "Unknown-Movie-ID";
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieRepository.class);
 
     private Repository<VideoFile> videoFileRepository;
@@ -34,50 +37,44 @@ public class MovieRepository extends CoreRepository<Movie> {
     }
 
     @Override
-    public ServerResponse<Movie> getById(String id) {
-        if (id != null && !id.isEmpty()) {
-            return selectMovie(id);
+    public ServerResponse getById(String id) {
+        Movie movie = selectMovie(id);
+        if (movie != null) {
+            return new ServerResponseBuilder().ok().payload(movie).build();
         } else {
-            LOGGER.warn("Could not validate ID when asked to get movie [{}]", id);
-            return new ServerResponseBuilder<Movie>().failure().message("ID invalid or missing").build();
+            return new ServerResponseBuilder().failure().build();
         }
     }
 
     @Override
-    public ServerResponse<Movie> insert(Movie movie) {
+    public boolean insert(Movie movie) {
         if (isRequiredFieldsValid(movie)) {
-            return getServerResponse(insertMovie(movie) && insertMovieGenreRelations(movie));
+            return insertMovie(movie) && insertMovieGenreRelations(movie);
         } else {
             LOGGER.warn("Could not validate required fields when asked to insert movie [{}]", movie);
-            return new ServerResponseBuilder<Movie>().failure().message("Required fields invalid").build();
+            return false;
         }
     }
 
     @Override
-    public ServerResponse<Movie> update(Movie movie) {
+    public boolean update(Movie movie) {
         if (isRequiredFieldsValid(movie)) {
-            return getServerResponse(updateMovie(movie));
+            return updateMovie(movie);
         } else {
             LOGGER.warn("Could not validate required fields when asked to update movie [{}]", movie);
-            return new ServerResponseBuilder<Movie>().failure().message("Required fields invalid").build();
+            return false;
         }
     }
 
     @Override
-    public ServerResponse<Movie> delete(String id) {
-        if (id != null && !id.isEmpty()) {
-            return getServerResponse(deleteMovie(id));
-        } else {
-            LOGGER.warn("Could not validate ID when asked to delete movie [{}]", id);
-            return new ServerResponseBuilder<Movie>().failure().message("ID invalid or missing").build();
-        }
+    public boolean delete(String id) {
+        return deleteMovie(id);
     }
 
     @Override
-    public ServerResponse<List<Movie>> search(SearchCriteria searchCriteria) {
+    public List<Movie> search(SearchCriteria searchCriteria) {
         if (searchCriteria.getKey() == SearchKey.NAME) {
-            List<Movie> movies = selectMoviesByName(searchCriteria);
-            return new ServerResponseBuilder<List<Movie>>().ok().payload(movies).build();
+            return selectMoviesByName(searchCriteria);
         } else if (searchCriteria.getKey() == SearchKey.GENRE) {
             return selectMoviesByGenre(searchCriteria);
         } else {
@@ -117,28 +114,16 @@ public class MovieRepository extends CoreRepository<Movie> {
                 && movie.getGenres() != null && !movie.getGenres().isEmpty();
     }
 
-    private ServerResponse<Movie> getServerResponse(boolean success) {
-        if (success) {
-            return new ServerResponseBuilder<Movie>().ok().build();
-        } else {
-            return new ServerResponseBuilder<Movie>().failure().build();
-        }
-    }
-
-    private ServerResponse<Movie> selectMovie(String id) {
+    private Movie selectMovie(String id) {
         LOGGER.info("Getting movie by ID [{}]", id);
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement preparedStatement = getSelectMoviePreparedStatement(connection, id)) {
                 List<Movie> movies = executeQuery(preparedStatement);
-                if (!movies.isEmpty()) {
-                    return new ServerResponseBuilder<Movie>().ok().payload(movies.get(0)).build();
-                } else {
-                    return new ServerResponseBuilder<Movie>().notFound().build();
-                }
+                return movies.isEmpty() ? null : movies.get(0);
             }
         } catch (SQLException e) {
             LOGGER.error("Could not get movie by ID [{}]", id, e);
-            return new ServerResponseBuilder<Movie>().failure().build();
+            return null;
         }
     }
 
@@ -147,6 +132,10 @@ public class MovieRepository extends CoreRepository<Movie> {
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, id);
         return preparedStatement;
+    }
+
+    private Movie getUnknownMovie() {
+        return new Movie(UNKNOWN_MOVIE_ID, "Unknown", "Unknown", "Unknown", "Unknown", 0, new KeyDate(), new ArrayList<>(), new VideoFile(Id.get(), "unknown"), new HashMap<>());
     }
 
     private boolean insertMovie(Movie movie) {

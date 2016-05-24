@@ -34,20 +34,20 @@ public class MovieResource extends CoreResource {
     @Path("{id}")
     public Response getMovieById(@PathParam("id") String id) {
         LOGGER.info("Received request to GET movie with ID [{}]", id);
-        ServerResponse<Movie> serverResponse = movieRepository.getById(id);
-        if (serverResponse.getStatus() == Status.OK && serverResponse.containsPayload()) {
-            Movie movie = serverResponse.getPayload();
-            return Response.ok().entity(gson.toJson(movie)).build();
+        ServerResponse serverResponse = movieRepository.getById(id);
+        if (serverResponse.getStatus() == Status.OK && serverResponse.getPayload() != null) {
+            return Response.ok().entity(gson.toJson(serverResponse.getPayload())).build();
         } else {
-            return Response.serverError().header("SERVER_RESPONSE", serverResponse.getMessage()).build();
+            return Response.serverError().entity(serverResponse.getMessage()).build();
         }
+
     }
 
     @GET
     @Path("name")
     public Response getMoviesByName(@QueryParam("name") String name, @QueryParam("limit") int limit) {
         LOGGER.info("Received request to GET max [{}] movie(s) with name [{}]", limit, name);
-        ServerResponse<List<Movie>> search = movieRepository.search(new SearchCriteria(SearchKey.NAME, name, limit));
+        List<Movie> movies = movieRepository.search(new SearchCriteria(SearchKey.NAME, name, limit));
         return Response.ok().entity(gson.toJson(movies)).build();
     }
 

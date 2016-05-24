@@ -2,7 +2,7 @@ package no.svitts.core.status;
 
 public enum Status {
 
-    OK("Completed successfully."), FAILURE("An error occurred."), NOT_FOUND("Could not find target(s) in database");
+    OK("Completed successfully."), FAILURE("An error occurred.");
 
     private String message;
 

@@ -1,15 +1,16 @@
 package no.svitts.core.status;
 
-public class ServerResponse<T> {
+public class ServerResponse {
 
     private Status status;
     private String message;
-    private T payload;
+    private Object payload;
+    private Class<?> clazz;
 
-    ServerResponse(Status status, String message, T payload) {
+    ServerResponse(Status status, String message, Object payload) {
         this.status = status;
         this.message = message;
-        this.payload = payload;
+        setPayload(payload);
     }
 
     public Status getStatus() {
@@ -20,12 +21,13 @@ public class ServerResponse<T> {
         return message;
     }
 
-    public T getPayload() {
-        return payload;
+    public Object getPayload() {
+        return clazz.cast(payload);
     }
 
-    public boolean containsPayload() {
-        return payload != null;
+    private void setPayload(Object payload) {
+            this.payload = payload;
+            clazz = payload.getClass();
     }
 
 }
