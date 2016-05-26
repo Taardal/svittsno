@@ -48,7 +48,8 @@ public class ImageFileResource extends CoreResource {
     public Response createImageFile(String json) {
         LOGGER.info("Received request to POST image file by json [{}]", json);
         ImageFile imageFile = gson.fromJson(json, ImageFile.class);
-        return getResponse(imageFileRepository.insert(imageFile));
+        imageFileRepository.insert(imageFile);
+        return getResponse(true);
     }
 
     @PUT

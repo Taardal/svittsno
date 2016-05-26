@@ -29,13 +29,13 @@ public class VideoFileRepository extends CoreRepository<VideoFile> {
     }
 
     @Override
-    public boolean insert(VideoFile videoFile) {
+    public String insert(VideoFile videoFile) {
         if (isRequiredFieldsValid(videoFile)) {
-            return insertVideoFile(videoFile);
+            insertVideoFile(videoFile);
         } else {
             LOGGER.warn("Could not validate required fields when asked to insert videoFile [{}]", videoFile);
-            return false;
         }
+        return null;
     }
 
     @Override

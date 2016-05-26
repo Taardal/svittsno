@@ -50,7 +50,7 @@ public class MovieResourceTest extends JerseyTest {
     @Test
     public void createMovie_ShouldReturnOk() {
         Movie sherlockHolmes = movieTestDataBuilder.sherlockHolmes().build();
-        when(mockMovieRepository.insert(any(Movie.class))).thenReturn(true);
+        when(mockMovieRepository.insert(any(Movie.class))).thenReturn("");
         Entity<String> jsonEntity = Entity.entity(gson.toJson(sherlockHolmes), MediaType.APPLICATION_JSON);
 
         Response response = target(MOVIE_RESOURCE).path("create").request().post(jsonEntity, Response.class);
@@ -62,7 +62,7 @@ public class MovieResourceTest extends JerseyTest {
     @Test
     public void createMovie_Fails_ShouldReturnServerError() {
         Movie sherlockHolmes = movieTestDataBuilder.sherlockHolmes().build();
-        when(mockMovieRepository.insert(any(Movie.class))).thenReturn(false);
+        when(mockMovieRepository.insert(any(Movie.class))).thenReturn("");
         Entity<String> jsonEntity = Entity.entity(gson.toJson(sherlockHolmes), MediaType.APPLICATION_JSON);
 
         Response response = target(MOVIE_RESOURCE).path("create").request().post(jsonEntity, Response.class);

@@ -61,9 +61,8 @@ public class ImageFileRepositoryTest {
     public void insertSingle_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnFalse() throws SQLException {
         when(mockDataSource.getConnection()).thenThrow(new SQLException());
 
-        boolean success = imageFileRepository.insert(imageFileTestDataBuilder.build());
+        String success = imageFileRepository.insert(imageFileTestDataBuilder.build());
 
-        assertFalse(success);
         verify(mockDataSource, times(1)).getConnection();
     }
 

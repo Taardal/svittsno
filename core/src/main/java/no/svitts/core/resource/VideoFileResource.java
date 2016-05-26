@@ -47,7 +47,8 @@ public class VideoFileResource extends CoreResource {
     public Response createVideoFile(String json) {
         LOGGER.info("Received request to POST video file by json [{}]", json);
         VideoFile videoFile = gson.fromJson(json, VideoFile.class);
-        return getResponse(videoFileRepository.insert(videoFile));
+        videoFileRepository.insert(videoFile);
+        return getResponse(true);
     }
 
     @PUT

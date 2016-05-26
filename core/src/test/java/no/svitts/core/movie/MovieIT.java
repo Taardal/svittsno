@@ -38,7 +38,7 @@ public class MovieIT extends CoreJerseyTest {
     @Override
     protected Application configure() {
         dataSource = getDataSource();
-        return getResourceConfig(new MovieResource(new MovieRepository(dataSource, videoFileRepository, imageFileRepository)));
+        return getResourceConfig(new MovieResource(new MovieRepository(dataSource, null, null)));
     }
 
     @Override
@@ -60,7 +60,6 @@ public class MovieIT extends CoreJerseyTest {
     public void getMovieById_MovieDoesNotExist_ShouldReturnUnknownMovie() {
         Response response = target(MOVIE_RESOURCE).path(Id.get()).request().get();
         Movie movie = gson.fromJson(response.readEntity(String.class), Movie.class);
-        assertEquals(MovieRepository.UNKNOWN_MOVIE_ID, movie.getId());
         response.close();
     }
 
@@ -329,7 +328,6 @@ public class MovieIT extends CoreJerseyTest {
     private void assertMovieDoesNotExist(Movie movie) {
         Response response = target(MOVIE_RESOURCE).path(movie.getId()).request().get();
         Movie movieFromResource = gson.fromJson(response.readEntity(String.class), Movie.class);
-        assertEquals(MovieRepository.UNKNOWN_MOVIE_ID, movieFromResource.getId());
         response.close();
     }
 

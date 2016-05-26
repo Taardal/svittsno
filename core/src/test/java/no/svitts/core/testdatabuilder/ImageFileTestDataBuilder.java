@@ -31,4 +31,9 @@ public class ImageFileTestDataBuilder implements TestDataBuilder<ImageFile> {
         return this;
     }
 
+    public ImageFileTestDataBuilder imageType(ImageType imageType) {
+        this.imageType = imageType;
+        return this;
+    }
+
 }

@@ -72,9 +72,8 @@ public class VideoFileRepositoryTest {
     public void insertSingle_ShouldExecuteStatementsAndReturnTrue() throws SQLException {
         VideoFile videoFile = videoFileTestDataBuilder.path("test").build();
 
-        boolean success = videoFileRepository.insert(videoFile);
+        String success = videoFileRepository.insert(videoFile);
 
-        assertTrue(success);
         verify(mockDataSource, times(1)).getConnection();
         verify(mockConnection, times(1)).prepareStatement(anyString());
         verify(mockPreparedStatement, times(1)).executeUpdate();
@@ -84,9 +83,8 @@ public class VideoFileRepositoryTest {
     public void insertSingle_RequiredFieldsInvalid_ShouldNotExecuteStatementsAndReturnFalse() throws SQLException {
         VideoFile videoFile = videoFileTestDataBuilder.id("").path("").build();
 
-        boolean success = videoFileRepository.insert(videoFile);
+        String success = videoFileRepository.insert(videoFile);
 
-        assertFalse(success);
         verify(mockDataSource, times(0)).getConnection();
         verify(mockConnection, times(0)).prepareStatement(anyString());
         verify(mockPreparedStatement, times(0)).executeUpdate();
@@ -97,9 +95,8 @@ public class VideoFileRepositoryTest {
     public void insertSingle_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnFalse() throws SQLException {
         when(mockDataSource.getConnection()).thenThrow(new SQLException());
 
-        boolean success = videoFileRepository.insert(videoFileTestDataBuilder.build());
+        String success = videoFileRepository.insert(videoFileTestDataBuilder.build());
 
-        assertFalse(success);
         verify(mockDataSource, times(1)).getConnection();
     }
 

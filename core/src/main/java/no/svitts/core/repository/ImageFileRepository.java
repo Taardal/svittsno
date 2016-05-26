@@ -30,13 +30,13 @@ public class ImageFileRepository extends CoreRepository<ImageFile> {
     }
 
     @Override
-    public boolean insert(ImageFile imageFile) {
+    public String insert(ImageFile imageFile) {
         if (isRequiredFieldsValid(imageFile)) {
-            return insertImageFile(imageFile);
+            insertImageFile(imageFile);
         } else {
             LOGGER.warn("Could not validate required fields when asked to insert imageFile [{}]", imageFile);
-            return false;
         }
+        return null;
     }
 
     @Override

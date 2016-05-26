@@ -54,7 +54,7 @@ public class ImageFileResourceTest extends CoreJerseyTest {
     @Test
     public void createImageFile_ShouldReturnOk() {
         ImageFile imageFile = imageFileTestDataBuilder.build();
-        when(mockImageFileRepository.insert(any(ImageFile.class))).thenReturn(true);
+        when(mockImageFileRepository.insert(any(ImageFile.class))).thenReturn("");
         Entity<String> jsonEntity = Entity.entity(gson.toJson(imageFile), MediaType.APPLICATION_JSON);
 
         Response response = target(IMAGE_FILE_RESOURCE).path("create").request().post(jsonEntity, Response.class);
@@ -66,7 +66,7 @@ public class ImageFileResourceTest extends CoreJerseyTest {
     @Test
     public void createImageFile_Fails_ShouldReturnServerError() {
         ImageFile imageFile = imageFileTestDataBuilder.build();
-        when(mockImageFileRepository.insert(any(ImageFile.class))).thenReturn(false);
+        when(mockImageFileRepository.insert(any(ImageFile.class))).thenReturn("");
         Entity<String> jsonEntity = Entity.entity(gson.toJson(imageFile), MediaType.APPLICATION_JSON);
 
         Response response = target(IMAGE_FILE_RESOURCE).path("create").request().post(jsonEntity, Response.class);

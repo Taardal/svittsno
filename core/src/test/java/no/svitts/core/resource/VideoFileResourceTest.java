@@ -56,7 +56,7 @@ public class VideoFileResourceTest extends CoreJerseyTest {
     @Test
     public void createVideoFile_ShouldReturnOk() {
         VideoFile videoFile = videoFileTestDataBuilder.build();
-        when(mockVideoFileRepository.insert(any(VideoFile.class))).thenReturn(true);
+        when(mockVideoFileRepository.insert(any(VideoFile.class))).thenReturn("");
         Entity<String> jsonEntity = Entity.entity(gson.toJson(videoFile), MediaType.APPLICATION_JSON);
 
         Response response = target(VIDEO_FILE_RESOURCE).path("create").request().post(jsonEntity, Response.class);
@@ -68,7 +68,7 @@ public class VideoFileResourceTest extends CoreJerseyTest {
     @Test
     public void createVideoFile_Fails_ShouldReturnServerError() {
         VideoFile videoFile = videoFileTestDataBuilder.build();
-        when(mockVideoFileRepository.insert(any(VideoFile.class))).thenReturn(false);
+        when(mockVideoFileRepository.insert(any(VideoFile.class))).thenReturn("");
         Entity<String> jsonEntity = Entity.entity(gson.toJson(videoFile), MediaType.APPLICATION_JSON);
 
         Response response = target(VIDEO_FILE_RESOURCE).path("create").request().post(jsonEntity, Response.class);

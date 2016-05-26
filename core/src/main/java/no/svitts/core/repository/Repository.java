@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface Repository<T> {
     T getById(String id);
-    boolean insert(T t);
+    String insert(T t);
     boolean update(T t);
     boolean delete(String id);
     List<T> search(SearchCriteria searchCriteria);

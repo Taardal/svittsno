@@ -57,7 +57,8 @@ public class MovieResource extends CoreResource {
     public Response createMovie(String json) {
         LOGGER.info("Received request to POST movie by json [{}]", json);
         Movie movie = gson.fromJson(json, Movie.class);
-        return getResponse(movieRepository.insert(movie));
+        movieRepository.insert(movie);
+        return getResponse(true);
     }
 
     @PUT

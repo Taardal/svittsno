@@ -7,12 +7,13 @@ import no.svitts.core.date.KeyDate;
 import no.svitts.core.file.ImageFile;
 import no.svitts.core.file.ImageType;
 import no.svitts.core.file.VideoFile;
-import no.svitts.core.id.Id;
 import no.svitts.core.movie.Genre;
 import no.svitts.core.movie.Movie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotFoundException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +22,6 @@ import java.util.Map;
 
 public class MovieRepository extends CoreRepository<Movie> {
 
-    public static final String UNKNOWN_MOVIE_ID = "Unknown-Movie-ID";
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieRepository.class);
 
     private Repository<VideoFile> videoFileRepository;
@@ -35,27 +35,56 @@ public class MovieRepository extends CoreRepository<Movie> {
 
     @Override
     public Movie getById(String id) {
-        return selectMovie(id);
+        LOGGER.info("Getting movie by ID [{}]", id);
+        try (Connection connection = dataSource.getConnection()) {
+            return getMovie(id, connection);
+        } catch (SQLException e) {
+            String errorMessage = "Could not get connection from data source when asked to get movie by ID [" + id + "]";
+            LOGGER.error(errorMessage, e);
+            throw new InternalServerErrorException(errorMessage, e);
+        }
     }
 
     @Override
-    public boolean insert(Movie movie) {
-        if (isRequiredFieldsValid(movie)) {
-            return insertMovie(movie) && insertMovieGenreRelations(movie);
-        } else {
-            LOGGER.warn("Could not validate required fields when asked to insert movie [{}]", movie);
-            return false;
-        }
+    public String insert(Movie movie) {
+        insertMovie(movie);
+        insertMovieGenreRelations(movie);
+        videoFileRepository.insert(movie.getVideoFile());
+        insertMovieVideoFileRelations(movie);
+        insertImageFiles(movie);
+        insertMovieImageFilesRelations(movie);
+        return movie.getId();
     }
 
     @Override
     public boolean update(Movie movie) {
-        if (isRequiredFieldsValid(movie)) {
-            return updateMovie(movie);
-        } else {
-            LOGGER.warn("Could not validate required fields when asked to update movie [{}]", movie);
+        return updateMovie(movie);
+    }
+
+    private boolean updateMovie(Movie movie) {
+        LOGGER.info("Updating movie [{}]", movie.toString());
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement preparedStatement = getUpdateMoviePreparedStatement(connection, movie)) {
+                return executeUpdate(preparedStatement);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Could not update movie [{}]", movie.toString(), e);
             return false;
         }
+    }
+
+    private PreparedStatement getUpdateMoviePreparedStatement(Connection connection, Movie movie) throws SQLException {
+        String sql = "UPDATE movie SET imdb_id = ?, name = ?, tagline = ?, overview = ?, runtime = ?, release_date = ? WHERE id = ?;";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        int i = 1;
+        preparedStatement.setString(i++, movie.getImdbId());
+        preparedStatement.setString(i++, movie.getName());
+        preparedStatement.setString(i++, movie.getTagline());
+        preparedStatement.setString(i++, movie.getOverview());
+        preparedStatement.setInt(i++, movie.getRuntime());
+        preparedStatement.setDate(i++, getDate(movie.getReleaseDate()));
+        preparedStatement.setString(i, movie.getId());
+        return preparedStatement;
     }
 
     @Override
@@ -106,16 +135,19 @@ public class MovieRepository extends CoreRepository<Movie> {
                 && movie.getGenres() != null && !movie.getGenres().isEmpty();
     }
 
-    private Movie selectMovie(String id) {
-        LOGGER.info("Getting movie by ID [{}]", id);
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement preparedStatement = getSelectMoviePreparedStatement(connection, id)) {
-                List<Movie> movies = executeQuery(preparedStatement);
-                return movies.isEmpty() ? getUnknownMovie() : movies.get(0);
-            }
+    private Movie getMovie(String id, Connection connection) {
+        try (PreparedStatement preparedStatement = getSelectMoviePreparedStatement(connection, id)) {
+            return getMovie(executeQuery(preparedStatement));
         } catch (SQLException e) {
-            LOGGER.error("Could not get movie by ID [{}]", id, e);
-            return getUnknownMovie();
+            throw new InternalServerErrorException("Could not prepare sql statement when asked to get movie by ID [" + id + "]");
+        }
+    }
+
+    private Movie getMovie(List<Movie> movies) {
+        if (!movies.isEmpty()) {
+            return movies.get(0);
+        } else {
+            throw new NotFoundException("Could not find requested movie in the database.");
         }
     }
 
@@ -126,19 +158,24 @@ public class MovieRepository extends CoreRepository<Movie> {
         return preparedStatement;
     }
 
-    private Movie getUnknownMovie() {
-        return new Movie(UNKNOWN_MOVIE_ID, "Unknown", "Unknown", "Unknown", "Unknown", 0, new KeyDate(), new ArrayList<>(), new VideoFile(Id.get(), "unknown"), new HashMap<>());
-    }
-
     private boolean insertMovie(Movie movie) {
         LOGGER.info("Inserting movie [{}]", movie.toString());
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement preparedStatement = getInsertMoviePreparedStatement(connection, movie)) {
-                return executeUpdate(preparedStatement);
-            }
+            return insertMovie(movie, connection);
         } catch (SQLException e) {
-            LOGGER.error("Could not insert movie [{}]", movie.toString(), e);
-            return false;
+            String errorMessage = "Could not get connection from data source when asked to insert movie [" + movie.toString() + "]";
+            LOGGER.error(errorMessage, e);
+            throw new InternalServerErrorException(errorMessage, e);
+        }
+    }
+
+    private boolean insertMovie(Movie movie, Connection connection) {
+        try (PreparedStatement preparedStatement = getInsertMoviePreparedStatement(connection, movie)) {
+            return executeUpdate(preparedStatement);
+        } catch (SQLException e) {
+            String errorMessage = "Could not prepare sql statement when asked to insert movie [" + movie.toString() + "]";
+            LOGGER.error(errorMessage, e);
+            throw new InternalServerErrorException(errorMessage, e);
         }
     }
 
@@ -163,16 +200,25 @@ public class MovieRepository extends CoreRepository<Movie> {
     private boolean insertMovieGenreRelations(Movie movie) {
         LOGGER.info("Inserting movie/genre relations for movie [{}]", movie.toString());
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement preparedStatement = getInsertMovieGenreRelations(connection, movie)) {
-                return executeBatch(preparedStatement);
-            }
+            return insertMovieGenreRelations(movie, connection);
         } catch (SQLException e) {
-            LOGGER.error("Could not insert movie/genre relations for movie [{}]", movie.toString(), e);
-            return false;
+            String errorMessage = "Could not get connection from data source when asked to insert movie/genre relations for movie [" + movie.toString() + "]";
+            LOGGER.error(errorMessage, e);
+            throw new InternalServerErrorException(errorMessage, e);
         }
     }
 
-    private PreparedStatement getInsertMovieGenreRelations(Connection connection, Movie movie) throws SQLException {
+    private boolean insertMovieGenreRelations(Movie movie, Connection connection) {
+        try (PreparedStatement preparedStatement = getInsertMovieGenreRelationsPreparedStatement(connection, movie)) {
+            return executeBatch(preparedStatement);
+        } catch (SQLException e) {
+            String errorMessage = "Could not prepare sql statement when asked to insert movie/genre relations for movie [" + movie.toString() + "]";
+            LOGGER.error(errorMessage, e);
+            throw new InternalServerErrorException(errorMessage, e);
+        }
+    }
+
+    private PreparedStatement getInsertMovieGenreRelationsPreparedStatement(Connection connection, Movie movie) throws SQLException {
         String sql = "INSERT INTO movie_genre (movie_id, genre_id) VALUES (?, ?);";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         for (Genre genre : movie.getGenres()) {
@@ -184,29 +230,72 @@ public class MovieRepository extends CoreRepository<Movie> {
         return preparedStatement;
     }
 
-    private boolean updateMovie(Movie movie) {
-        LOGGER.info("Updating movie [{}]", movie.toString());
+    private boolean insertMovieVideoFileRelations(Movie movie) {
+        LOGGER.info("Inserting movie/video file relations for movie [{}]", movie.toString());
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement preparedStatement = getUpdateMoviePreparedStatement(connection, movie)) {
-                return executeUpdate(preparedStatement);
-            }
+            return insertMovieVideoFileRelations(movie, connection);
         } catch (SQLException e) {
-            LOGGER.error("Could not update movie [{}]", movie.toString(), e);
-            return false;
+            String errorMessage = "Could not get connection from data source when asked to insert movie/video file relations for movie [" + movie.toString() + "]";
+            LOGGER.error(errorMessage, e);
+            throw new InternalServerErrorException(errorMessage, e);
         }
     }
 
-    private PreparedStatement getUpdateMoviePreparedStatement(Connection connection, Movie movie) throws SQLException {
-        String sql = "UPDATE movie SET imdb_id = ?, name = ?, tagline = ?, overview = ?, runtime = ?, release_date = ? WHERE id = ?;";
+    private boolean insertMovieVideoFileRelations(Movie movie, Connection connection) {
+        try (PreparedStatement preparedStatement = getInsertMovieVideoFileRelationsPreparedStatement(movie, connection)) {
+            return executeUpdate(preparedStatement);
+        } catch (SQLException e) {
+            String errorMessage = "Could not prepare sql statement when asked to insert movie/video file relations for movie [" + movie.toString() + "]";
+            LOGGER.error(errorMessage, e);
+            throw new InternalServerErrorException(errorMessage, e);
+        }
+    }
+
+    private PreparedStatement getInsertMovieVideoFileRelationsPreparedStatement(Movie movie, Connection connection) throws SQLException {
+        String sql = "INSERT INTO movie_video_file (movie_id, video_file_id) VALUES (?, ?);";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         int i = 1;
-        preparedStatement.setString(i++, movie.getImdbId());
-        preparedStatement.setString(i++, movie.getName());
-        preparedStatement.setString(i++, movie.getTagline());
-        preparedStatement.setString(i++, movie.getOverview());
-        preparedStatement.setInt(i++, movie.getRuntime());
-        preparedStatement.setDate(i++, getDate(movie.getReleaseDate()));
-        preparedStatement.setString(i, movie.getId());
+        preparedStatement.setString(i++, movie.getId());
+        preparedStatement.setString(i, movie.getVideoFile().getId());
+        return preparedStatement;
+    }
+
+    private void insertImageFiles(Movie movie) {
+        for (ImageFile imageFile : movie.getImageFiles().values()) {
+            imageFileRepository.insert(imageFile);
+        }
+    }
+
+    private boolean insertMovieImageFilesRelations(Movie movie) {
+        LOGGER.info("Inserting movie/image file relations for movie [{}]", movie.toString());
+        try (Connection connection = dataSource.getConnection()) {
+            return insertMovieImageFileRelations(movie, connection);
+        } catch (SQLException e) {
+            String errorMessage = "Could not get connection from data source when asked to insert movie/image file relations for movie [" + movie.toString() + "]";
+            LOGGER.error(errorMessage, e);
+            throw new InternalServerErrorException(errorMessage, e);
+        }
+    }
+
+    private boolean insertMovieImageFileRelations(Movie movie, Connection connection) {
+        try (PreparedStatement preparedStatement = getInsertMovieImageFilesRelations(connection, movie)) {
+            return executeBatch(preparedStatement);
+        } catch (SQLException e) {
+            String errorMessage = "Could not prepare sql statement when asked to insert movie/image file relations for movie [" + movie.toString() + "]";
+            LOGGER.error(errorMessage, e);
+            throw new InternalServerErrorException(errorMessage, e);
+        }
+    }
+
+    private PreparedStatement getInsertMovieImageFilesRelations(Connection connection, Movie movie) throws SQLException {
+        String sql = "INSERT INTO movie_image_file (movie_id, image_file_id) VALUES (?, ?);";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        for (ImageFile imageFile : movie.getImageFiles().values()) {
+            int i = 1;
+            preparedStatement.setString(i++, movie.getId());
+            preparedStatement.setString(i, imageFile.getId());
+            preparedStatement.addBatch();
+        }
         return preparedStatement;
     }
 

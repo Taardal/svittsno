@@ -35,8 +35,8 @@ public class MovieTestDataBuilder implements TestDataBuilder<Movie> {
         runtime = 0;
         releaseDate = new KeyDate();
         genres = getDefaultGenres();
-        videoFile = new VideoFile(Id.get(), "path");
-        imageFiles = new HashMap<>();
+        videoFile = new VideoFileTestDataBuilder().build();
+        imageFiles = getDefaultImageFiles(new ImageFileTestDataBuilder());
     }
 
     @Override
@@ -84,6 +84,16 @@ public class MovieTestDataBuilder implements TestDataBuilder<Movie> {
         return this;
     }
 
+    public MovieTestDataBuilder videoFile(VideoFile videoFile) {
+        this.videoFile = videoFile;
+        return this;
+    }
+
+    public MovieTestDataBuilder imageFiles(Map<ImageType, ImageFile> imageFiles) {
+        this.imageFiles = imageFiles;
+        return this;
+    }
+
     public MovieTestDataBuilder sherlockHolmes() {
         id = Id.get();
         name = "Sherlock Holmes";
@@ -115,6 +125,13 @@ public class MovieTestDataBuilder implements TestDataBuilder<Movie> {
         return genres;
     }
 
+    private Map<ImageType, ImageFile> getDefaultImageFiles(ImageFileTestDataBuilder imageFileTestDataBuilder) {
+        Map<ImageType, ImageFile> imageFiles = new HashMap<>();
+        imageFiles.put(ImageType.POSTER, imageFileTestDataBuilder.imageType(ImageType.POSTER).build());
+        imageFiles.put(ImageType.BACKDROP, imageFileTestDataBuilder.imageType(ImageType.BACKDROP).build());
+        return imageFiles;
+    }
+
     private List<Genre> getSherlockHolmesGenres() {
         List<Genre> genres = new ArrayList<>();
         genres.add(Genre.ACTION);
@@ -133,34 +150,4 @@ public class MovieTestDataBuilder implements TestDataBuilder<Movie> {
         genres.add(Genre.MYSTERY);
         return genres;
     }
-
-    //    private Map<Job, List<Person>> getMoviePersons() {
-//        Map<Job, List<Person>> persons = new HashMap<>();
-//        persons.put(Job.ACTOR, getActors());
-//        persons.put(Job.DIRECTOR, getDirectors());
-//        persons.put(Job.WRITER, getWriters());
-//        return persons;
-//    }
-//
-//    private List<Person> getActors() {
-//        List<Person> cast = new ArrayList<>();
-//        cast.add(new Person(Id.get(), "Robert", "Downey Jr.", new KeyDate(1965, 4, 4), Gender.MALE));
-//        cast.add(new Person(Id.get(), "Jude", "Law", new KeyDate(1979, 12, 29), Gender.MALE));
-//        cast.add(new Person(Id.get(), "Rachel", "McAdams", new KeyDate(1978, 11, 17), Gender.FEMALE));
-//        cast.add(new Person(Id.get(), "Mark", "Strong", new KeyDate(1963, 8, 5), Gender.MALE));
-//        return cast;
-//    }
-//
-//    private List<Person> getDirectors() {
-//        List<Person> persons = new ArrayList<>();
-//        persons.add(new Person(Id.get(), "Guy", "Ritchie", new KeyDate(1968, 9, 10), Gender.MALE));
-//        return persons;
-//    }
-//
-//    private List<Person> getWriters() {
-//        List<Person> persons = new ArrayList<>();
-//        persons.add(new Person(Id.get(), "Arthur", "Conan Doyle", new KeyDate(1859, 5, 22), Gender.MALE));
-//        return persons;
-//    }
-
 }
