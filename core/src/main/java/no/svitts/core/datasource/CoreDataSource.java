@@ -7,12 +7,13 @@ import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class SqlDataSource implements DataSource {
+public class CoreDataSource implements DataSource {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SqlDataSource.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CoreDataSource.class);
+
     private HikariDataSource hikariDataSource;
 
-    public SqlDataSource(DataSourceConfig dataSourceConfig) {
+    public CoreDataSource(DataSourceConfig dataSourceConfig) {
         hikariDataSource = new HikariDataSource(dataSourceConfig);
     }
 

@@ -2,8 +2,8 @@ package no.svitts.core.resource;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import no.svitts.core.criteria.SearchCriteria;
-import no.svitts.core.criteria.SearchKey;
+import no.svitts.core.search.SearchCriteria;
+import no.svitts.core.search.SearchKey;
 import no.svitts.core.exception.NoChangeException;
 import no.svitts.core.exception.RequiredFieldsInvalidException;
 import no.svitts.core.movie.Movie;
@@ -34,7 +34,7 @@ public class MovieResource extends CoreResource {
     @ApiOperation(value = "MovieResource", notes = "Lists a specific movie stored in the database as JSON. Invalid/non-existing ID will give 'required fields invalid' error.", response = Response.class)
     @GET
     @Path("{id}")
-    public Response getMovieById(@PathParam("id") String id) throws RequiredFieldsInvalidException {
+    public Response getMovie(@PathParam("id") String id) throws RequiredFieldsInvalidException {
         LOGGER.info("Received request to GET movie with ID [{}]", id);
         Movie movie = movieService.getMovie(id);
         return Response.ok().entity(gson.toJson(movie)).build();

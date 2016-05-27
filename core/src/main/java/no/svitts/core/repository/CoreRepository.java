@@ -10,7 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-abstract class CoreRepository<T> implements Repository<T> {
+abstract class CoreRepository<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CoreRepository.class);
 

@@ -1,4 +1,4 @@
-package no.svitts.core.criteria;
+package no.svitts.core.search;
 
 public class SearchCriteria {
 

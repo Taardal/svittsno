@@ -18,7 +18,7 @@ INSERT INTO movie_genre (movie_id, genre_id) VALUES ('1', 20);
 
 
 
-INSERT INTO movie (id, name, imdb_id, tagline, overview, runtime, release_date)
+INSERT INTO movie (id, name, imdb_id, tagline, overview, runtime, release_date, video_file_path, poster_image_file_path, backdrop_image_file_path)
 VALUES ('2',
         'Sherlock Holmes: A Game of Shadows',
         'tt1515091',

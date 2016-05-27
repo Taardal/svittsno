@@ -1,22 +1,21 @@
 package no.svitts.core.repository;
 
-import no.svitts.core.criteria.SearchCriteria;
-import no.svitts.core.criteria.SearchKey;
 import no.svitts.core.datasource.DataSource;
 import no.svitts.core.date.KeyDate;
 import no.svitts.core.movie.Genre;
 import no.svitts.core.movie.Movie;
+import no.svitts.core.search.SearchCriteria;
+import no.svitts.core.search.SearchKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.NotFoundException;
 import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovieRepository extends CoreRepository<Movie> {
+public class MovieRepository extends CoreRepository<Movie> implements Repository<Movie> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieRepository.class);
 
@@ -38,7 +37,7 @@ public class MovieRepository extends CoreRepository<Movie> {
 
     @Override
     public List<Movie> getMultiple(SearchCriteria searchCriteria) {
-        LOGGER.info("Getting multiple movies by search criteria [{}]", searchCriteria.toString());
+        LOGGER.info("Getting multiple movies by search search [{}]", searchCriteria.toString());
         try (Connection connection = dataSource.getConnection()) {
             return getMultiple(searchCriteria, connection);
         } catch (SQLException e) {
@@ -46,7 +45,6 @@ public class MovieRepository extends CoreRepository<Movie> {
             LOGGER.error(errorMessage, e);
             throw new InternalServerErrorException(errorMessage, e);
         }
-
     }
 
     @Override
@@ -153,11 +151,13 @@ public class MovieRepository extends CoreRepository<Movie> {
         return movies;
     }
 
-    private Movie getMovie(String id, Connection connection) {
+    Movie getMovie(String id, Connection connection) {
         try (PreparedStatement preparedStatement = getSelectMoviePreparedStatement(connection, id)) {
             return getMovie(executeQuery(preparedStatement));
         } catch (SQLException e) {
-            throw new InternalServerErrorException("Could not prepare sql statement when asked to get movie by ID [" + id + "]");
+            String errorMessage = "Could not prepare sql statement for getting movie by ID [" + id + "]";
+            LOGGER.error(errorMessage);
+            throw new InternalServerErrorException(errorMessage);
         }
     }
 
@@ -172,9 +172,7 @@ public class MovieRepository extends CoreRepository<Movie> {
         if (!movies.isEmpty()) {
             return movies.get(0);
         } else {
-            String errorMessage = "Could not find requested movie in the database.";
-            LOGGER.warn(errorMessage);
-            throw new NotFoundException(errorMessage);
+            return null;
         }
     }
 

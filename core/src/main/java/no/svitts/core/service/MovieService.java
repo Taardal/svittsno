@@ -1,7 +1,7 @@
 package no.svitts.core.service;
 
-import no.svitts.core.criteria.SearchCriteria;
-import no.svitts.core.exception.ConflictException;
+import no.svitts.core.search.SearchCriteria;
+import no.svitts.core.exception.AlreadyExitstsException;
 import no.svitts.core.exception.NoChangeException;
 import no.svitts.core.exception.UnprocessableEntityException;
 import no.svitts.core.movie.Movie;
@@ -9,6 +9,8 @@ import no.svitts.core.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.NotFoundException;
 import java.util.List;
 
 public class MovieService {
@@ -23,11 +25,22 @@ public class MovieService {
 
     public Movie getMovie(String id)  {
         if (isRequiredFieldsValid(id)) {
-            return movieRepository.getById(id);
-        } else {
+            return getMovieIfItExists(id);
+         } else {
             String errorMessage = "Could not validate required field(s)";
             LOGGER.warn(errorMessage);
-            throw new UnprocessableEntityException(errorMessage);
+            throw new BadRequestException(errorMessage);
+        }
+    }
+
+    Movie getMovieIfItExists(String id) {
+        Movie movie = movieRepository.getById(id);
+        if (movie != null) {
+            return movie;
+        } else {
+            String errorMessage = "Could not find requested movie in the database.";
+            LOGGER.warn(errorMessage);
+            throw new NotFoundException(errorMessage);
         }
     }
 
@@ -42,16 +55,18 @@ public class MovieService {
     }
 
     public String createMovie(Movie movie) {
-        if (!isRequiredFieldsValid(movie.getId(), movie.getName())) {
+        if (isRequiredFieldsValid(movie.getId(), movie.getName())) {
+            if (movieRepository.getById(movie.getId()) == null) {
+                return movieRepository.insert(movie);
+            } else {
+                String errorMessage = "Could not insert movie because it already exists.";
+                LOGGER.warn(errorMessage);
+                throw new AlreadyExitstsException(errorMessage);
+            }
+        } else {
             String errorMessage = "Could not validate required field(s)";
             LOGGER.warn(errorMessage);
             throw new UnprocessableEntityException(errorMessage);
-        } else if (movieRepository.getById(movie.getId()) != null) {
-            String errorMessage = "Could not insert movie because it already exists.";
-            LOGGER.warn(errorMessage);
-            throw new ConflictException(errorMessage);
-        } else {
-            return movieRepository.insert(movie);
         }
     }
 

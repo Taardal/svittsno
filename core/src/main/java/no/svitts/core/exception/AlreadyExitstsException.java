@@ -3,13 +3,13 @@ package no.svitts.core.exception;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.core.Response;
 
-public class ConflictException extends ClientErrorException {
+public class AlreadyExitstsException extends ClientErrorException {
 
-    public ConflictException(String message) {
+    public AlreadyExitstsException(String message) {
         super(message, Response.Status.CONFLICT);
     }
 
-    public ConflictException(String message, Throwable cause) {
+    public AlreadyExitstsException(String message, Throwable cause) {
         super(message, Response.Status.CONFLICT, cause);
     }
 

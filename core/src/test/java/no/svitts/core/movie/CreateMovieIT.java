@@ -1,15 +1,12 @@
 package no.svitts.core.movie;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import no.svitts.core.CoreJerseyTest;
+import no.svitts.core.builder.MovieBuilder;
 import no.svitts.core.datasource.DataSource;
-import no.svitts.core.gson.deserializer.MovieDeserializer;
-import no.svitts.core.gson.serializer.MovieSerializer;
-import no.svitts.core.id.Id;
 import no.svitts.core.repository.MovieRepository;
 import no.svitts.core.resource.MovieResource;
-import no.svitts.core.testdatabuilder.MovieTestDataBuilder;
+import no.svitts.core.service.MovieService;
+import org.glassfish.jersey.test.JerseyTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,12 +16,16 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import static no.svitts.core.testkit.ITestKit.getDataSource;
+import static no.svitts.core.testkit.JerseyTestKit.getResourceConfig;
+import static no.svitts.core.testkit.MovieTestKit.getGson;
+import static no.svitts.core.util.StringUtil.getRandomString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class MovieIT extends CoreJerseyTest {
+public class CreateMovieIT extends JerseyTest {
 
-    private static final String MOVIE_RESOURCE = "movie";
+    private static final String MOVIE_RESOURCE = "movies";
     private static final int ID_MAX_LENGTH = 255;
     private static final int NAME_MAX_LENGTH = 255;
     private static final int IMDB_ID_MAX_LENGTH = 255;
@@ -33,19 +34,19 @@ public class MovieIT extends CoreJerseyTest {
 
     private DataSource dataSource;
     private Gson gson;
-    private MovieTestDataBuilder movieTestDataBuilder;
+    private MovieBuilder movieBuilder;
 
     @Override
     protected Application configure() {
         dataSource = getDataSource();
-        return getResourceConfig(new MovieResource(new MovieRepository(dataSource, null, null)));
+        return getResourceConfig(new MovieResource(new MovieService(new MovieRepository(dataSource))));
     }
 
     @Override
     @Before
     public void setUp() throws Exception {
         gson = getGson();
-        movieTestDataBuilder = new MovieTestDataBuilder();
+        movieBuilder = new MovieBuilder();
         super.setUp();
     }
 
@@ -56,16 +57,10 @@ public class MovieIT extends CoreJerseyTest {
         super.tearDown();
     }
 
-    @Test
-    public void getMovieById_MovieDoesNotExist_ShouldReturnUnknownMovie() {
-        Response response = target(MOVIE_RESOURCE).path(Id.get()).request().get();
-        Movie movie = gson.fromJson(response.readEntity(String.class), Movie.class);
-        response.close();
-    }
 
     @Test
     public void createMovie_IdTooLong_ShouldAbortAndReturnServerError() {
-        Movie movie = movieTestDataBuilder.id(getRandomString(ID_MAX_LENGTH + 1)).build();
+        Movie movie = movieBuilder.id(getRandomString(ID_MAX_LENGTH + 1)).build();
         Entity<String> movieJsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
 
         Response response = target(MOVIE_RESOURCE).path("create").request().post(movieJsonEntity);
@@ -77,7 +72,7 @@ public class MovieIT extends CoreJerseyTest {
 
     @Test
     public void createMovie_NameTooLong_ShouldAbortAndReturnServerError() {
-        Movie movie = movieTestDataBuilder.name(getRandomString(NAME_MAX_LENGTH + 1)).build();
+        Movie movie = movieBuilder.name(getRandomString(NAME_MAX_LENGTH + 1)).build();
         Entity<String> movieJsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
 
         Response response = target(MOVIE_RESOURCE).path("create").request().post(movieJsonEntity);
@@ -89,7 +84,7 @@ public class MovieIT extends CoreJerseyTest {
 
     @Test
     public void createMovie_ImdbIdTooLong_ShouldAbortAndReturnServerError() {
-        Movie movie = movieTestDataBuilder.imdbId(getRandomString(IMDB_ID_MAX_LENGTH + 1)).build();
+        Movie movie = movieBuilder.imdbId(getRandomString(IMDB_ID_MAX_LENGTH + 1)).build();
         Entity<String> movieJsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
 
         Response response = target(MOVIE_RESOURCE).path("create").request().post(movieJsonEntity);
@@ -101,7 +96,7 @@ public class MovieIT extends CoreJerseyTest {
 
     @Test
     public void createMovie_TaglineTooLong_ShouldAbortAndReturnServerError() {
-        Movie movie = movieTestDataBuilder.tagline(getRandomString(TAGLINE_MAX_LENGTH + 1)).build();
+        Movie movie = movieBuilder.tagline(getRandomString(TAGLINE_MAX_LENGTH + 1)).build();
         Entity<String> movieJsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
 
         Response response = target(MOVIE_RESOURCE).path("create").request().post(movieJsonEntity);
@@ -113,7 +108,7 @@ public class MovieIT extends CoreJerseyTest {
 
     @Test
     public void createMovie_OverviewTooLong_ShouldAbortAndReturnServerError() {
-        Movie movie = movieTestDataBuilder.overview(getRandomString(OVERVIEW_MAX_LENGTH + 1)).build();
+        Movie movie = movieBuilder.overview(getRandomString(OVERVIEW_MAX_LENGTH + 1)).build();
         Entity<String> movieJsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
 
         Response response = target(MOVIE_RESOURCE).path("create").request().post(movieJsonEntity);
@@ -125,7 +120,7 @@ public class MovieIT extends CoreJerseyTest {
 
     @Test
     public void createMovie_StringFieldsMaximumLength_ShouldReturnOk() {
-        Movie movie = movieTestDataBuilder
+        Movie movie = movieBuilder
                 .name(getRandomString(ID_MAX_LENGTH))
                 .imdbId(getRandomString(IMDB_ID_MAX_LENGTH))
                 .tagline(getRandomString(TAGLINE_MAX_LENGTH))
@@ -141,7 +136,7 @@ public class MovieIT extends CoreJerseyTest {
 
     @Test
     public void createMovie_RequiredFieldsAreNull_ShouldAbortAndReturnServerError() {
-        Movie movie = movieTestDataBuilder.id(null).name(null).build();
+        Movie movie = movieBuilder.id(null).name(null).build();
         Entity<String> movieJsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
 
         Response response = target(MOVIE_RESOURCE).path("create").request().post(movieJsonEntity);
@@ -152,11 +147,11 @@ public class MovieIT extends CoreJerseyTest {
 
     @Test
     public void createMovie_OptionalFieldsAreNull_ShouldReturnOk() {
-        Movie movie = movieTestDataBuilder.imdbId(null).tagline(null).overview(null).releaseDate(null).build();
+        Movie movie = movieBuilder.imdbId(null).tagline(null).overview(null).releaseDate(null).build();
         Entity<String> movieJsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
 
         Response response = target(MOVIE_RESOURCE).path("create").request().post(movieJsonEntity);
-        
+
         assertEquals(200, response.getStatus());
         deleteMovie(movie);
         response.close();
@@ -164,133 +159,15 @@ public class MovieIT extends CoreJerseyTest {
 
     @Test
     public void updateMovie_MovieDoesNotExist_ShouldAbortAndReturnServerError() {
-        Movie movie = new MovieTestDataBuilder().build();
+        Movie movie = new MovieBuilder().build();
         Entity<String> movieJsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
 
         Response response = target(MOVIE_RESOURCE).path("update").path(movie.getId()).request().put(movieJsonEntity);
-        
+
         assertEquals(500, response.getStatus());
         response.close();
     }
 
-    @Test
-    public void updateMovie_NameTooLong_ShouldAbortAndReturnServerError() {
-        Movie movie = movieTestDataBuilder.build();
-        createMovie(movie);
-        
-        movie.setName(getRandomString(NAME_MAX_LENGTH + 1));
-        Entity<String> movieJsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
-        Response response = target(MOVIE_RESOURCE).path("update").path(movie.getId()).request().put(movieJsonEntity);
-        
-        assertEquals(500, response.getStatus());
-        deleteMovie(movie);
-        response.close();
-    }
-
-    @Test
-    public void updateMovie_ImdbIdTooLong_ShouldAbortAndReturnServerError() {
-        Movie movie = movieTestDataBuilder.build();
-        createMovie(movie);
-        
-        movie.setImdbId(getRandomString(IMDB_ID_MAX_LENGTH + 1));
-        Entity<String> movieJsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
-        Response response = target(MOVIE_RESOURCE).path("update").path(movie.getId()).request().put(movieJsonEntity);
-        
-        assertEquals(500, response.getStatus());
-        deleteMovie(movie);
-        response.close();
-    }
-
-    @Test
-    public void updateMovie_TaglineTooLong_ShouldAbortAndReturnServerError() {
-        Movie movie = movieTestDataBuilder.build();
-        createMovie(movie);
-        
-        movie.setTagline(getRandomString(TAGLINE_MAX_LENGTH + 1));
-        Entity<String> movieJsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
-        Response response = target(MOVIE_RESOURCE).path("update").path(movie.getId()).request().put(movieJsonEntity);
-        
-        assertEquals(500, response.getStatus());
-        deleteMovie(movie);
-        response.close();
-    }
-
-    @Test
-    public void updateMovie_OverviewTooLong_ShouldAbortAndReturnServerError() {
-        Movie movie = movieTestDataBuilder.build();
-        createMovie(movie);
-        
-        movie.setOverview(getRandomString(OVERVIEW_MAX_LENGTH + 1));
-        Entity<String> movieJsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
-        Response response = target(MOVIE_RESOURCE).path("update").path(movie.getId()).request().put(movieJsonEntity);
-        
-        assertEquals(500, response.getStatus());
-        deleteMovie(movie);
-        response.close();
-    }
-
-    @Test
-    public void updateMovie_StringFieldsMaximumLength_ShouldReturnOk() {
-        Movie movie = movieTestDataBuilder.build();
-        createMovie(movie);
-        
-        movie.setName(getRandomString(ID_MAX_LENGTH));
-        movie.setImdbId(getRandomString(IMDB_ID_MAX_LENGTH));
-        movie.setTagline(getRandomString(TAGLINE_MAX_LENGTH));
-        movie.setOverview(getRandomString(OVERVIEW_MAX_LENGTH));
-        Entity<String> movieJsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
-        Response response = target(MOVIE_RESOURCE).path("update").path(movie.getId()).request().put(movieJsonEntity);
-        
-        assertEquals(200, response.getStatus());
-        deleteMovie(movie);
-        response.close();
-    }
-
-    @Test
-    public void updateMovie_RequiredFieldsAreNull_ShouldAbortAndReturnServerError() {
-        Movie movie = movieTestDataBuilder.build();
-        createMovie(movie);
-
-        movie.setName(null);
-        Entity<String> movieJsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
-        Response response = target(MOVIE_RESOURCE).path("update").path(movie.getId()).request().put(movieJsonEntity);
-        
-        assertEquals(500, response.getStatus());
-        deleteMovie(movie);
-        response.close();
-    }
-
-    @Test
-    public void updateMovie_OptionalFieldsAreNull_ShouldReturnOk() {
-        Movie movie = movieTestDataBuilder.build();
-        createMovie(movie);
-
-        movie.setImdbId(null);
-        movie.setTagline(null);
-        movie.setOverview(null);
-        movie.setReleaseDate(null);
-        Entity<String> movieJsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
-        Response response = target(MOVIE_RESOURCE).path("update").path(movie.getId()).request().put(movieJsonEntity);
-        
-        assertEquals(200, response.getStatus());
-        deleteMovie(movie);
-        response.close();
-    }
-
-    @Test
-    public void deleteMovie_MovieDoesNotExist_ShouldAbortAndReturnServerError() {
-        Response response = target(MOVIE_RESOURCE).path("delete").path(Id.get()).request().delete();
-        assertEquals(500, response.getStatus());
-        response.close();
-    }
-
-    @Override
-    protected Gson getGson() {
-        return new GsonBuilder()
-                .registerTypeAdapter(Movie.class, new MovieSerializer())
-                .registerTypeAdapter(Movie.class, new MovieDeserializer())
-                .create();
-    }
 
     private void createMovie(Movie movie) {
         Entity<String> movieJsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
