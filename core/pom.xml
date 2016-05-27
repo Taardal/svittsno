@@ -197,10 +197,10 @@
                                     <goal>execute</goal>
                                 </goals>
                                 <configuration>
-                                    <driver>${db.driver}</driver>
+                                    <url>${db.main.url}</url>
                                     <username>${db.username}</username>
                                     <password>${db.password}</password>
-                                    <url>${db.main.url}</url>
+                                    <driver>${db.driver}</driver>
                                     <autocommit>true</autocommit>
                                     <srcFiles>
                                         <srcFile>${resources.directory}/${profile.id}/database.sql</srcFile>
@@ -215,10 +215,10 @@
                                     <goal>execute</goal>
                                 </goals>
                                 <configuration>
-                                    <driver>${db.driver}</driver>
+                                    <url>${db.itest.url}</url>
                                     <username>${db.username}</username>
                                     <password>${db.password}</password>
-                                    <url>${db.itest.url}</url>
+                                    <driver>${db.driver}</driver>
                                     <autocommit>true</autocommit>
                                     <srcFiles>
                                         <srcFile>${resources.directory}/${profile.id}/database.sql</srcFile>
