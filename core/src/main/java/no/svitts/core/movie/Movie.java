@@ -1,12 +1,9 @@
 package no.svitts.core.movie;
 
 import no.svitts.core.date.KeyDate;
-import no.svitts.core.file.ImageFile;
-import no.svitts.core.file.ImageType;
-import no.svitts.core.file.VideoFile;
 
+import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 public class Movie {
 
@@ -18,10 +15,11 @@ public class Movie {
     private int runtime;
     private KeyDate releaseDate;
     private List<Genre> genres;
-    private VideoFile videoFile;
-    private Map<ImageType, ImageFile> imageFiles;
+    private File videoFile;
+    private File posterImageFile;
+    private File backdropImageFile;
 
-    public Movie(String id, String name, String imdbId, String tagline, String overview, int runtime, KeyDate releaseDate, List<Genre> genres, VideoFile videoFile, Map<ImageType, ImageFile> imageFiles) {
+    public Movie(String id, String name, String imdbId, String tagline, String overview, int runtime, KeyDate releaseDate, List<Genre> genres, File videoFile, File posterImageFile, File backdropImageFile) {
         this.id = id;
         this.name = name;
         this.imdbId = imdbId;
@@ -31,7 +29,25 @@ public class Movie {
         this.releaseDate = releaseDate;
         this.genres = genres;
         this.videoFile = videoFile;
-        this.imageFiles = imageFiles;
+        this.posterImageFile = posterImageFile;
+        this.backdropImageFile = backdropImageFile;
+    }
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", imdbId='" + imdbId + '\'' +
+                ", tagline='" + tagline + '\'' +
+                ", overview='" + overview + '\'' +
+                ", runtime=" + runtime +
+                ", releaseDate=" + releaseDate +
+                ", genres=" + genres +
+                ", videoFile=" + videoFile +
+                ", posterImageFile=" + posterImageFile +
+                ", backdropImageFile=" + backdropImageFile +
+                '}';
     }
 
     public String getId() {
@@ -94,35 +110,27 @@ public class Movie {
         this.genres = genres;
     }
 
-    public VideoFile getVideoFile() {
+    public File getVideoFile() {
         return videoFile;
     }
 
-    public void setVideoFile(VideoFile videoFile) {
+    public void setVideoFile(File videoFile) {
         this.videoFile = videoFile;
     }
 
-    public Map<ImageType, ImageFile> getImageFiles() {
-        return imageFiles;
+    public File getPosterImageFile() {
+        return posterImageFile;
     }
 
-    public void setImageFiles(Map<ImageType, ImageFile> imageFiles) {
-        this.imageFiles = imageFiles;
+    public void setPosterImageFile(File posterImageFile) {
+        this.posterImageFile = posterImageFile;
     }
 
-    @Override
-    public String toString() {
-        return "Movie{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", imdbId='" + imdbId + '\'' +
-                ", tagline='" + tagline + '\'' +
-                ", overview='" + overview + '\'' +
-                ", runtime=" + runtime +
-                ", releaseDate=" + releaseDate +
-                ", genres=" + genres +
-                ", videoFile=" + videoFile +
-                ", imageFiles=" + imageFiles +
-                '}';
+    public File getBackdropImageFile() {
+        return backdropImageFile;
+    }
+
+    public void setBackdropImageFile(File backdropImageFile) {
+        this.backdropImageFile = backdropImageFile;
     }
 }

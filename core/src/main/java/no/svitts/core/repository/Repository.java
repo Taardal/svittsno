@@ -6,8 +6,12 @@ import java.util.List;
 
 public interface Repository<T> {
     T getById(String id);
+
+    List<T> getMultiple(SearchCriteria searchCriteria);
+
     String insert(T t);
-    boolean update(T t);
-    boolean delete(String id);
-    List<T> search(SearchCriteria searchCriteria);
+
+    void update(T t);
+
+    void delete(String id);
 }

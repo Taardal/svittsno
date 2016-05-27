@@ -12,6 +12,15 @@ public class SearchCriteria {
         this.limit = limit;
     }
 
+    @Override
+    public String toString() {
+        return "SearchCriteria{" +
+                "searchKey=" + searchKey +
+                ", value='" + value + '\'' +
+                ", limit=" + limit +
+                '}';
+    }
+
     public SearchKey getKey() {
         return searchKey;
     }
