@@ -7,12 +7,9 @@ import no.svitts.core.application.ApplicationProperties;
 import no.svitts.core.datasource.DataSource;
 import no.svitts.core.datasource.DataSourceConfig;
 import no.svitts.core.datasource.SqlDataSource;
-import no.svitts.core.repository.ImageFileRepository;
 import no.svitts.core.repository.MovieRepository;
-import no.svitts.core.repository.VideoFileRepository;
-import no.svitts.core.resource.ImageFileResource;
 import no.svitts.core.resource.MovieResource;
-import no.svitts.core.resource.VideoFileResource;
+import no.svitts.core.service.MovieService;
 import org.glassfish.jersey.server.ResourceConfig;
 
 
@@ -21,17 +18,8 @@ public class CoreApplication extends ResourceConfig {
     public CoreApplication() {
         ApplicationProperties applicationProperties = new ApplicationProperties();
         DataSource dataSource = new SqlDataSource(getDataSourceConfig(applicationProperties));
-        ImageFileRepository imageFileRepository = new ImageFileRepository(dataSource);
-        VideoFileRepository videoFileRepository = new VideoFileRepository(dataSource);
-        MovieRepository movieRepository = new MovieRepository(dataSource, videoFileRepository, imageFileRepository);
-        registerResources(imageFileRepository, videoFileRepository, movieRepository);
+        register(new MovieResource(new MovieService(new MovieRepository(dataSource))));
         initializeSwagger(applicationProperties);
-    }
-
-    private void registerResources(ImageFileRepository imageFileRepository, VideoFileRepository videoFileRepository, MovieRepository movieRepository) {
-        register(new MovieResource(movieRepository));
-        register(new VideoFileResource(videoFileRepository));
-        register(new ImageFileResource(imageFileRepository));
     }
 
     private DataSourceConfig getDataSourceConfig(ApplicationProperties applicationProperties) {

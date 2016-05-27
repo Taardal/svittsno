@@ -7,6 +7,9 @@ CREATE TABLE movie (
   overview VARCHAR(510) DEFAULT NULL,
   runtime SMALLINT UNSIGNED DEFAULT NULL,
   release_date DATE DEFAULT NULL,
+  video_file_path VARCHAR(255) DEFAULT NULL,
+  poster_image_file_path VARCHAR(255) DEFAULT NULL,
+  backdrop_image_file_path VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (id)
 );
 DROP TABLE IF EXISTS genre;
@@ -22,35 +25,6 @@ CREATE TABLE movie_genre (
   PRIMARY KEY (movie_id,genre_id),
   KEY genre_id (genre_id),
   CONSTRAINT movie_genre_ibfk_1 FOREIGN KEY (movie_id) REFERENCES movie (id) ON UPDATE CASCADE ON DELETE CASCADE
-);
-DROP TABLE IF EXISTS video_file;
-CREATE TABLE video_file (
-  id VARCHAR(255) NOT NULL,
-  path VARCHAR(255) NOT NULL,
-  PRIMARY KEY (id)
-);
-DROP TABLE IF EXISTS movie_video_file;
-CREATE TABLE movie_video_file (
-  movie_id VARCHAR(255) NOT NULL,
-  video_file_id VARCHAR(255) NOT NULL,
-  PRIMARY KEY (movie_id,video_file_id),
-  KEY video_file_id (video_file_id),
-  CONSTRAINT movie_video_file_ibfk_1 FOREIGN KEY (movie_id) REFERENCES movie (id) ON UPDATE CASCADE ON DELETE CASCADE
-);
-DROP TABLE IF EXISTS image_file;
-CREATE TABLE image_file (
-  id VARCHAR(255) NOT NULL,
-  path VARCHAR(255) NOT NULL,
-  type VARCHAR(255) NOT NULL,
-  PRIMARY KEY (id)
-);
-DROP TABLE IF EXISTS movie_image_file;
-CREATE TABLE movie_image_file (
-  movie_id VARCHAR(255) NOT NULL,
-  image_file_id VARCHAR(255) NOT NULL,
-  PRIMARY KEY (movie_id,image_file_id),
-  KEY image_file_id (image_file_id),
-  CONSTRAINT movie_image_file_ibfk_1 FOREIGN KEY (movie_id) REFERENCES movie (id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 INSERT INTO genre (id, name) VALUES (1, 'ACTION');
