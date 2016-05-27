@@ -33,6 +33,21 @@ public class KeyDate {
         this.dateTime = dateTime;
     }
 
+    @Override
+    public String toString() {
+        return KEY_DATE_PATTERN.print(getTime());
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (getClass() == object.getClass()) {
+            KeyDate keyDate = (KeyDate) object;
+            return getTime() == keyDate.getTime();
+        } else {
+            return false;
+        }
+    }
+
     public java.sql.Date toSqlDate() {
         return new java.sql.Date(getTime());
     }
@@ -73,11 +88,6 @@ public class KeyDate {
                 .hourOfDay().withMaximumValue()
                 .minuteOfHour().withMaximumValue()
                 .secondOfMinute().withMaximumValue());
-    }
-
-    @Override
-    public String toString() {
-        return KEY_DATE_PATTERN.print(getTime());
     }
 
     private DateTime parseDateTime(String date) {

@@ -50,6 +50,26 @@ public class Movie {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object object) {
+        if (getClass() == object.getClass()) {
+            Movie movie = (Movie) object;
+            return id.equals(movie.getId())
+                    && name.equals(movie.getName())
+                    && imdbId.equals(movie.getImdbId())
+                    && tagline.equals(movie.getTagline())
+                    && overview.equals(movie.getOverview())
+                    && runtime == movie.getRuntime()
+                    && releaseDate.equals(movie.getReleaseDate())
+                    && genres.equals(movie.genres)
+                    && videoFile.equals(movie.getVideoFile())
+                    && posterImageFile.equals(movie.getPosterImageFile())
+                    && backdropImageFile.equals(movie.getBackdropImageFile());
+        } else {
+            return false;
+        }
+    }
+
     public String getId() {
         return id;
     }
