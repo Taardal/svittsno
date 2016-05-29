@@ -59,7 +59,7 @@ public class DeleteMovieIT extends JerseyTest {
 
     @Test
     public void deleteMovie_MovieDoesNotExist_ShouldAbortAndReturnServerError() {
-        Response response = target(MOVIE_RESOURCE).path("delete").path(Id.get()).request().delete();
+        Response response = target(MOVIE_RESOURCE).path("deleteSingle").path(Id.get()).request().delete();
         assertEquals(500, response.getStatus());
         response.close();
     }
@@ -91,7 +91,7 @@ public class DeleteMovieIT extends JerseyTest {
     }
 
     private void deleteMovie(Movie movie) {
-        Response response = target(MOVIE_RESOURCE).path("delete").path(movie.getId()).request().delete();
+        Response response = target(MOVIE_RESOURCE).path("deleteSingle").path(movie.getId()).request().delete();
         assertEquals(200, response.getStatus());
         assertMovieDoesNotExist(movie);
         response.close();

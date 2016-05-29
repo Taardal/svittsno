@@ -2,11 +2,12 @@ package no.svitts.core.resource;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import no.svitts.core.exception.HttpErrorMessage;
+import no.svitts.core.exception.RepositoryException;
+import no.svitts.core.id.Id;
+import no.svitts.core.movie.Movie;
 import no.svitts.core.search.SearchCriteria;
 import no.svitts.core.search.SearchKey;
-import no.svitts.core.exception.NoChangeException;
-import no.svitts.core.exception.RequiredFieldsInvalidException;
-import no.svitts.core.movie.Movie;
 import no.svitts.core.service.MovieService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,18 +32,26 @@ public class MovieResource extends CoreResource {
         this.movieService = movieService;
     }
 
-    @ApiOperation(value = "MovieResource", notes = "Lists a specific movie stored in the database as JSON. Invalid/non-existing ID will give 'required fields invalid' error.", response = Response.class)
+    @ApiOperation(value = "Get movie by ID", notes = "Lists a specific movie as JSON. Invalid/non-existing ID will give 'required fields invalid' error.", response = Response.class)
     @GET
     @Path("{id}")
-    public Response getMovie(@PathParam("id") String id) throws RequiredFieldsInvalidException {
+    public Response getMovie(@PathParam("id") String id) {
         LOGGER.info("Received request to GET movie with ID [{}]", id);
-        Movie movie = movieService.getMovie(id);
-        return Response.ok().entity(gson.toJson(movie)).build();
+        if (id.length() > Id.MAX_LENGTH) {
+            HttpErrorMessage httpErrorMessage = new HttpErrorMessage(Response.Status.BAD_REQUEST, "Could not validate ID because it exceeded [" + Id.MAX_LENGTH + "] characters.");
+            return Response.status(httpErrorMessage.getStatus()).entity(gson.toJson(httpErrorMessage)).build();
+        }
+        try {
+            Movie movie = movieService.getMovie(id);
+            return Response.ok().entity(gson.toJson(movie)).build();
+        } catch (RepositoryException e) {
+            throw new InternalServerErrorException(e.getMessage(), e);
+        }
     }
 
     @GET
     @Path("name")
-    public Response getMoviesByName(@QueryParam("name") String name, @QueryParam("limit") int limit) throws RequiredFieldsInvalidException {
+    public Response getMoviesByName(@QueryParam("name") String name, @QueryParam("limit") int limit) {
         LOGGER.info("Received request to GET max [{}] movie(s) with name [{}]", limit, name);
         SearchCriteria searchCriteria = new SearchCriteria(SearchKey.NAME, name, limit);
         List<Movie> movies = movieService.getMovies(searchCriteria);
@@ -51,7 +60,7 @@ public class MovieResource extends CoreResource {
 
     @GET
     @Path("genre")
-    public Response getMoviesByGenre(@QueryParam("genre") String genre, @QueryParam("limit") int limit) throws RequiredFieldsInvalidException {
+    public Response getMoviesByGenre(@QueryParam("genre") String genre, @QueryParam("limit") int limit) {
         LOGGER.info("Received request to GET max [{}] movie(s) with genre [{}]", limit, genre);
         SearchCriteria searchCriteria = new SearchCriteria(SearchKey.GENRE, genre, limit);
         List<Movie> movies = movieService.getMovies(searchCriteria);
@@ -59,29 +68,28 @@ public class MovieResource extends CoreResource {
     }
 
     @POST
-    @Path("create")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createMovie(String json) throws NoChangeException, RequiredFieldsInvalidException {
+    public Response createMovie(String json) {
         LOGGER.info("Received request to POST movie by json [{}]", json);
         String insertedMovieId = movieService.createMovie(gson.fromJson(json, Movie.class));
         return Response.created(getLocation(insertedMovieId)).build();
     }
 
+    @ApiOperation(value = "update", notes = "Requires full object body", response = Response.class)
     @PUT
-    @Path("update/{id}")
+    @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateMovie(@PathParam("id") String id, String json) throws NoChangeException, RequiredFieldsInvalidException {
+    public Response updateMovie(@PathParam("id") String id, String json) {
         LOGGER.info("Received request to PUT movie by json [{}]", json);
         movieService.updateMovie(gson.fromJson(json, Movie.class));
         return Response.ok().build();
     }
 
     @DELETE
-    @Path("delete/{id}")
+    @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response deleteMovie(@PathParam("id") String id) throws NoChangeException, RequiredFieldsInvalidException {
+    public Response deleteMovie(@PathParam("id") String id) {
         LOGGER.info("Received request to DELETE movie with ID [{}]", id);
-        movieService.deleteMovie(id);
         return Response.ok().build();
     }
 

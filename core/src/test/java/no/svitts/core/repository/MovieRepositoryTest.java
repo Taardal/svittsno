@@ -3,6 +3,7 @@ package no.svitts.core.repository;
 import no.svitts.core.builder.MovieBuilder;
 import no.svitts.core.datasource.CoreDataSource;
 import no.svitts.core.datasource.DataSource;
+import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.id.Id;
 import no.svitts.core.movie.Genre;
 import no.svitts.core.movie.Movie;
@@ -15,7 +16,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static no.svitts.core.repository.MovieRepository.*;
 import static no.svitts.core.testkit.MovieTestKit.assertMovie;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -41,17 +44,17 @@ public class MovieRepositoryTest {
         when(connectionMock.prepareStatement(anyString())).thenReturn(preparedStatementMock);
         when(preparedStatementMock.executeQuery()).thenReturn(resultSetMock);
         when(preparedStatementMock.executeUpdate()).thenReturn(1);
-        when(preparedStatementMock.executeBatch()).thenReturn(new int[]{1});
+        when(preparedStatementMock.executeBatch()).thenReturn(new int[]{1, 1});
 
         movieRepository = new MovieRepository(dataSourceMock);
     }
 
     @Test
-    public void getById_ValidId_ShouldReturnExpectedMovie() throws SQLException {
+    public void getById_ValidId_ShouldTriggerExpectedSQLComponentsAndReturnExpectedMovie() throws SQLException, RepositoryException {
         Movie movie = movieBuilder.build();
         setupMockResultSetForMovie(movie);
 
-        Movie movieFromRepository = movieRepository.getById(movie.getId());
+        Movie movieFromRepository = movieRepository.getSingle(movie.getId());
 
         assertMovie(movie, movieFromRepository);
         verify(dataSourceMock, times(1)).getConnection();
@@ -60,106 +63,115 @@ public class MovieRepositoryTest {
         verify(resultSetMock, times(2)).next();
     }
 
-    @Test(expected = InternalServerErrorException.class)
-    public void getById_ThrowsSQLExceptionWhenGettingConnection_ShouldCatchSQLExceptionAndThrowInternalServerErrorException() throws SQLException {
+    @Test(expected = RepositoryException.class)
+    public void getSingle_ThrowsSQLException_ShouldCatchSQLExceptionAndThrowInternalServerErrorException() throws SQLException, RepositoryException {
         when(dataSourceMock.getConnection()).thenThrow(new SQLException());
-        movieRepository.getById(Id.get());
-        verify(dataSourceMock, times(1)).getConnection();
+        movieRepository.getSingle(Id.get());
     }
 
-    @Test(expected = InternalServerErrorException.class)
-    public void getMovie_ThrowsSQLExceptionWhenGettingPreparedStatement_ShouldCatchSQLExceptionAndThrowInternalServerErrorException() throws SQLException {
+    @Test(expected = RepositoryException.class)
+    public void getMovie_ThrowsSQLException_ShouldCatchSQLExceptionAndThrowInternalServerErrorException() throws SQLException, RepositoryException {
         when(connectionMock.prepareStatement(anyString())).thenThrow(new SQLException());
         movieRepository.getMovie(Id.get(), connectionMock);
-        verify(connectionMock, times(0)).prepareStatement(anyString());
     }
 
     @Test
-    public void insertSingle_ShouldExecuteStatementsAndReturnTrue() throws SQLException {
+    public void insertSingle_ValidMovie_ShouldTriggerExpectedSQLComponentsAndReturnIdOfInsertedMovie() throws SQLException {
         Movie movie = movieBuilder.build();
 
-        String id = movieRepository.insert(movie);
+        String insertedMovieId = movieRepository.insertSingle(movie);
 
-        verify(dataSourceMock, times(2)).getConnection();
+        assertEquals(movie.getId(), insertedMovieId);
+        verify(dataSourceMock, times(1)).getConnection();
         verify(connectionMock, times(2)).prepareStatement(anyString());
         verify(preparedStatementMock, times(1)).executeUpdate();
         verify(preparedStatementMock, times(1)).executeBatch();
     }
 
-    @Test
-    public void insertSingle_RequiredFieldsInvalid_ShouldNotExecuteStatementsAndReturnFalse() throws SQLException {
-        Movie movie = movieBuilder.id("").name("").build();
-
-        String success = movieRepository.insert(movie);
-
-        verify(dataSourceMock, times(0)).getConnection();
-        verify(connectionMock, times(0)).prepareStatement(anyString());
-        verify(preparedStatementMock, times(0)).executeUpdate();
-        verify(preparedStatementMock, times(0)).executeBatch();
-    }
-
-    @Test
-    public void insertSingle_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnFalse() throws SQLException {
+    @Test(expected = InternalServerErrorException.class)
+    public void insertSingle_ThrowsSQLException_ShouldCatchSQLExceptionAndThrowInternalServerErrorException() throws SQLException {
         when(dataSourceMock.getConnection()).thenThrow(new SQLException());
+        movieRepository.insertSingle(movieBuilder.build());
+    }
 
-        String success = movieRepository.insert(movieBuilder.build());
+    @Test(expected = InternalServerErrorException.class)
+    public void insertMovie_ThrowsSQLException_ShouldCatchSQLExceptionAndThrowInternalServerErrorException() throws SQLException {
+        when(connectionMock.prepareStatement(anyString())).thenThrow(new SQLException());
+        movieRepository.insertMovie(movieBuilder.build(), connectionMock);
+    }
 
-        verify(dataSourceMock, times(1)).getConnection();
+    @Test(expected = InternalServerErrorException.class)
+    public void insertMovieGenreRelations_ThrowsSQLException_ShouldCatchSQLExceptionAndThrowInternalServerErrorException() throws SQLException {
+        when(connectionMock.prepareStatement(anyString())).thenThrow(new SQLException());
+        movieRepository.insertMovieGenreRelations(movieBuilder.build(), connectionMock);
     }
 
     @Test
-    public void updateSingle_ShouldExecuteStatementsAndReturnTrue() throws SQLException {
+    public void updateSingle_ValidMovie_ShouldTriggerExpectedSQLComponents() throws SQLException {
         Movie movie = movieBuilder.build();
 
-        movieRepository.update(movie);
+        movieRepository.updateSingle(movie);
+
+        verify(dataSourceMock, times(1)).getConnection();
+        verify(connectionMock, times(3)).prepareStatement(anyString());
+        verify(preparedStatementMock, times(2)).executeUpdate();
+        verify(preparedStatementMock, times(1)).executeBatch();
+    }
+
+    @Test(expected = InternalServerErrorException.class)
+    public void updateSingle_ThrowsSQLException_ShouldCatchSQLExceptionAndThrowInternalServerErrorException() throws SQLException {
+        when(dataSourceMock.getConnection()).thenThrow(new SQLException());
+        movieRepository.updateSingle(movieBuilder.build());
+    }
+
+    @Test(expected = InternalServerErrorException.class)
+    public void updateMovie_ThrowsSQLException_ShouldCatchSQLExceptionAndThrowInternalServerErrorException() throws SQLException {
+        when(connectionMock.prepareStatement(anyString())).thenThrow(new SQLException());
+        movieRepository.updateMovie(movieBuilder.build(), connectionMock);
+    }
+
+    @Test(expected = InternalServerErrorException.class)
+    public void updateMovieGenreRelations_ThrowsSQLException_ShouldCatchSQLExceptionAndThrowInternalServerErrorException() throws SQLException {
+        when(connectionMock.prepareStatement(anyString())).thenThrow(new SQLException());
+        movieRepository.updateMovieGenreRelations(movieBuilder.build(), connectionMock);
+    }
+
+    @Test
+    public void deleteSingle_ValidId_ShouldTriggerExpectedSQLComponents() throws SQLException {
+        Movie movie = movieBuilder.build();
+
+        movieRepository.deleteSingle(movie.getId());
 
         verify(dataSourceMock, times(1)).getConnection();
         verify(connectionMock, times(1)).prepareStatement(anyString());
         verify(preparedStatementMock, times(1)).executeUpdate();
     }
 
-    @Test
-    public void updateSingle_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnFalse() throws SQLException {
+    @Test(expected = InternalServerErrorException.class)
+    public void deleteSingle_ThrowsSQLException_ShouldCatchSQLExceptionAndThrowInternalServerErrorException() throws SQLException {
         when(dataSourceMock.getConnection()).thenThrow(new SQLException());
-
-        movieRepository.update(movieBuilder.build());
-
-        verify(dataSourceMock, times(1)).getConnection();
+        movieRepository.deleteSingle(Id.get());
     }
 
-    @Test
-    public void deleteSingle_ShouldExecuteStatementsAndReturnTrue() throws SQLException {
-        Movie movie = movieBuilder.build();
-
-        movieRepository.delete(movie.getId());
-
-        verify(dataSourceMock, times(1)).getConnection();
-        verify(connectionMock, times(1)).prepareStatement(anyString());
-        verify(preparedStatementMock, times(1)).executeUpdate();
-    }
-
-    @Test
-    public void deleteSingle_ThrowsSQLException_ShouldHandleSQLExceptionAndReturnFalse() throws SQLException {
-        when(dataSourceMock.getConnection()).thenThrow(new SQLException());
-
-        movieRepository.delete(Id.get());
-
-        verify(dataSourceMock, times(1)).getConnection();
+    @Test(expected = InternalServerErrorException.class)
+    public void deleteMovie_ThrowsSQLException_ShouldCatchSQLExceptionAndThrowInternalServerErrorException() throws SQLException {
+        when(connectionMock.prepareStatement(anyString())).thenThrow(new SQLException());
+        movieRepository.deleteMovie(Id.get(), connectionMock);
     }
 
     private void setupMockResultSetForMovie(Movie movie) throws SQLException {
         when(resultSetMock.next()).thenReturn(true, false);
-        when(resultSetMock.getString("id")).thenReturn(movie.getId());
-        when(resultSetMock.getString("name")).thenReturn(movie.getName());
-        when(resultSetMock.getString("imdb_id")).thenReturn(movie.getImdbId());
-        when(resultSetMock.getString("tagline")).thenReturn(movie.getTagline());
-        when(resultSetMock.getString("overview")).thenReturn(movie.getOverview());
-        when(resultSetMock.getInt("runtime")).thenReturn(movie.getRuntime());
-        when(resultSetMock.getDate("release_date")).thenReturn(movie.getReleaseDate().toSqlDate());
-        when(resultSetMock.getString("genres")).thenReturn(Genre.toString(movie.getGenres()));
-        when(resultSetMock.getString("video_file_path")).thenReturn(movie.getVideoFile().getPath());
-        when(resultSetMock.getString("poster_image_file_path")).thenReturn(movie.getPosterImageFile().getPath());
-        when(resultSetMock.getString("backdrop_image_file_path")).thenReturn(movie.getBackdropImageFile().getPath());
+        when(resultSetMock.getString(ID)).thenReturn(movie.getId());
+        when(resultSetMock.getString(NAME)).thenReturn(movie.getName());
+        when(resultSetMock.getString(IMDB_ID)).thenReturn(movie.getImdbId());
+        when(resultSetMock.getString(TAGLINE)).thenReturn(movie.getTagline());
+        when(resultSetMock.getString(OVERVIEW)).thenReturn(movie.getOverview());
+        when(resultSetMock.getInt(RUNTIME)).thenReturn(movie.getRuntime());
+        when(resultSetMock.getDate(RELEASE_DATE)).thenReturn(movie.getReleaseDate().toSqlDate());
+        when(resultSetMock.getString(GENRES)).thenReturn(Genre.toString(movie.getGenres()));
+        when(resultSetMock.getString(VIDEO_FILE_PATH)).thenReturn(movie.getVideoFile().getPath());
+        when(resultSetMock.getString(POSTER_IMAGE_FILE_PATH)).thenReturn(movie.getPosterImageFile().getPath());
+        when(resultSetMock.getString(BACKDROP_IMAGE_FILE_PATH)).thenReturn(movie.getBackdropImageFile().getPath());
     }
 
 

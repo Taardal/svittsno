@@ -4,9 +4,10 @@ import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.jaxrs.listing.ApiListingResource;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
 import no.svitts.core.application.ApplicationProperties;
+import no.svitts.core.datasource.CoreDataSource;
 import no.svitts.core.datasource.DataSource;
 import no.svitts.core.datasource.DataSourceConfig;
-import no.svitts.core.datasource.CoreDataSource;
+import no.svitts.core.exception.WebApplicationExceptionMapper;
 import no.svitts.core.repository.MovieRepository;
 import no.svitts.core.resource.MovieResource;
 import no.svitts.core.service.MovieService;
@@ -19,7 +20,8 @@ public class CoreApplication extends ResourceConfig {
         ApplicationProperties applicationProperties = new ApplicationProperties();
         DataSource dataSource = new CoreDataSource(getDataSourceConfig(applicationProperties));
         register(new MovieResource(new MovieService(new MovieRepository(dataSource))));
-        initializeSwagger(applicationProperties);
+        register(new WebApplicationExceptionMapper());
+        registerSwagger(applicationProperties);
     }
 
     private DataSourceConfig getDataSourceConfig(ApplicationProperties applicationProperties) {
@@ -30,9 +32,9 @@ public class CoreApplication extends ResourceConfig {
                 applicationProperties.get("db.driver"));
     }
 
-    private void initializeSwagger(ApplicationProperties applicationProperties) {
-        register(ApiListingResource.class);
-        register(SwaggerSerializers.class);
+    private void registerSwagger(ApplicationProperties applicationProperties) {
+        register(new ApiListingResource());
+        register(new SwaggerSerializers());
         createSwaggerBean(applicationProperties);
     }
 

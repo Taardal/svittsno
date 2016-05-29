@@ -29,20 +29,20 @@ abstract class CoreRepository<T> {
             LOGGER.info("Query got [{}] results", results.size());
             return results;
         } catch (SQLException e) {
-            String errorMessage = "Could not execute query [" + preparedStatement.toString() + "]";
-            LOGGER.error(errorMessage, e);
+            String errorMessage = "Could not execute query";
+            LOGGER.error(errorMessage + " [" + preparedStatement.toString() + "]", e);
             throw new InternalServerErrorException(errorMessage, e);
         }
     }
 
     void executeUpdate(PreparedStatement preparedStatement) {
-        LOGGER.info("Executing update [{}]", preparedStatement.toString());
+        LOGGER.info("Executing updateSingle [{}]", preparedStatement.toString());
         try {
-            int rowsAffected = preparedStatement.executeUpdate();
-            LOGGER.info("Update affected [{}] rows", rowsAffected);
+            int updateCount = preparedStatement.executeUpdate();
+            LOGGER.info("Update updated [{}] rows", updateCount);
         } catch (SQLException e) {
-            String errorMessage = "Could not execute update [" + preparedStatement.toString() + "]";
-            LOGGER.error(errorMessage, e);
+            String errorMessage = "Could not execute update";
+            LOGGER.error(errorMessage + " [" + preparedStatement.toString() + "]", e);
             throw new InternalServerErrorException(errorMessage, e);
         }
     }
@@ -51,8 +51,8 @@ abstract class CoreRepository<T> {
     void executeBatch(PreparedStatement preparedStatement) {
         LOGGER.info("Executing batch [{}]", preparedStatement.toString());
         try {
-            int[] batchResults = preparedStatement.executeBatch();
-            LOGGER.info("Batch affected [{}] rows", batchResults);
+            int[] updateCounts = preparedStatement.executeBatch();
+            LOGGER.info("Batch updated {} rows", updateCounts);
         } catch (SQLException e) {
             String errorMessage = "Could not execute batch [" + preparedStatement.toString() + "]";
             LOGGER.error(errorMessage, e);

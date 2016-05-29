@@ -1,17 +1,18 @@
 package no.svitts.core.repository;
 
+import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.search.SearchCriteria;
 
 import java.util.List;
 
 public interface Repository<T> {
-    T getById(String id);
+    T getSingle(String id) throws RepositoryException;
 
     List<T> getMultiple(SearchCriteria searchCriteria);
 
-    String insert(T t);
+    String insertSingle(T t);
 
-    void update(T t);
+    void updateSingle(T t);
 
-    void delete(String id);
+    void deleteSingle(String id);
 }

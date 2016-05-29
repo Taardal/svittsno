@@ -162,7 +162,7 @@ public class CreateMovieIT extends JerseyTest {
         Movie movie = new MovieBuilder().build();
         Entity<String> movieJsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
 
-        Response response = target(MOVIE_RESOURCE).path("update").path(movie.getId()).request().put(movieJsonEntity);
+        Response response = target(MOVIE_RESOURCE).path("updateSingle").path(movie.getId()).request().put(movieJsonEntity);
 
         assertEquals(500, response.getStatus());
         response.close();
@@ -196,7 +196,7 @@ public class CreateMovieIT extends JerseyTest {
     }
 
     private void deleteMovie(Movie movie) {
-        Response response = target(MOVIE_RESOURCE).path("delete").path(movie.getId()).request().delete();
+        Response response = target(MOVIE_RESOURCE).path("deleteSingle").path(movie.getId()).request().delete();
         assertEquals(200, response.getStatus());
         assertMovieDoesNotExist(movie);
         response.close();
