@@ -1,12 +1,9 @@
 package no.svitts.core.resource;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import no.svitts.core.builder.MovieBuilder;
 import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.exception.WebApplicationExceptionMapper;
-import no.svitts.core.gson.deserializer.MovieDeserializer;
-import no.svitts.core.gson.serializer.MovieSerializer;
 import no.svitts.core.id.Id;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.service.MovieService;
@@ -20,7 +17,7 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static no.svitts.core.util.StringUtil.getRandomString;
+import static no.svitts.core.testkit.MovieTestKit.getGson;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -67,16 +64,6 @@ public class MovieResourceTest extends JerseyTest {
     public void getMovieById_ThrowsRepositoryException_ShouldReturnInternalServerErrorResponse() throws RepositoryException {
         when(movieServiceMock.getMovie(anyString())).thenThrow(new RepositoryException());
         Response response = target(MOVIE_RESOURCE).path(Id.get()).request().get();
-        assertEquals(500, response.getStatus());
-        response.close();
-    }
-
-    @Test
-    public void name() {
-        Response response = target(MOVIE_RESOURCE).path(getRandomString(254)).request().get();
-        System.out.println("Response:"+ response.toString());
-        String entity = response.readEntity(String.class);
-        System.out.println("Entity: " + entity);
         assertEquals(500, response.getStatus());
         response.close();
     }
@@ -145,13 +132,6 @@ public class MovieResourceTest extends JerseyTest {
 
         assertEquals(500, response.getStatus());
         verify(movieServiceMock, times(1)).deleteMovie(movie.getId());
-    }
-
-    private Gson getGson() {
-        return new GsonBuilder()
-                .registerTypeAdapter(Movie.class, new MovieSerializer())
-                .registerTypeAdapter(Movie.class, new MovieDeserializer())
-                .create();
     }
 
 }
