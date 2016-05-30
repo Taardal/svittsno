@@ -1,7 +1,7 @@
 package no.svitts.core.gson.deserializer;
 
 import com.google.gson.JsonElement;
-import no.svitts.core.id.Id;
+import no.svitts.core.util.Id;
 
 abstract class CoreDeserializer {
 

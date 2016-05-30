@@ -1,9 +1,9 @@
 package no.svitts.core.repository;
 
 import no.svitts.core.datasource.CoreDataSource;
+import no.svitts.core.exception.RepositoryException;
 import org.junit.Test;
 
-import javax.ws.rs.InternalServerErrorException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
@@ -28,20 +28,20 @@ public class CoreRepositoryTest {
         assertEquals(1, list.size());
     }
 
-    @Test(expected = InternalServerErrorException.class)
-    public void executeQuery_ThrowsSQLException_ShouldCatchSQLExceptionAndThrowInternalServerException() throws Exception {
+    @Test(expected = RepositoryException.class)
+    public void executeQuery_ThrowsSQLException_ShouldCatchSQLExceptionAndThrowRepositoryException() throws SQLException {
         when(preparedStatementMock.executeQuery()).thenThrow(new SQLException());
         coreRepositoryMock.executeQuery(preparedStatementMock);
     }
 
-    @Test(expected = InternalServerErrorException.class)
-    public void executeUpdate_ThrowsSQLException_ShouldCatchSQLExceptionAndThrowInternalServerException() throws Exception {
+    @Test(expected = RepositoryException.class)
+    public void executeUpdate_ThrowsSQLException_ShouldCatchSQLExceptionAndThrowRepositoryException() throws SQLException {
         when(preparedStatementMock.executeUpdate()).thenThrow(new SQLException());
         coreRepositoryMock.executeUpdate(preparedStatementMock);
     }
 
-    @Test(expected = InternalServerErrorException.class)
-    public void executeBatch_ThrowsSQLException_ShouldCatchSQLExceptionAndThrowInternalServerException() throws Exception {
+    @Test(expected = RepositoryException.class)
+    public void executeBatch_ThrowsSQLException_ShouldCatchSQLExceptionAndThrowRepositoryException() throws SQLException {
         when(preparedStatementMock.executeBatch()).thenThrow(new SQLException());
         coreRepositoryMock.executeBatch(preparedStatementMock);
     }

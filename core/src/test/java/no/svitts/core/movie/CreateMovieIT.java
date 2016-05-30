@@ -6,6 +6,7 @@ import no.svitts.core.datasource.DataSource;
 import no.svitts.core.repository.MovieRepository;
 import no.svitts.core.resource.MovieResource;
 import no.svitts.core.service.MovieService;
+import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.After;
 import org.junit.Before;
@@ -17,7 +18,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import static no.svitts.core.testkit.ITestKit.getDataSource;
-import static no.svitts.core.testkit.JerseyTestKit.getResourceConfig;
 import static no.svitts.core.testkit.MovieTestKit.getGson;
 import static no.svitts.core.util.StringUtil.getRandomString;
 import static org.junit.Assert.assertEquals;
@@ -39,7 +39,9 @@ public class CreateMovieIT extends JerseyTest {
     @Override
     protected Application configure() {
         dataSource = getDataSource();
-        return getResourceConfig(new MovieResource(new MovieService(new MovieRepository(dataSource))));
+        ResourceConfig resourceConfig = new ResourceConfig();
+        resourceConfig.register(new MovieResource(new MovieService(new MovieRepository(dataSource))));
+        return resourceConfig;
     }
 
     @Override

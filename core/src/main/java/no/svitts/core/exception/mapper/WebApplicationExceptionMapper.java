@@ -1,6 +1,7 @@
-package no.svitts.core.exception;
+package no.svitts.core.exception.mapper;
 
 import com.google.gson.Gson;
+import no.svitts.core.error.ErrorMessage;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -19,8 +20,8 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
 
     @Override
     public Response toResponse(WebApplicationException webApplicationException) {
-        HttpErrorMessage httpErrorMessage = new HttpErrorMessage(webApplicationException);
-        return Response.status(httpErrorMessage.getStatus()).entity(gson.toJson(httpErrorMessage)).type(MediaType.APPLICATION_JSON).build();
+        ErrorMessage errorMessage = new ErrorMessage(webApplicationException);
+        return Response.status(errorMessage.getStatus()).entity(gson.toJson(errorMessage)).type(MediaType.APPLICATION_JSON).build();
     }
 
 }

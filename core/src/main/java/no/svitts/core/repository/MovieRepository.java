@@ -10,7 +10,6 @@ import no.svitts.core.search.SearchKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.InternalServerErrorException;
 import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
@@ -36,15 +35,14 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
     }
 
     @Override
-    public Movie getSingle(String id) throws RepositoryException {
+    public Movie getSingle(String id) {
         LOGGER.info("Getting movie by ID [{}]", id);
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement preparedStatement = getSelectMoviePreparedStatement(connection, id)) {
-                return getMovie(executeQuery(preparedStatement));
-            }
+            return getMovie(id, connection);
         } catch (SQLException e) {
-            LOGGER.error("Could not connect to data source to get movie by ID [" + id + "].", e);
-            throw new RepositoryException("Could not execute request to get movie by ID [" + id + "]. Connection was unavaiable or the SQL statement was invalid.", e);
+            String errorMessage = "Could not connect to data source to get single movie by ID [" + id + "]";
+            LOGGER.error(errorMessage, e);
+            throw new RepositoryException(errorMessage, e);
         }
     }
 
@@ -54,9 +52,9 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
         try (Connection connection = dataSource.getConnection()) {
             return getMultiple(searchCriteria, connection);
         } catch (SQLException e) {
-            String errorMessage = "Could not get connection from data source when asked to get multiple movies by search criteria [" + searchCriteria.toString() + "]";
-            LOGGER.error(errorMessage, e);
-            throw new InternalServerErrorException(errorMessage, e);
+            String errorMessage = "Could not get connection from data source when asked to get multiple movies by search criteria";
+            LOGGER.error(errorMessage + " [" + searchCriteria.toString() + "]", e);
+            throw new RepositoryException(errorMessage, e);
         }
     }
 
@@ -70,9 +68,9 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
             }
             return movie.getId();
         } catch (SQLException e) {
-            String errorMessage = "Could not get connection from data source when asked to insert single movie [" + movie.toString() + "]";
-            LOGGER.error(errorMessage, e);
-            throw new InternalServerErrorException(errorMessage, e);
+            String errorMessage = "Could not get connection from data source when asked to insert single movie";
+            LOGGER.error(errorMessage + " [" + movie.toString() + "]", e);
+            throw new RepositoryException(errorMessage, e);
         }
     }
 
@@ -83,9 +81,9 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
             updateMovie(movie, connection);
             updateMovieGenreRelations(movie, connection);
         } catch (SQLException e) {
-            String errorMessage = "Could not get connection from data source when asked to update single movie [" + movie.toString() + "]";
-            LOGGER.error(errorMessage, e);
-            throw new InternalServerErrorException(errorMessage, e);
+            String errorMessage = "Could not get connection from data source when asked to update single movie";
+            LOGGER.error(errorMessage + " [" + movie.toString() + "]", e);
+            throw new RepositoryException(errorMessage, e);
         }
     }
 
@@ -97,7 +95,7 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
         } catch (SQLException e) {
             String errorMessage = "Could not get connection from data source when asked to delete single movie with ID [" + id + "]";
             LOGGER.error(errorMessage, e);
-            throw new InternalServerErrorException(errorMessage, e);
+            throw new RepositoryException(errorMessage, e);
         }
 
     }
@@ -126,11 +124,12 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
         return movies;
     }
 
-    Movie getMovie(String id, Connection connection) throws RepositoryException {
+    Movie getMovie(String id, Connection connection) {
         try (PreparedStatement preparedStatement = getSelectMoviePreparedStatement(connection, id)) {
             return getMovie(executeQuery(preparedStatement));
         } catch (SQLException e) {
-            throw new RepositoryException("Could not execute sql statement for getting movie by ID [" + id + "]", e);
+            String errorMessage = "Could not prepare sql statement to get single movie by ID [" + id + "]";
+            throw new RepositoryException(errorMessage, e);
         }
     }
 
@@ -142,7 +141,7 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
         } else {
             String errorMessage = "Could not resolve search key [" + searchCriteria.getKey() + "] when asked to get multiple movies";
             LOGGER.error(errorMessage);
-            throw new InternalServerErrorException(errorMessage);
+            throw new RepositoryException(errorMessage);
         }
     }
 
@@ -152,7 +151,7 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
         } catch (SQLException e) {
             String errorMessage = "Could not prepare sql statement when asked to get movies by name [" + searchCriteria.getValue() + "]";
             LOGGER.error(errorMessage, e);
-            throw new InternalServerErrorException(errorMessage, e);
+            throw new RepositoryException(errorMessage, e);
         }
     }
 
@@ -162,7 +161,7 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
         } catch (SQLException e) {
             String errorMessage = "Could not prepare sql statement when asked to get movies by genre [" + searchCriteria.getValue() + "]";
             LOGGER.error(errorMessage, e);
-            throw new InternalServerErrorException(errorMessage, e);
+            throw new RepositoryException(errorMessage, e);
         }
     }
 
@@ -170,9 +169,9 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
         try (PreparedStatement preparedStatement = getInsertMoviePreparedStatement(connection, movie)) {
             executeUpdate(preparedStatement);
         } catch (SQLException e) {
-            String errorMessage = "Could not prepare sql statement when asked to insert single movie [" + movie.toString() + "]";
-            LOGGER.error(errorMessage, e);
-            throw new InternalServerErrorException(errorMessage, e);
+            String errorMessage = "Could not prepare sql statement when asked to insert single movie";
+            LOGGER.error(errorMessage + " [" + movie.toString() + "]", e);
+            throw new RepositoryException(errorMessage, e);
         }
     }
 
@@ -180,9 +179,9 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
         try (PreparedStatement preparedStatement = getInsertMovieGenreRelationsPreparedStatement(connection, movie)) {
             executeBatch(preparedStatement);
         } catch (SQLException e) {
-            String errorMessage = "Could not prepare sql statement when asked to insert single movie/genre relations for movie [" + movie.toString() + "]";
-            LOGGER.error(errorMessage, e);
-            throw new InternalServerErrorException(errorMessage, e);
+            String errorMessage = "Could not prepare sql statement when asked to insert single movie/genre relations for movie";
+            LOGGER.error(errorMessage + " [" + movie.toString() + "]", e);
+            throw new RepositoryException(errorMessage, e);
         }
     }
 
@@ -190,16 +189,9 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
         try (PreparedStatement preparedStatement = getUpdateMoviePreparedStatement(connection, movie)) {
             executeUpdate(preparedStatement);
         } catch (SQLException e) {
-            String errorMessage = "Could not prepare sql statement when asked to update single movie [" + movie.toString() + "]";
-            LOGGER.error(errorMessage, e);
-            throw new InternalServerErrorException(errorMessage, e);
-        }
-    }
-
-    void updateMovieGenreRelations(Movie movie, Connection connection)  {
-        deleteMovieGenreRelations(movie, connection);
-        if (movie.getGenres() != null && !movie.getGenres().isEmpty()) {
-            insertMovieGenreRelations(movie, connection);
+            String errorMessage = "Could not prepare sql statement when asked to update single movie";
+            LOGGER.error(errorMessage + " [" + movie.toString() + "]", e);
+            throw new RepositoryException(errorMessage, e);
         }
     }
 
@@ -207,9 +199,9 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
         try (PreparedStatement preparedStatement = getDeleteMovieGenreRelationsPreparedStatement(connection, movie)) {
             executeUpdate(preparedStatement);
         } catch (SQLException e) {
-            String errorMessage = "Could not prepare sql statement when asked to update single movie [" + movie.toString() + "]";
-            LOGGER.error(errorMessage, e);
-            throw new InternalServerErrorException(errorMessage, e);
+            String errorMessage = "Could not prepare sql statement when asked to update single movie";
+            LOGGER.error(errorMessage + " [" + movie.toString() + "]", e);
+            throw new RepositoryException(errorMessage, e);
         }
     }
 
@@ -219,7 +211,7 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
         } catch (SQLException e) {
             String errorMessage = "Could not prepare sql statement when asked to delete single movie with ID [" + id + "]";
             LOGGER.error(errorMessage, e);
-            throw new InternalServerErrorException(errorMessage, e);
+            throw new RepositoryException(errorMessage, e);
         }
     }
 
@@ -300,6 +292,13 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
         preparedStatement.setDate(i++, getDate(movie.getReleaseDate()));
         preparedStatement.setString(i, movie.getId());
         return preparedStatement;
+    }
+
+    private void updateMovieGenreRelations(Movie movie, Connection connection)  {
+        deleteMovieGenreRelations(movie, connection);
+        if (movie.getGenres() != null && !movie.getGenres().isEmpty()) {
+            insertMovieGenreRelations(movie, connection);
+        }
     }
 
     private PreparedStatement getDeleteMovieGenreRelationsPreparedStatement(Connection connection, Movie movie) throws SQLException {

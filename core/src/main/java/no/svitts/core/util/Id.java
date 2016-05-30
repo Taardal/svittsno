@@ -1,4 +1,4 @@
-package no.svitts.core.id;
+package no.svitts.core.util;
 
 import java.util.UUID;
 

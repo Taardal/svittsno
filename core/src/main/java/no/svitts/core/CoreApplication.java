@@ -7,7 +7,7 @@ import no.svitts.core.application.ApplicationProperties;
 import no.svitts.core.datasource.CoreDataSource;
 import no.svitts.core.datasource.DataSource;
 import no.svitts.core.datasource.DataSourceConfig;
-import no.svitts.core.exception.WebApplicationExceptionMapper;
+import no.svitts.core.exception.mapper.WebApplicationExceptionMapper;
 import no.svitts.core.repository.MovieRepository;
 import no.svitts.core.resource.MovieResource;
 import no.svitts.core.service.MovieService;

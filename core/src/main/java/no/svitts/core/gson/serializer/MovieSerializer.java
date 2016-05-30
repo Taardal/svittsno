@@ -34,7 +34,7 @@ public class MovieSerializer extends CoreSerializer implements JsonSerializer<Mo
         } else {
             String errorMessage = "Could not serialize movie because the object was null";
             LOGGER.error(errorMessage);
-            throw new InternalServerErrorException(errorMessage);
+            throw new RuntimeException(errorMessage);
         }
     }
 

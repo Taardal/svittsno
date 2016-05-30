@@ -1,10 +1,10 @@
 package no.svitts.core.repository;
 
 import no.svitts.core.datasource.DataSource;
+import no.svitts.core.exception.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.InternalServerErrorException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,12 +26,12 @@ abstract class CoreRepository<T> {
         LOGGER.info("Executing query [{}]", preparedStatement.toString());
         try (ResultSet resultSet = preparedStatement.executeQuery()){
             List<T> results = getResults(resultSet);
-            LOGGER.info("Query got [{}] results", results.size());
+            LOGGER.debug("Query got [{}] results", results.size());
             return results;
         } catch (SQLException e) {
             String errorMessage = "Could not execute query";
             LOGGER.error(errorMessage + " [" + preparedStatement.toString() + "]", e);
-            throw new InternalServerErrorException(errorMessage, e);
+            throw new RepositoryException(errorMessage, e);
         }
     }
 
@@ -39,24 +39,23 @@ abstract class CoreRepository<T> {
         LOGGER.info("Executing updateSingle [{}]", preparedStatement.toString());
         try {
             int updateCount = preparedStatement.executeUpdate();
-            LOGGER.info("Update updated [{}] rows", updateCount);
+            LOGGER.debug("Update updated [{}] rows", updateCount);
         } catch (SQLException e) {
             String errorMessage = "Could not execute update";
             LOGGER.error(errorMessage + " [" + preparedStatement.toString() + "]", e);
-            throw new InternalServerErrorException(errorMessage, e);
+            throw new RepositoryException(errorMessage, e);
         }
     }
-
 
     void executeBatch(PreparedStatement preparedStatement) {
         LOGGER.info("Executing batch [{}]", preparedStatement.toString());
         try {
             int[] updateCounts = preparedStatement.executeBatch();
-            LOGGER.info("Batch updated {} rows", updateCounts);
+            LOGGER.debug("Batch updated {} rows", updateCounts);
         } catch (SQLException e) {
             String errorMessage = "Could not execute batch [" + preparedStatement.toString() + "]";
             LOGGER.error(errorMessage, e);
-            throw new InternalServerErrorException(errorMessage, e);
+            throw new RepositoryException(errorMessage, e);
         }
     }
 

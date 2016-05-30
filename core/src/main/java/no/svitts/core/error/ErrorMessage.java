@@ -1,27 +1,27 @@
-package no.svitts.core.exception;
+package no.svitts.core.error;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-public class HttpErrorMessage {
+public class ErrorMessage {
 
     private int status;
     private String message;
 
-    public HttpErrorMessage() {
+    public ErrorMessage() {
     }
 
-    HttpErrorMessage(WebApplicationException webApplicationException) {
+    public ErrorMessage(WebApplicationException webApplicationException) {
         status = webApplicationException.getResponse().getStatus();
         message = webApplicationException.getMessage();
     }
 
-    public HttpErrorMessage(int status, String message) {
+    public ErrorMessage(int status, String message) {
         this.status = status;
         this.message = message;
     }
 
-    public HttpErrorMessage(Response.Status status, String message) {
+    public ErrorMessage(Response.Status status, String message) {
         this.status = status.getStatusCode();
         this.message = message;
     }

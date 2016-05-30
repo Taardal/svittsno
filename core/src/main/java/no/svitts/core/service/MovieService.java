@@ -1,6 +1,5 @@
 package no.svitts.core.service;
 
-import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.repository.Repository;
 import no.svitts.core.search.SearchCriteria;
@@ -19,7 +18,7 @@ public class MovieService {
         this.movieRepository = movieRepository;
     }
 
-    public Movie getMovie(String id) throws RepositoryException {
+    public Movie getMovie(String id) {
         return movieRepository.getSingle(id);
     }
 
@@ -37,19 +36,6 @@ public class MovieService {
 
     public void deleteMovie(String id) {
         movieRepository.deleteSingle(id);
-    }
-
-    private boolean isRequiredFieldsValid(String... strings) {
-        for (String string : strings) {
-            if (string == null || string.isEmpty()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean isRequiredFieldsValid(SearchCriteria searchCriteria) {
-        return searchCriteria.getKey() != null && searchCriteria.getValue() != null && !searchCriteria.getValue().isEmpty() && searchCriteria.getLimit() > 0;
     }
 
 }
