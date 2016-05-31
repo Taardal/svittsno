@@ -4,11 +4,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import no.svitts.core.error.ErrorMessage;
 import no.svitts.core.exception.RepositoryException;
-import no.svitts.core.util.Id;
 import no.svitts.core.movie.Movie;
-import no.svitts.core.search.SearchCriteria;
-import no.svitts.core.search.SearchKey;
+import no.svitts.core.search.Criteria;
 import no.svitts.core.service.MovieService;
+import no.svitts.core.util.Id;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,21 +61,12 @@ public class MovieResource extends CoreResource {
     @Path("name")
     public Response getMoviesByName(@QueryParam("name") String name, @QueryParam("limit") int limit) {
         LOGGER.info("Received request to GET max [{}] movie(s) with name [{}]", limit, name);
-        SearchCriteria searchCriteria = new SearchCriteria(SearchKey.NAME, name, limit);
+        Criteria criteria = new Criteria(0, 0);
         if (name == null || name.equals("")) {
             ErrorMessage errorMessage = new ErrorMessage(Response.Status.BAD_REQUEST, "Could not validate search parameter name");
             return Response.status(errorMessage.getStatus()).entity(gson.toJson(errorMessage)).build();
         }
-        List<Movie> movies = movieService.getMovies(searchCriteria);
-        return Response.ok().entity(gson.toJson(movies)).build();
-    }
-
-    @GET
-    @Path("genre")
-    public Response getMoviesByGenre(@QueryParam("genre") String genre, @QueryParam("limit") int limit) {
-        LOGGER.info("Received request to GET max [{}] movie(s) with genre [{}]", limit, genre);
-        SearchCriteria searchCriteria = new SearchCriteria(SearchKey.GENRE, genre, limit);
-        List<Movie> movies = movieService.getMovies(searchCriteria);
+        List<Movie> movies = movieService.getMovies(criteria);
         return Response.ok().entity(gson.toJson(movies)).build();
     }
 

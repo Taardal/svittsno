@@ -75,6 +75,12 @@ public class MovieRepositoryTest {
     }
 
     @Test
+    public void getMultiple_NameAndGenreCriteria_ShouldReturnExpectedMovies() {
+
+
+    }
+
+    @Test
     public void insertSingle_ValidMovie_ShouldTriggerExpectedSQLComponentsAndReturnIdOfInsertedMovie() throws SQLException {
         Movie movie = movieBuilder.build();
 

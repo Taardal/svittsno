@@ -5,7 +5,7 @@ import no.svitts.core.date.KeyDate;
 import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.movie.Genre;
 import no.svitts.core.movie.Movie;
-import no.svitts.core.search.SearchCriteria;
+import no.svitts.core.search.Criteria;
 import no.svitts.core.search.SearchKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,13 +47,13 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
     }
 
     @Override
-    public List<Movie> getMultiple(SearchCriteria searchCriteria) {
-        LOGGER.info("Getting multiple movies by search search [{}]", searchCriteria.toString());
+    public List<Movie> getMultiple(Criteria criteria) {
+        LOGGER.info("Getting multiple movies [{}]", criteria.toString());
         try (Connection connection = dataSource.getConnection()) {
-            return getMultiple(searchCriteria, connection);
+            return getMultiple(criteria, connection);
         } catch (SQLException e) {
             String errorMessage = "Could not get connection from data source when asked to get multiple movies by search criteria";
-            LOGGER.error(errorMessage + " [" + searchCriteria.toString() + "]", e);
+            LOGGER.error(errorMessage + " [" + criteria.toString() + "]", e);
             throw new RepositoryException(errorMessage, e);
         }
     }
@@ -133,36 +133,24 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
         }
     }
 
-    List<Movie> getMultiple(SearchCriteria searchCriteria, Connection connection) {
-        if (searchCriteria.getKey() == SearchKey.NAME) {
-            return getMoviesByName(searchCriteria, connection);
-        } else if (searchCriteria.getKey() == SearchKey.GENRE) {
-            return getMoviesByGenre(searchCriteria, connection);
-        } else {
-            String errorMessage = "Could not resolve search key [" + searchCriteria.getKey() + "] when asked to get multiple movies";
-            LOGGER.error(errorMessage);
-            throw new RepositoryException(errorMessage);
-        }
-    }
-
-    List<Movie> getMoviesByName(SearchCriteria searchCriteria, Connection connection) {
-        try (PreparedStatement preparedStatement = getSelectMoviesByNamePreparedStatement(searchCriteria, connection)) {
+    List<Movie> getMultiple(Criteria criteria, Connection connection) {
+        try (PreparedStatement preparedStatement = getSelectMoviesPreparedStatement(criteria, connection)) {
             return executeQuery(preparedStatement);
         } catch (SQLException e) {
-            String errorMessage = "Could not prepare sql statement when asked to get movies by name [" + searchCriteria.getValue() + "]";
-            LOGGER.error(errorMessage, e);
+            String errorMessage = "Could not prepare sql statement to get multiple movies by criteria";
+            LOGGER.error(errorMessage + " [" + criteria.toString() + "]");
             throw new RepositoryException(errorMessage, e);
         }
     }
 
-    List<Movie> getMoviesByGenre(SearchCriteria searchCriteria, Connection connection) {
-        try (PreparedStatement preparedStatement = getSelectMoviesByGenrePreparedStatement(searchCriteria, connection)) {
-            return executeQuery(preparedStatement);
-        } catch (SQLException e) {
-            String errorMessage = "Could not prepare sql statement when asked to get movies by genre [" + searchCriteria.getValue() + "]";
-            LOGGER.error(errorMessage, e);
-            throw new RepositoryException(errorMessage, e);
-        }
+    private PreparedStatement getSelectMoviesPreparedStatement(Criteria criteria, Connection connection) throws SQLException {
+        String sql = "SELECT movie.name, GROUP_CONCAT(DISTINCT genre.name) AS genres FROM movie LEFT JOIN movie_genre ON movie.id = movie_genre.movie_id LEFT JOIN genre ON genre.id = movie_genre.genre_id WHERE movie.name LIKE ? GROUP BY movie.id HAVING genres LIKE ?;";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        int i = 1;
+        preparedStatement.setString(i++, "%" + criteria.getCriteria(SearchKey.NAME) + "%");
+        preparedStatement.setString(i++, "%" + criteria.getCriteria(SearchKey.GENRE) + "%");
+        preparedStatement.setInt(i, criteria.getLimit());
+        return preparedStatement;
     }
 
     void insertMovie(Movie movie, Connection connection)  {
@@ -228,26 +216,6 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
         } else {
             return null;
         }
-    }
-
-    private PreparedStatement getSelectMoviesByNamePreparedStatement(SearchCriteria searchCriteria, Connection connection) throws SQLException {
-        String sql = "SELECT movie.*, GROUP_CONCAT(genre.name) AS genres FROM movie JOIN movie_genre ON movie.id = movie_genre.movie_id " +
-                "JOIN genre ON genre.id = movie_genre.genre_id WHERE movie.name LIKE ? GROUP BY movie.id LIMIT ?;";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        int i = 1;
-        preparedStatement.setString(i++, "%" + searchCriteria.getValue() + "%");
-        preparedStatement.setInt(i, searchCriteria.getLimit());
-        return preparedStatement;
-    }
-
-    private PreparedStatement getSelectMoviesByGenrePreparedStatement(SearchCriteria searchCriteria, Connection connection) throws SQLException {
-        String sql = "SELECT movie.*, GROUP_CONCAT(genre.name) AS genres FROM movie JOIN movie_genre ON movie.id = movie_genre.movie_id " +
-                "JOIN genre ON genre.id = movie_genre.genre_id WHERE genre.name LIKE ? GROUP BY movie.id LIMIT ?;";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        int i = 1;
-        preparedStatement.setString(i++, "%" + searchCriteria.getValue() + "%");
-        preparedStatement.setInt(i, searchCriteria.getLimit());
-        return preparedStatement;
     }
 
     private PreparedStatement getInsertMoviePreparedStatement(Connection connection, Movie movie) throws SQLException {

@@ -2,7 +2,7 @@ package no.svitts.core.service;
 
 import no.svitts.core.movie.Movie;
 import no.svitts.core.repository.Repository;
-import no.svitts.core.search.SearchCriteria;
+import no.svitts.core.search.Criteria;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,8 +22,8 @@ public class MovieService {
         return movieRepository.getSingle(id);
     }
 
-    public List<Movie> getMovies(SearchCriteria searchCriteria) {
-        return movieRepository.getMultiple(searchCriteria);
+    public List<Movie> getMovies(Criteria criteria) {
+        return movieRepository.getMultiple(criteria);
     }
 
     public String createMovie(Movie movie) {
