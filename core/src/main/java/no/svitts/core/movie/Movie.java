@@ -35,6 +35,10 @@ public class Movie {
         this.backdropImageFile = backdropImageFile;
     }
 
+    public static boolean isIdValid(String id) {
+        return id != null && !id.equals("") && id.length() <= NAME_MAX_LENGTH;
+    }
+
     @Override
     public String toString() {
         return "Movie{" +
