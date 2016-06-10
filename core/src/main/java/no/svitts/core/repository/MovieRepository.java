@@ -6,7 +6,7 @@ import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.movie.Genre;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.search.Criteria;
-import no.svitts.core.search.SearchKey;
+import no.svitts.core.search.CriteriaKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +63,7 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
         LOGGER.info("Inserting movie [{}]", movie.toString());
         try (Connection connection = dataSource.getConnection()) {
             insertMovie(movie, connection);
-            if (movie.getGenres() != null && !movie.getGenres().isEmpty()) {
+            if (!movie.getGenres().isEmpty()) {
                 insertMovieGenreRelations(movie, connection);
             }
             return movie.getId();
@@ -147,8 +147,8 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
         String sql = "SELECT movie.name, GROUP_CONCAT(DISTINCT genre.name) AS genres FROM movie LEFT JOIN movie_genre ON movie.id = movie_genre.movie_id LEFT JOIN genre ON genre.id = movie_genre.genre_id WHERE movie.name LIKE ? GROUP BY movie.id HAVING genres LIKE ?;";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         int i = 1;
-        preparedStatement.setString(i++, "%" + criteria.getCriteria(SearchKey.NAME) + "%");
-        preparedStatement.setString(i++, "%" + criteria.getCriteria(SearchKey.GENRE) + "%");
+        preparedStatement.setString(i++, "%" + criteria.getCriteria(CriteriaKey.NAME) + "%");
+        preparedStatement.setString(i++, "%" + criteria.getCriteria(CriteriaKey.GENRE) + "%");
         preparedStatement.setInt(i, criteria.getLimit());
         return preparedStatement;
     }
@@ -264,7 +264,7 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
 
     private void updateMovieGenreRelations(Movie movie, Connection connection)  {
         deleteMovieGenreRelations(movie, connection);
-        if (movie.getGenres() != null && !movie.getGenres().isEmpty()) {
+        if (!movie.getGenres().isEmpty()) {
             insertMovieGenreRelations(movie, connection);
         }
     }

@@ -4,8 +4,6 @@ import java.util.UUID;
 
 public class Id {
 
-    public static final int MAX_LENGTH = 255;
-
     private Id() {
     }
 

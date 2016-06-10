@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class Criteria {
 
-    private Map<SearchKey, String> criteria;
+    private Map<CriteriaKey, String> criteria;
     private int limit;
     private int offset;
 
@@ -22,12 +22,12 @@ public class Criteria {
                 '}';
     }
 
-    public void addCriteria(SearchKey searchKey, String criteria) {
-        this.criteria.put(searchKey, criteria);
+    public void addCriteria(CriteriaKey criteriaKey, String criteria) {
+        this.criteria.put(criteriaKey, criteria);
     }
 
-    public String getCriteria(SearchKey searchKey) {
-        return criteria.get(searchKey);
+    public String getCriteria(CriteriaKey criteriaKey) {
+        return criteria.get(criteriaKey);
     }
 
     public int getLimit() {

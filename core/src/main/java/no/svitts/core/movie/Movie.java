@@ -7,8 +7,6 @@ import java.util.List;
 
 public class Movie {
 
-    public static final int NAME_MAX_LENGTH = 255;
-
     private final String id;
     private String name;
     private String imdbId;
@@ -33,10 +31,6 @@ public class Movie {
         this.videoFile = videoFile;
         this.posterImageFile = posterImageFile;
         this.backdropImageFile = backdropImageFile;
-    }
-
-    public static boolean isIdValid(String id) {
-        return id != null && !id.equals("") && id.length() <= NAME_MAX_LENGTH;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package no.svitts.core.search;
 
-public enum SearchKey {
+public enum CriteriaKey {
 
     NAME, GENRE
 

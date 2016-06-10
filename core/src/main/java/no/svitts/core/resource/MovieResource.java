@@ -6,9 +6,9 @@ import no.svitts.core.error.ErrorMessage;
 import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.search.Criteria;
-import no.svitts.core.search.SearchKey;
+import no.svitts.core.search.CriteriaKey;
 import no.svitts.core.service.MovieService;
-import no.svitts.core.util.Id;
+import no.svitts.core.validator.MovieValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,9 +31,11 @@ public class MovieResource extends CoreResource {
     private UriInfo uriInfo;
 
     private MovieService movieService;
+    private MovieValidator movieValidator;
 
     public MovieResource(MovieService movieService) {
         this.movieService = movieService;
+        movieValidator = new MovieValidator();
     }
 
     @ApiOperation(value = "Get movie by ID", notes = "Lists a specific movie as JSON. Invalid/non-existing ID will give 'required fields invalid' error.", response = Response.class)
@@ -41,8 +43,8 @@ public class MovieResource extends CoreResource {
     @Path("{id}")
     public Response getMovie(@PathParam("id") String id) {
         LOGGER.info("Received request to GET movie with ID [{}]", id);
-        if (Movie.isIdValid(id)) {
-            return getErrorResponse(Response.Status.BAD_REQUEST, "Could not validate ID because it exceeded [" + Id.MAX_LENGTH + "] characters");
+        if (!movieValidator.isIdValid(id)) {
+            return getErrorResponse(Response.Status.BAD_REQUEST, "Could not validate ID");
         }
         try {
             Movie movie = movieService.getMovie(id);
@@ -60,7 +62,7 @@ public class MovieResource extends CoreResource {
     public Response getMovies(@QueryParam("name") String name, @QueryParam("genre") String genre, @DefaultValue("10") @QueryParam("limit") int limit, @DefaultValue("0") @QueryParam("offset") int offset) {
         LOGGER.info("Received request to GET max [{}] movie(s) with name [{}]", limit, name);
         Criteria criteria = getCriteria(name, genre, limit, offset);
-        if (name == null || name.equals("")) {
+        if (name.length() > 255 || genre.length() > 255) {
             return getErrorResponse(Response.Status.BAD_REQUEST, "Could not validate search parameter name");
         }
         try {
@@ -76,8 +78,8 @@ public class MovieResource extends CoreResource {
     public Response createMovie(String json) {
         LOGGER.info("Received request to POST movie by json [{}]", json);
         Movie movie = gson.fromJson(json, Movie.class);
-        if (movie.getName().equals("null") || movie.getName().isEmpty() || movie.getName().length() > Movie.NAME_MAX_LENGTH) {
-            return getErrorResponse(Response.Status.BAD_REQUEST, "Could not validate movie name.");
+        if (!movieValidator.isMovieValid(movie)) {
+            return getErrorResponse(Response.Status.BAD_REQUEST, "Could not validate movie");
         }
         try {
             String insertedMovieId = movieService.createMovie(movie);
@@ -94,7 +96,7 @@ public class MovieResource extends CoreResource {
     public Response updateMovie(@PathParam("id") String id, String json) {
         LOGGER.info("Received request to PUT movie by json [{}]", json);
         Movie movie = gson.fromJson(json, Movie.class);
-        if (movie.getName().equals("null") || movie.getName().isEmpty() || movie.getName().length() > Movie.NAME_MAX_LENGTH) {
+        if (!movieValidator.isMovieValid(movie)) {
             return getErrorResponse(Response.Status.BAD_REQUEST, "Could not validate movie name.");
         }
         if (movieService.getMovie(id) == null) {
@@ -113,8 +115,8 @@ public class MovieResource extends CoreResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response deleteMovie(@PathParam("id") String id) {
         LOGGER.info("Received request to DELETE movie with ID [{}]", id);
-        if (id.length() > Id.MAX_LENGTH) {
-            return getErrorResponse(Response.Status.BAD_REQUEST, "Could not validate ID because it exceeded [" + Id.MAX_LENGTH + "] characters");
+        if (!movieValidator.isIdValid(id)) {
+            return getErrorResponse(Response.Status.BAD_REQUEST, "Could not validate ID");
         }
         try {
             movieService.deleteMovie(id);
@@ -131,8 +133,8 @@ public class MovieResource extends CoreResource {
 
     private Criteria getCriteria(String name, String genre, int limit, int offset) {
         Criteria criteria = new Criteria();
-        criteria.addCriteria(SearchKey.NAME, name);
-        criteria.addCriteria(SearchKey.GENRE, genre);
+        criteria.addCriteria(CriteriaKey.NAME, name);
+        criteria.addCriteria(CriteriaKey.GENRE, genre);
         criteria.setLimit(limit);
         criteria.setOffset(offset);
         return criteria;
