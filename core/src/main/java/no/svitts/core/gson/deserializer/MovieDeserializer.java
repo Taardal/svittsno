@@ -62,8 +62,8 @@ public class MovieDeserializer extends CoreDeserializer implements JsonDeseriali
         try {
             return Genre.valueOf(genreString);
         } catch (IllegalArgumentException e) {
-            LOGGER.error("Could not convert genre [" + genreString + "] from string to an appropriate enum", e);
-            // Letting invalid genre pass because it should be handled in constraint validator for movie
+            LOGGER.error("Could not convert genre [" + genreString + "] from string to an appropriate enum.", e);
+            // Letting invalid genre pass as null because it should be handled in movie constraint validator.
             return null;
         }
     }

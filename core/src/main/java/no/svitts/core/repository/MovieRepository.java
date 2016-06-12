@@ -63,7 +63,7 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
         LOGGER.info("Inserting movie [{}]", movie.toString());
         try (Connection connection = dataSource.getConnection()) {
             insertMovie(movie, connection);
-            if (!movie.getGenres().isEmpty()) {
+            if (movie.getGenres() != null && !movie.getGenres().isEmpty()) {
                 insertMovieGenreRelations(movie, connection);
             }
             return movie.getId();
@@ -264,7 +264,7 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
 
     private void updateMovieGenreRelations(Movie movie, Connection connection)  {
         deleteMovieGenreRelations(movie, connection);
-        if (!movie.getGenres().isEmpty()) {
+        if (movie.getGenres() != null && !movie.getGenres().isEmpty()) {
             insertMovieGenreRelations(movie, connection);
         }
     }

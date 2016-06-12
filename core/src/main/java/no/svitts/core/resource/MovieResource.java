@@ -21,7 +21,7 @@ import java.util.List;
 @Path("movies")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class MovieResource extends CoreResource {
+public class MovieResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieResource.class);
 
