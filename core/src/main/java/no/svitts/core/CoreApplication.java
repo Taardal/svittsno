@@ -11,7 +11,9 @@ import no.svitts.core.exception.mapper.WebApplicationExceptionMapper;
 import no.svitts.core.repository.MovieRepository;
 import no.svitts.core.resource.MovieResource;
 import no.svitts.core.service.MovieService;
+import no.svitts.core.validation.ValidationConfigurationContextResolver;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.ServerProperties;
 
 
 public class CoreApplication extends ResourceConfig {
@@ -21,7 +23,9 @@ public class CoreApplication extends ResourceConfig {
         DataSource dataSource = new CoreDataSource(getDataSourceConfig(applicationProperties));
         register(new MovieResource(new MovieService(new MovieRepository(dataSource))));
         register(new WebApplicationExceptionMapper());
+        register(new ValidationConfigurationContextResolver());
         registerSwagger(applicationProperties);
+        property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
     }
 
     private DataSourceConfig getDataSourceConfig(ApplicationProperties applicationProperties) {

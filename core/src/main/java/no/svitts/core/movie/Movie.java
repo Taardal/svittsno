@@ -7,6 +7,9 @@ import java.util.List;
 
 public class Movie {
 
+    public static final int ID_MAX_LENGTH = 255;
+    public static final int NAME_MAX_LENGTH = 255;
+
     private final String id;
     private String name;
     private String imdbId;

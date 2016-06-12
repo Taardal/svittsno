@@ -1,4 +1,4 @@
-package no.svitts.core.movie;
+package no.svitts.core.genre;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +27,8 @@ public enum Genre {
     THRILLER(20, "Thriller"),
     WAR(21, "War"),
     WESTERN(22, "Western");
+
+    public static final int GENRE_MAX_LENGTH = 255;
 
     private int id;
     private String value;

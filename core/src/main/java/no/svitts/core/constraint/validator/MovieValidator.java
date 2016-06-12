@@ -1,7 +1,7 @@
-package no.svitts.core.validator;
+package no.svitts.core.constraint.validator;
 
-import no.svitts.core.date.KeyDate;
-import no.svitts.core.movie.Genre;
+import no.svitts.core.date.ReleaseDate;
+import no.svitts.core.genre.Genre;
 import no.svitts.core.movie.Movie;
 
 import java.io.File;
@@ -42,8 +42,8 @@ public class MovieValidator {
         return runtime >= 0;
     }
 
-    public boolean isReleaseDateValid(KeyDate releaseDate) {
-        return releaseDate == null || releaseDate.getTime() > new KeyDate("19000101").getTime();
+    public boolean isReleaseDateValid(ReleaseDate releaseDate) {
+        return releaseDate == null || releaseDate.getTime() > new ReleaseDate(1900, 1, 1).getTime();
     }
 
     public boolean isGenresValid(List<Genre> genres) {
