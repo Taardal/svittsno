@@ -26,11 +26,11 @@ abstract class CoreRepository<T> {
         LOGGER.info("Executing query [{}]", preparedStatement.toString());
         try (ResultSet resultSet = preparedStatement.executeQuery()){
             List<T> results = getResults(resultSet);
-            LOGGER.debug("Query got [{}] results", results.size());
+            LOGGER.info("Query got [{}] results", results.size());
             return results;
         } catch (SQLException e) {
-            String errorMessage = "Could not execute query";
-            LOGGER.error(errorMessage + " [" + preparedStatement.toString() + "]", e);
+            String errorMessage = "Could not execute query [" + preparedStatement.toString() + "]";
+            LOGGER.error(errorMessage, e);
             throw new RepositoryException(errorMessage, e);
         }
     }
@@ -41,8 +41,8 @@ abstract class CoreRepository<T> {
             int updateCount = preparedStatement.executeUpdate();
             LOGGER.debug("Update updated [{}] rows", updateCount);
         } catch (SQLException e) {
-            String errorMessage = "Could not execute update";
-            LOGGER.error(errorMessage + " [" + preparedStatement.toString() + "]", e);
+            String errorMessage = "Could not execute update [" + preparedStatement.toString() + "]";
+            LOGGER.error(errorMessage, e);
             throw new RepositoryException(errorMessage, e);
         }
     }

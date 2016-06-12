@@ -30,39 +30,17 @@ public class MovieValidator extends CoreValidator implements ConstraintValidator
 
     @Override
     public boolean isValid(Movie movie, ConstraintValidatorContext constraintValidatorContext) {
-        boolean idValid = isValid(getIdViolations(movie.getId()), constraintValidatorContext);
-        boolean nameValid = isValid(getNameViolations(movie.getName()), constraintValidatorContext);
-        boolean imdbIdValid = isValid(getImdbIdViolations(movie.getImdbId()), constraintValidatorContext);
-        boolean taglineValid = isValid(getTaglineViolations(movie.getTagline()), constraintValidatorContext);
-        boolean overviewValid = isValid(getOverviewViolations(movie.getOverview()), constraintValidatorContext);
-        boolean runtimeValid = isValid(getRuntimeViolations(movie.getRuntime()), constraintValidatorContext);
-        boolean releaseDateValid = isValid(getReleaseDateViolations(movie.getReleaseDate()), constraintValidatorContext);
-        boolean genresValid = isValid(getGenresViolations(movie.getGenres()), constraintValidatorContext);
-        boolean videoFileValid = isValid(getVideoFileViolations(movie.getVideoFile()), constraintValidatorContext);
-        boolean posterImageFileValid = isValid(getPosterImageFileViolations(movie.getPosterImageFile()), constraintValidatorContext);
-        boolean backdropImageFileValid = isValid(getBackdropImageFileViolations(movie.getBackdropImageFile()), constraintValidatorContext);
-        return idValid
-                && nameValid
-                && imdbIdValid
-                && taglineValid
-                && overviewValid
-                && runtimeValid
-                && releaseDateValid
-                && genresValid
-                && videoFileValid
-                && posterImageFileValid
-                && backdropImageFileValid;
-    }
-
-    private boolean isValid(List<String> violations, ConstraintValidatorContext constraintValidatorContext) {
-        if (violations.size() == 0) {
-            return true;
-        } else {
-            for (String violation : violations) {
-                addConstraintViolation(violation, constraintValidatorContext);
-            }
-            return false;
-        }
+        return isNoViolations(getIdViolations(movie.getId()), constraintValidatorContext)
+                && isNoViolations(getNameViolations(movie.getName()), constraintValidatorContext)
+                && isNoViolations(getImdbIdViolations(movie.getImdbId()), constraintValidatorContext)
+                && isNoViolations(getTaglineViolations(movie.getTagline()), constraintValidatorContext)
+                && isNoViolations(getOverviewViolations(movie.getOverview()), constraintValidatorContext)
+                && isNoViolations(getRuntimeViolations(movie.getRuntime()), constraintValidatorContext)
+                && isNoViolations(getReleaseDateViolations(movie.getReleaseDate()), constraintValidatorContext)
+                && isNoViolations(getGenresViolations(movie.getGenres()), constraintValidatorContext)
+                && isNoViolations(getVideoFileViolations(movie.getVideoFile()), constraintValidatorContext)
+                && isNoViolations(getPosterImageFileViolations(movie.getPosterImageFile()), constraintValidatorContext)
+                && isNoViolations(getBackdropImageFileViolations(movie.getBackdropImageFile()), constraintValidatorContext);
     }
 
     private List<String> getIdViolations(String id) {
@@ -71,7 +49,7 @@ public class MovieValidator extends CoreValidator implements ConstraintValidator
             if (id.length() > ID_MAX_LENGTH) {
                 violations.add("ID was too long.");
             }
-            if (containsIllegalCharacters(id)) {
+            if (isContainsIllegalCharacters(id)) {
                 violations.add("ID contained illegal characters.");
             }
         } else {
@@ -86,7 +64,7 @@ public class MovieValidator extends CoreValidator implements ConstraintValidator
             if (name.length() > NAME_MAX_LENGTH) {
                 violations.add("Name was too long.");
             }
-            if (containsIllegalCharacters(name)) {
+            if (isContainsIllegalCharacters(name)) {
                 violations.add("Name contained illegal characters.");
             }
         } else {
@@ -101,7 +79,7 @@ public class MovieValidator extends CoreValidator implements ConstraintValidator
             if (imdbId.length() > IMDB_ID_MAX_LENGTH) {
                 violations.add("IMDB ID was too long.");
             }
-            if (containsIllegalCharacters(imdbId)) {
+            if (isContainsIllegalCharacters(imdbId)) {
                 violations.add("IMDB ID contained illegal characters.");
             }
         }
@@ -114,7 +92,7 @@ public class MovieValidator extends CoreValidator implements ConstraintValidator
             if (tagline.length() > TAGLINE_MAX_LENGTH) {
                 violations.add("Tagline was too long.");
             }
-            if (containsIllegalCharacters(tagline)) {
+            if (isContainsIllegalCharacters(tagline)) {
                 violations.add("Tagline contained illegal characters.");
             }
         }
@@ -127,7 +105,7 @@ public class MovieValidator extends CoreValidator implements ConstraintValidator
             if (overview.length() > OVERVIEW_MAX_LENGTH) {
                 violations.add("Overview was too long.");
             }
-            if (containsIllegalCharacters(overview)) {
+            if (isContainsIllegalCharacters(overview)) {
                 violations.add("Overview contained illegal characters.");
             }
         }
@@ -166,7 +144,7 @@ public class MovieValidator extends CoreValidator implements ConstraintValidator
             if (videoFile.getPath().length() > VIDEO_FILE_PATH_MAX_LENGTH) {
                 violations.add("Video file path was too long.");
             }
-            if (containsIllegalCharacters(videoFile.getPath())) {
+            if (isContainsIllegalCharacters(videoFile.getPath())) {
                 violations.add("Video file path contained illegal characters.");
             }
         }
@@ -179,7 +157,7 @@ public class MovieValidator extends CoreValidator implements ConstraintValidator
             if (posterImageFile.getPath().length() > POSTER_IMAGE_FILE_PATH_MAX_LENGTH) {
                 violations.add("Poster image file path was too long.");
             }
-            if (containsIllegalCharacters(posterImageFile.getPath())) {
+            if (isContainsIllegalCharacters(posterImageFile.getPath())) {
                 violations.add("Poster image file path contained illegal characters.");
             }
         }
@@ -192,7 +170,7 @@ public class MovieValidator extends CoreValidator implements ConstraintValidator
             if (backdropImageFile.getPath().length() > BACKDROP_IMAGE_FILE_PATH_MAX_LENGTH) {
                 violations.add("Backrop image file path was too long.");
             }
-            if (containsIllegalCharacters(backdropImageFile.getPath())) {
+            if (isContainsIllegalCharacters(backdropImageFile.getPath())) {
                 violations.add("Backrop image file path contained illegal characters.");
             }
         }

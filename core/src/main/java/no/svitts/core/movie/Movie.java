@@ -2,17 +2,13 @@ package no.svitts.core.movie;
 
 import no.svitts.core.date.ReleaseDate;
 import no.svitts.core.genre.Genre;
-import no.svitts.core.util.Id;
 
 import java.io.File;
 import java.util.List;
 
 public class Movie {
 
-    public static final int ID_MAX_LENGTH = Id.MAX_LENGTH;
-    public static final int NAME_MAX_LENGTH = 255;
-
-    private String id;
+    private final String id;
     private String name;
     private String imdbId;
     private String tagline;
@@ -23,9 +19,6 @@ public class Movie {
     private File videoFile;
     private File posterImageFile;
     private File backdropImageFile;
-
-    public Movie() {
-    }
 
     public Movie(String id, String name, String imdbId, String tagline, String overview, int runtime, ReleaseDate releaseDate, List<Genre> genres, File videoFile, File posterImageFile, File backdropImageFile) {
         this.id = id;

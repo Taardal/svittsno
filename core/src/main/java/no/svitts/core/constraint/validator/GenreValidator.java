@@ -17,7 +17,7 @@ public class GenreValidator extends CoreValidator implements ConstraintValidator
     @Override
     public boolean isValid(String string, ConstraintValidatorContext constraintValidatorContext) {
         boolean tooLong = string.length() > GENRE_MAX_LENGTH;
-        boolean containsIllegalCharacters = containsIllegalCharacters(string);
+        boolean containsIllegalCharacters = isContainsIllegalCharacters(string);
         if (tooLong) {
             addConstraintViolation("Genre was too long.", constraintValidatorContext);
         }
