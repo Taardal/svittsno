@@ -1,5 +1,7 @@
 package no.svitts.core.constraint;
 
+import no.svitts.core.constraint.validator.IdValidator;
+
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.ElementType;

@@ -1,9 +1,9 @@
 package no.svitts.core.repository;
 
 import no.svitts.core.datasource.DataSource;
-import no.svitts.core.date.KeyDate;
+import no.svitts.core.date.ReleaseDate;
 import no.svitts.core.exception.RepositoryException;
-import no.svitts.core.movie.Genre;
+import no.svitts.core.genre.Genre;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.search.Criteria;
 import no.svitts.core.search.CriteriaKey;
@@ -111,7 +111,7 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
                 String tagline = resultSet.getString(TAGLINE);
                 String overview = resultSet.getString(OVERVIEW);
                 int runtime = resultSet.getInt(RUNTIME);
-                KeyDate releaseDate = new KeyDate(resultSet.getDate(RELEASE_DATE));
+                ReleaseDate releaseDate = new ReleaseDate(resultSet.getDate(RELEASE_DATE));
                 List<Genre> genres = Genre.fromString(resultSet.getString(GENRES));
                 File videoFile = new File(resultSet.getString(VIDEO_FILE_PATH));
                 File posterImageFile = new File(resultSet.getString(POSTER_IMAGE_FILE_PATH));
@@ -232,7 +232,7 @@ public class MovieRepository extends CoreRepository<Movie> implements Repository
         return preparedStatement;
     }
 
-    private Date getDate(KeyDate releaseDate) {
+    private Date getDate(ReleaseDate releaseDate) {
         return releaseDate != null ? releaseDate.toSqlDate() : null;
     }
 

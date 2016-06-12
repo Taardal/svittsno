@@ -18,7 +18,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import static no.svitts.core.testkit.ITestKit.getDataSource;
-import static no.svitts.core.testkit.MovieTestKit.getGson;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -40,7 +39,7 @@ public class DeleteMovieIT extends JerseyTest {
     @Override
     @Before
     public void setUp() throws Exception {
-        gson = getGson();
+        gson = new Gson();
         super.setUp();
     }
 

@@ -1,8 +1,8 @@
 package no.svitts.core.builder;
 
-import no.svitts.core.date.KeyDate;
+import no.svitts.core.date.ReleaseDate;
 import no.svitts.core.util.Id;
-import no.svitts.core.movie.Genre;
+import no.svitts.core.genre.Genre;
 import no.svitts.core.movie.Movie;
 
 import java.io.File;
@@ -17,7 +17,7 @@ public class MovieBuilder implements Builder<Movie> {
     private String tagline;
     private String overview;
     private int runtime;
-    private KeyDate releaseDate;
+    private ReleaseDate releaseDate;
     private List<Genre> genres;
     private File videoFile;
     private File posterImageFile;
@@ -30,7 +30,7 @@ public class MovieBuilder implements Builder<Movie> {
         tagline = "tagline";
         overview = "overview";
         runtime = 0;
-        releaseDate = new KeyDate("20160101");
+        releaseDate = new ReleaseDate(2016, 1, 1);
         genres = getDefaultGenres();
         videoFile = new File("videoFilePath");
         posterImageFile = new File("posterImageFilePath");
@@ -72,7 +72,7 @@ public class MovieBuilder implements Builder<Movie> {
         return this;
     }
 
-    public MovieBuilder releaseDate(KeyDate releaseDate) {
+    public MovieBuilder releaseDate(ReleaseDate releaseDate) {
         this.releaseDate = releaseDate;
         return this;
     }

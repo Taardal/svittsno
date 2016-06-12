@@ -5,7 +5,7 @@ import no.svitts.core.datasource.CoreDataSource;
 import no.svitts.core.datasource.DataSource;
 import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.util.Id;
-import no.svitts.core.movie.Genre;
+import no.svitts.core.genre.Genre;
 import no.svitts.core.movie.Movie;
 import org.junit.Before;
 import org.junit.Test;

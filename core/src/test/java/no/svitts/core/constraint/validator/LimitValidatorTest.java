@@ -1,6 +1,5 @@
 package no.svitts.core.constraint.validator;
 
-import no.svitts.core.constraint.validator.LimitValidator;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,7 +25,7 @@ public class LimitValidatorTest {
     }
 
     @Test
-    public void isValid_LimitIsANegativeNumber_ShouldReturnFalse() {
+    public void isValid_ValueIsANegativeNumber_ShouldReturnFalse() {
         assertFalse(limitValidator.isValid(-1, constraintValidatorContextMock));
     }
     

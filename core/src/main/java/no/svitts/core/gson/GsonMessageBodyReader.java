@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
 
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
-public class GsonMessageBodyReader implements MessageBodyReader<Movie> {
+public class GsonMessageBodyReader implements MessageBodyReader<Object> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GsonMessageBodyReader.class);
 
@@ -34,19 +34,18 @@ public class GsonMessageBodyReader implements MessageBodyReader<Movie> {
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return type == Movie.class && mediaType.getType().equals(MediaType.APPLICATION_JSON_TYPE.getType());
+        return mediaType.getType().equals(MediaType.APPLICATION_JSON_TYPE.getType());
     }
 
     @Override
-    public Movie readFrom(Class<Movie> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) {
+    public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) {
         try (InputStreamReader inputStreamReader = new InputStreamReader(entityStream, StandardCharsets.UTF_8)) {
-            return gson.fromJson(inputStreamReader, genericType);
+            return gson.fromJson(inputStreamReader, type);
         } catch (IOException e) {
-            String errorMessage = "Could not convert JSON to movie";
+            String errorMessage = "Could not convert JSON to type [" + type + "]";
             LOGGER.error(errorMessage);
-            throw new WebApplicationException(errorMessage, e);
+            throw new InternalServerErrorException(errorMessage, e);
         }
     }
-
 
 }

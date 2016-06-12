@@ -7,13 +7,14 @@ import no.svitts.core.application.ApplicationProperties;
 import no.svitts.core.datasource.CoreDataSource;
 import no.svitts.core.datasource.DataSource;
 import no.svitts.core.datasource.DataSourceConfig;
+import no.svitts.core.exception.mapper.ConstraintViolationExceptionMapper;
 import no.svitts.core.exception.mapper.WebApplicationExceptionMapper;
+import no.svitts.core.gson.GsonMessageBodyReader;
+import no.svitts.core.gson.GsonMessageBodyWriter;
 import no.svitts.core.repository.MovieRepository;
 import no.svitts.core.resource.MovieResource;
 import no.svitts.core.service.MovieService;
-import no.svitts.core.validation.ValidationConfigurationContextResolver;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.ServerProperties;
 
 
 public class CoreApplication extends ResourceConfig {
@@ -23,9 +24,10 @@ public class CoreApplication extends ResourceConfig {
         DataSource dataSource = new CoreDataSource(getDataSourceConfig(applicationProperties));
         register(new MovieResource(new MovieService(new MovieRepository(dataSource))));
         register(new WebApplicationExceptionMapper());
-        register(new ValidationConfigurationContextResolver());
+        register(new ConstraintViolationExceptionMapper());
+        register(new GsonMessageBodyReader());
+        register(new GsonMessageBodyWriter());
         registerSwagger(applicationProperties);
-        property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
     }
 
     private DataSourceConfig getDataSourceConfig(ApplicationProperties applicationProperties) {

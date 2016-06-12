@@ -1,13 +1,12 @@
 package no.svitts.core.constraint.validator;
 
-import no.svitts.core.constraint.validator.IdValidator;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.validation.ConstraintValidatorContext;
 
-import static no.svitts.core.util.StringUtil.getRandomString;
 import static no.svitts.core.constraint.validator.IdValidator.ID_MAX_LENGTH;
+import static no.svitts.core.util.StringUtil.getRandomString;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -35,9 +34,9 @@ public class IdValidatorTest {
 
     @Test
     public void isValid_IdContainsIllegalCharacters_ShouldReturnFalse() {
-        String[] strings = {"\\~", "\\#", "\\@", "\\*", "\\+", "\\%", "\\<", "\\>", "\\[", "\\]", "\\|", "\"", "\\_", "\\^", "\\£", "\\$", "\\€", "\\´"};
-        for (String string : strings) {
-            assertFalse(idValidator.isValid(string, constraintValidatorContextMock));
+        String[] illegalCharacters = {"\\~", "\\#", "\\@", "\\*", "\\+", "\\%", "\\<", "\\>", "\\[", "\\]", "\\|", "\"", "\\_", "\\^", "\\£", "\\$", "\\€", "\\´"};
+        for (String illegalCharacter : illegalCharacters) {
+            assertFalse(idValidator.isValid(illegalCharacter, constraintValidatorContextMock));
         }
     }
 }

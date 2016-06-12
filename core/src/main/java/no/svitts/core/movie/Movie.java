@@ -1,28 +1,33 @@
 package no.svitts.core.movie;
 
-import no.svitts.core.date.KeyDate;
+import no.svitts.core.date.ReleaseDate;
+import no.svitts.core.genre.Genre;
+import no.svitts.core.util.Id;
 
 import java.io.File;
 import java.util.List;
 
 public class Movie {
 
-    public static final int ID_MAX_LENGTH = 255;
+    public static final int ID_MAX_LENGTH = Id.MAX_LENGTH;
     public static final int NAME_MAX_LENGTH = 255;
 
-    private final String id;
+    private String id;
     private String name;
     private String imdbId;
     private String tagline;
     private String overview;
     private int runtime;
-    private KeyDate releaseDate;
+    private ReleaseDate releaseDate;
     private List<Genre> genres;
     private File videoFile;
     private File posterImageFile;
     private File backdropImageFile;
 
-    public Movie(String id, String name, String imdbId, String tagline, String overview, int runtime, KeyDate releaseDate, List<Genre> genres, File videoFile, File posterImageFile, File backdropImageFile) {
+    public Movie() {
+    }
+
+    public Movie(String id, String name, String imdbId, String tagline, String overview, int runtime, ReleaseDate releaseDate, List<Genre> genres, File videoFile, File posterImageFile, File backdropImageFile) {
         this.id = id;
         this.name = name;
         this.imdbId = imdbId;
@@ -117,11 +122,11 @@ public class Movie {
         this.runtime = runtime;
     }
 
-    public KeyDate getReleaseDate() {
+    public ReleaseDate getReleaseDate() {
         return releaseDate;
     }
 
-    public void setReleaseDate(KeyDate releaseDate) {
+    public void setReleaseDate(ReleaseDate releaseDate) {
         this.releaseDate = releaseDate;
     }
 

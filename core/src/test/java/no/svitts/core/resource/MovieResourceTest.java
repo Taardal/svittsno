@@ -1,12 +1,14 @@
 package no.svitts.core.resource;
 
-import com.google.gson.Gson;
 import no.svitts.core.builder.MovieBuilder;
 import no.svitts.core.exception.RepositoryException;
+import no.svitts.core.exception.mapper.ConstraintViolationExceptionMapper;
 import no.svitts.core.exception.mapper.WebApplicationExceptionMapper;
-import no.svitts.core.util.Id;
+import no.svitts.core.gson.GsonMessageBodyReader;
+import no.svitts.core.gson.GsonMessageBodyWriter;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.service.MovieService;
+import no.svitts.core.util.Id;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Before;
@@ -16,9 +18,11 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import static no.svitts.core.testkit.MovieTestKit.getGson;
-import static no.svitts.core.util.StringUtil.getRandomString;
+import static no.svitts.core.testkit.MovieTestKit.assertMovie;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -27,8 +31,9 @@ public class MovieResourceTest extends JerseyTest {
     private static final String MOVIE_RESOURCE = "movies";
 
     private MovieBuilder movieBuilder;
-    private Gson gson;
     private MovieService movieServiceMock;
+    private GsonMessageBodyWriter gsonMessageBodyWriter;
+    private GsonMessageBodyReader gsonMessageBodyReader;
 
     @Override
     protected Application configure() {
@@ -36,6 +41,9 @@ public class MovieResourceTest extends JerseyTest {
         ResourceConfig resourceConfig = new ResourceConfig();
         resourceConfig.register(new MovieResource(movieServiceMock));
         resourceConfig.register(new WebApplicationExceptionMapper());
+        resourceConfig.register(new ConstraintViolationExceptionMapper());
+        resourceConfig.register(new GsonMessageBodyReader());
+        resourceConfig.register(new GsonMessageBodyWriter());
         return resourceConfig;
     }
 
@@ -43,31 +51,21 @@ public class MovieResourceTest extends JerseyTest {
     @Before
     public void setUp() throws Exception {
         movieBuilder = new MovieBuilder();
-        gson = getGson();
+        gsonMessageBodyWriter = new GsonMessageBodyWriter();
+        gsonMessageBodyReader = new GsonMessageBodyReader();
         super.setUp();
     }
 
     @Test
-    public void getMovie_ValidId_ShouldReturnMovieAsExpectedJson(){
+    public void getMovie_ValidRequest_ShouldReturnMovie() {
         Movie movie = movieBuilder.build();
         when(movieServiceMock.getMovie(movie.getId())).thenReturn(movie);
-        String expectedJson = gson.toJson(movie);
 
-        Response response = target(MOVIE_RESOURCE).path(movie.getId()).request().get();
+        Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE).path(movie.getId()).request().get();
 
         assertEquals(200, response.getStatus());
-        assertEquals(expectedJson, response.readEntity(String.class));
+        assertMovie(movie, response.readEntity(Movie.class));
         verify(movieServiceMock, times(1)).getMovie(movie.getId());
-        response.close();
-    }
-
-    @Test
-    public void getMovie_IdTooLong_ShouldReturnBadRequestResponse() {
-        String id = getRandomString(Id.MAX_LENGTH + 1);
-        Response response = target(MOVIE_RESOURCE).path(id).request().get();
-
-        assertEquals(400, response.getStatus());
-        verify(movieServiceMock, times(0)).getMovie(id);
         response.close();
     }
 
@@ -76,7 +74,7 @@ public class MovieResourceTest extends JerseyTest {
         String id = Id.get();
         when(movieServiceMock.getMovie(anyString())).thenReturn(null);
 
-        Response response = target(MOVIE_RESOURCE).path(id).request().get();
+        Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path(id).request().get();
 
         assertEquals(404, response.getStatus());
         verify(movieServiceMock, times(1)).getMovie(id);
@@ -88,7 +86,7 @@ public class MovieResourceTest extends JerseyTest {
         String id = Id.get();
         when(movieServiceMock.getMovie(anyString())).thenThrow(new RepositoryException());
 
-        Response response = target(MOVIE_RESOURCE).path(id).request().get();
+        Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path(id).request().get();
 
         assertEquals(500, response.getStatus());
         verify(movieServiceMock, times(1)).getMovie(id);
@@ -96,12 +94,60 @@ public class MovieResourceTest extends JerseyTest {
     }
 
     @Test
-    public void createMovie_ValidJSON_ShouldReturnCreatedResponse() {
+    public void getMovies_ValidRequest_ShouldReturnMovies() {
+        String name = "name";
+        String genre = "genre";
+        int limit = 10;
+        int offset = 10;
+        List<Movie> movies = new ArrayList<>();
+        movies.add(movieBuilder.build());
+        movies.add(movieBuilder.build());
+        when(movieServiceMock.getMovies(name, genre, limit, offset)).thenReturn(movies);
+
+        Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE)
+                .queryParam("name", name)
+                .queryParam("genre", genre)
+                .queryParam("limit", limit)
+                .queryParam("offset", offset)
+                .request()
+                .get();
+        List<Movie> moviesFromResponse = Arrays.asList(response.readEntity(Movie[].class));
+
+        assertEquals(200, response.getStatus());
+        assertEquals(movies.size(), moviesFromResponse.size());
+        movies.stream().forEach(movie -> moviesFromResponse.stream().forEach(movieFromResponse -> assertMovie(movie, movieFromResponse)));
+        response.close();
+    }
+
+    @Test
+    public void getMovies_NoMoviesFound_ShouldReturnEmptyList() {
+        String name = "name";
+        String genre = "genre";
+        int limit = 10;
+        int offset = 10;
+        when(movieServiceMock.getMovies(name, genre, limit, offset)).thenReturn(new ArrayList<>());
+
+        Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE)
+                .queryParam("name", name)
+                .queryParam("genre", genre)
+                .queryParam("limit", limit)
+                .queryParam("offset", offset)
+                .request()
+                .get();
+        List<Movie> moviesFromResponse = Arrays.asList(response.readEntity(Movie[].class));
+
+        assertEquals(200, response.getStatus());
+        assertEquals(0, moviesFromResponse.size());
+        response.close();
+    }
+
+    @Test
+    public void createMovie_ValidMovie_ShouldReturnCreatedResponse() {
         Movie movie = movieBuilder.build();
         when(movieServiceMock.createMovie(movie)).thenReturn(movie.getId());
-        Entity<String> jsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
+        Entity<Movie> movieEntity = Entity.entity(movie, MediaType.APPLICATION_JSON);
 
-        Response response = target(MOVIE_RESOURCE).request().post(jsonEntity, Response.class);
+        Response response = client().register(gsonMessageBodyWriter).target(getBaseUri()).path(MOVIE_RESOURCE).request().post(movieEntity, Response.class);
 
         assertEquals(201, response.getStatus());
         verify(movieServiceMock, times(1)).createMovie(any(Movie.class));
@@ -109,34 +155,12 @@ public class MovieResourceTest extends JerseyTest {
     }
 
     @Test
-    public void createMovie_InvalidName_ShouldReturnBadRequestResponse() {
-        Movie movie = movieBuilder.name(null).build();
-        Movie movie1 = movieBuilder.name("").build();
-        Movie movie2 = movieBuilder.name(getRandomString(Movie.NAME_MAX_LENGTH + 1)).build();
-        Entity<String> jsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
-        Entity<String> jsonEntity1 = Entity.entity(gson.toJson(movie1), MediaType.APPLICATION_JSON);
-        Entity<String> jsonEntity2 = Entity.entity(gson.toJson(movie2), MediaType.APPLICATION_JSON);
-
-        Response response = target(MOVIE_RESOURCE).request().post(jsonEntity, Response.class);
-        Response response1 = target(MOVIE_RESOURCE).request().post(jsonEntity1, Response.class);
-        Response response2 = target(MOVIE_RESOURCE).request().post(jsonEntity2, Response.class);
-
-        assertEquals(400, response.getStatus());
-        assertEquals(400, response1.getStatus());
-        assertEquals(400, response2.getStatus());
-        verify(movieServiceMock, times(0)).getMovie(movie.getId());
-        response.close();
-        response1.close();
-        response2.close();
-    }
-
-    @Test
     public void createMovie_ThrowsRepositoryException_ShouldReturnInternalServerErrorResponse() {
         Movie movie = movieBuilder.build();
         when(movieServiceMock.createMovie(movie)).thenThrow(new RepositoryException());
-        Entity<String> jsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
+        Entity<Movie> movieEntity = Entity.entity(movie, MediaType.APPLICATION_JSON);
 
-        Response response = target(MOVIE_RESOURCE).request().post(jsonEntity, Response.class);
+        Response response = client().register(gsonMessageBodyWriter).target(getBaseUri()).path(MOVIE_RESOURCE).request().post(movieEntity, Response.class);
 
         assertEquals(500, response.getStatus());
         verify(movieServiceMock, times(1)).createMovie(movie);
@@ -147,35 +171,13 @@ public class MovieResourceTest extends JerseyTest {
     public void updateMovie_ValidMovie_ShouldReturnOkResponse() {
         Movie movie = movieBuilder.build();
         when(movieServiceMock.getMovie(movie.getId())).thenReturn(movie);
-        Entity<String> jsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
+        Entity<Movie> movieEntity = Entity.entity(movie, MediaType.APPLICATION_JSON);
 
-        Response response = target(MOVIE_RESOURCE).path(movie.getId()).request().put(jsonEntity, Response.class);
+        Response response = client().register(gsonMessageBodyWriter).target(getBaseUri()).path(MOVIE_RESOURCE).path(movie.getId()).request().put(movieEntity, Response.class);
 
         assertEquals(200, response.getStatus());
         verify(movieServiceMock, times(1)).updateMovie(movie);
         response.close();
-    }
-
-    @Test
-    public void updateMovie_InvalidName_ShouldReturnBadRequestResponse() {
-        Movie movie = movieBuilder.name(null).build();
-        Movie movie1 = movieBuilder.name("").build();
-        Movie movie2 = movieBuilder.name(getRandomString(Movie.NAME_MAX_LENGTH + 1)).build();
-        Entity<String> jsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
-        Entity<String> jsonEntity1 = Entity.entity(gson.toJson(movie1), MediaType.APPLICATION_JSON);
-        Entity<String> jsonEntity2 = Entity.entity(gson.toJson(movie2), MediaType.APPLICATION_JSON);
-
-        Response response = target(MOVIE_RESOURCE).path(movie.getId()).request().put(jsonEntity, Response.class);
-        Response response1 = target(MOVIE_RESOURCE).path(movie1.getId()).request().put(jsonEntity1, Response.class);
-        Response response2 = target(MOVIE_RESOURCE).path(movie2.getId()).request().put(jsonEntity2, Response.class);
-
-        assertEquals(400, response.getStatus());
-        assertEquals(400, response1.getStatus());
-        assertEquals(400, response2.getStatus());
-        verify(movieServiceMock, times(0)).getMovie(movie.getId());
-        response.close();
-        response1.close();
-        response2.close();
     }
 
     @Test
@@ -183,9 +185,9 @@ public class MovieResourceTest extends JerseyTest {
         Movie movie = movieBuilder.build();
         when(movieServiceMock.getMovie(movie.getId())).thenReturn(movie);
         doThrow(new RepositoryException()).when(movieServiceMock).updateMovie(movie);
-        Entity<String> jsonEntity = Entity.entity(gson.toJson(movie), MediaType.APPLICATION_JSON);
+        Entity<Movie> movieEntity = Entity.entity(movie, MediaType.APPLICATION_JSON);
 
-        Response response = target(MOVIE_RESOURCE).path(movie.getId()).request().put(jsonEntity, Response.class);
+        Response response = client().register(gsonMessageBodyWriter).target(getBaseUri()).path(MOVIE_RESOURCE).path(movie.getId()).request().put(movieEntity, Response.class);
 
         assertEquals(500, response.getStatus());
         verify(movieServiceMock, times(1)).updateMovie(movie);
@@ -193,23 +195,13 @@ public class MovieResourceTest extends JerseyTest {
     }
 
     @Test
-    public void deleteMovie_ShouldReturnOkResponse() {
+    public void deleteMovie_ValidId_ShouldReturnOkResponse() {
         Movie movie = movieBuilder.build();
 
-        Response response = target(MOVIE_RESOURCE).path(movie.getId()).request().delete();
+        Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path(movie.getId()).request().delete();
 
         assertEquals(200, response.getStatus());
         verify(movieServiceMock, times(1)).deleteMovie(movie.getId());
-        response.close();
-    }
-
-    @Test
-    public void deleteMovie_IdTooLong_ShouldReturnBadRequestResponse(){
-        String id = getRandomString(Id.MAX_LENGTH + 1);
-        Response response = target(MOVIE_RESOURCE).path(id).request().delete();
-
-        assertEquals(400, response.getStatus());
-        verify(movieServiceMock, times(0)).deleteMovie(id);
         response.close();
     }
 
@@ -218,7 +210,7 @@ public class MovieResourceTest extends JerseyTest {
         String id = Id.get();
         doThrow(new RepositoryException()).when(movieServiceMock).deleteMovie(id);
 
-        Response response = target(MOVIE_RESOURCE).path(id).request().delete();
+        Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path(id).request().delete();
 
         assertEquals(500, response.getStatus());
         verify(movieServiceMock, times(1)).deleteMovie(id);

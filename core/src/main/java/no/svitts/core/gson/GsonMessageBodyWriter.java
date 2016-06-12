@@ -7,8 +7,8 @@ import no.svitts.core.movie.Movie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
 
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-public class GsonMessageBodyWriter implements MessageBodyWriter<Movie>{
+public class GsonMessageBodyWriter implements MessageBodyWriter<Object> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GsonMessageBodyWriter.class);
 
@@ -34,19 +34,24 @@ public class GsonMessageBodyWriter implements MessageBodyWriter<Movie>{
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return type == Movie.class && mediaType.getType().equals(MediaType.APPLICATION_JSON_TYPE.getType());
+        return mediaType.getType().equals(MediaType.APPLICATION_JSON_TYPE.getType());
     }
 
     @Override
-    public long getSize(Movie movie, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+    public long getSize(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return 0;
     }
 
     @Override
-    public void writeTo(Movie movie, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException{
+    public void writeTo(Object object, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) {
         try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(entityStream, StandardCharsets.UTF_8)) {
-            gson.toJson(movie, genericType, outputStreamWriter);
+            gson.toJson(object, genericType, outputStreamWriter);
+        } catch (IOException e) {
+            String errorMessage = "Could not read JSON from type [" + type + "]";
+            LOGGER.error(errorMessage);
+            throw new InternalServerErrorException(errorMessage, e);
         }
     }
+
 
 }

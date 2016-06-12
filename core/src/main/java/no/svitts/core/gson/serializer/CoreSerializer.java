@@ -1,7 +1,7 @@
 package no.svitts.core.gson.serializer;
 
 import com.google.gson.JsonPrimitive;
-import no.svitts.core.date.KeyDate;
+import no.svitts.core.date.ReleaseDate;
 
 abstract class CoreSerializer {
 
@@ -17,11 +17,11 @@ abstract class CoreSerializer {
         return number >= 0 ? new JsonPrimitive(number) : new JsonPrimitive(0);
     }
 
-    JsonPrimitive getJsonPrimitive(KeyDate keyDate) {
-        return keyDate != null ? getJsonPrimitive(keyDate.toString()) : getJsonPrimitiveNullString();
+    JsonPrimitive getJsonPrimitive(ReleaseDate releaseDate) {
+        return releaseDate != null ? getJsonPrimitive(releaseDate.toString()) : getJsonPrimitiveNullString();
     }
 
-    private JsonPrimitive getJsonPrimitiveNullString() {
+    JsonPrimitive getJsonPrimitiveNullString() {
         return new JsonPrimitive("null");
     }
 
