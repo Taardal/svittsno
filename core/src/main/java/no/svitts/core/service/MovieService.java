@@ -24,11 +24,11 @@ public class MovieService implements Service<Movie> {
     }
 
     @Override
-    public Movie getOne(String id) {
+    public Movie getById(String id) {
         try {
-            return transactionManager.executeTransaction(repository -> repository.getOne(id));
+            return transactionManager.transaction(repository -> repository.getOne(id));
         } catch (RepositoryException | TransactionException e) {
-            LOGGER.error("Could not executeTransaction executeTransaction", e);
+            LOGGER.error("Could not transaction transaction", e);
             throw new ServiceException(e);
         }
     }
@@ -36,9 +36,9 @@ public class MovieService implements Service<Movie> {
     @Override
     public List<Movie> getByCriteria(Criteria criteria) {
         try {
-            return transactionManager.executeTransaction(repository -> repository.getMany(criteria));
+            return transactionManager.transaction(repository -> repository.getMany(criteria));
         } catch (RepositoryException | TransactionException e) {
-            LOGGER.error("Could not executeTransaction executeTransaction", e);
+            LOGGER.error("Could not transaction transaction", e);
             throw new ServiceException(e);
         }
     }
@@ -46,9 +46,9 @@ public class MovieService implements Service<Movie> {
     @Override
     public String save(Movie movie) {
         try {
-            return transactionManager.executeTransaction(repository -> repository.save(movie));
+            return transactionManager.transaction(repository -> repository.save(movie));
         } catch (RepositoryException | TransactionException e) {
-            LOGGER.error("Could not executeTransaction executeTransaction", e);
+            LOGGER.error("Could not transaction transaction", e);
             throw new ServiceException(e);
         }
     }
@@ -56,9 +56,9 @@ public class MovieService implements Service<Movie> {
     @Override
     public void delete(String id) {
         try {
-            transactionManager.executeTransactionWithoutResult(repository -> repository.delete(id));
+            transactionManager.transactionWithoutResult(repository -> repository.delete(id));
         } catch (RepositoryException | TransactionException e) {
-            LOGGER.error("Could not executeTransaction executeTransaction", e);
+            LOGGER.error("Could not transaction transaction", e);
             throw new ServiceException(e);
         }
     }

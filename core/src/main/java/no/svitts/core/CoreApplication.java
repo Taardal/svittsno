@@ -24,7 +24,9 @@ public class CoreApplication extends ResourceConfig {
         register(new ConstraintViolationExceptionMapper());
         register(new GsonMessageBodyReader());
         register(new GsonMessageBodyWriter());
-        registerSwagger(applicationProperties);
+        register(new ApiListingResource());
+        register(new SwaggerSerializers());
+        createSwaggerBean(applicationProperties);
     }
 
     private DataSourceConfig getDataSourceConfig(ApplicationProperties applicationProperties) {
@@ -33,12 +35,6 @@ public class CoreApplication extends ResourceConfig {
                 applicationProperties.get("db.username"),
                 applicationProperties.get("db.password"),
                 applicationProperties.get("db.driver"));
-    }
-
-    private void registerSwagger(ApplicationProperties applicationProperties) {
-        register(new ApiListingResource());
-        register(new SwaggerSerializers());
-        createSwaggerBean(applicationProperties);
     }
 
     private void createSwaggerBean(ApplicationProperties applicationProperties) {

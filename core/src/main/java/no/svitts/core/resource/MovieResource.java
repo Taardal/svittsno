@@ -47,7 +47,7 @@ public class MovieResource {
     public Response getMovie(@ValidId @PathParam("id") String id) {
         LOGGER.info("Received request to GET movie with ID [{}]", id);
         try {
-            Movie movie = movieService.getOne(id);
+            Movie movie = movieService.getById(id);
             return Response.ok().entity(movie).build();
         } catch (ServiceException e) {
             throw new InternalServerErrorException("Could not get movie with ID [" + id + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);

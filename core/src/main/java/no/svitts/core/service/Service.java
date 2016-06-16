@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface Service<T> {
 
-    T getOne(String id);
+    T getById(String id);
 
     List<T> getByCriteria(Criteria criteria);
 

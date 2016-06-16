@@ -1,5 +1,6 @@
 package no.svitts.core.transaction;
 
+import no.svitts.core.datasource.CoreDataSource;
 import no.svitts.core.exception.TransactionException;
 import no.svitts.core.repository.Repository;
 import org.hibernate.HibernateException;
@@ -8,8 +9,11 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Properties;
 
 public class RepositoryTransactionManager<T> implements TransactionManager<T> {
 
@@ -28,7 +32,7 @@ public class RepositoryTransactionManager<T> implements TransactionManager<T> {
     }
 
     @Override
-    public <R> R executeTransaction(TransactionCallback<T, R> transactionCallback) {
+    public <R> R transaction(TransactionCallback<T, R> transactionCallback) {
         try {
             beginTransaction();
             R result = transactionCallback.execute(repository);
@@ -36,20 +40,20 @@ public class RepositoryTransactionManager<T> implements TransactionManager<T> {
             return result;
         } catch (HibernateException e) {
             rollbackTransaction();
-            LOGGER.error("Could not executeTransaction executeTransaction", e);
+            LOGGER.error("Could not execute transaction", e);
             throw new TransactionException(e);
         }
     }
 
     @Override
-    public void executeTransactionWithoutResult(TransactionCallbackWithoutResult<T> transactionCallbackWithoutResult) {
+    public void transactionWithoutResult(TransactionCallbackWithoutResult<T> transactionCallbackWithoutResult) {
         try {
             beginTransaction();
             transactionCallbackWithoutResult.execute(repository);
             commitTransaction();
         } catch (HibernateException e) {
             rollbackTransaction();
-            LOGGER.error("Could not executeTransaction executeTransaction", e);
+            LOGGER.error("Could not execute transaction", e);
             throw new TransactionException(e);
         }
     }
@@ -76,9 +80,21 @@ public class RepositoryTransactionManager<T> implements TransactionManager<T> {
     }
 
     private SessionFactory buildSessionFactory() {
-        Configuration configuration = new Configuration().configure("hibernate_sp.cfg.xml");
+        Configuration configuration = getConfiguration();
         StandardServiceRegistryBuilder standardServiceRegistryBuilder = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties());
         return configuration.buildSessionFactory(standardServiceRegistryBuilder.build());
+    }
+
+    private Configuration getConfiguration() {
+        Configuration configuration = new Configuration().configure("hibernate_sp.cfg.xml");
+        configuration.addProperties(getConnectionProviderProperties());
+        return configuration;
+    }
+
+    private Properties getConnectionProviderProperties() {
+        Properties properties = new Properties();
+        properties.put(Environment.CONNECTION_PROVIDER, CoreDataSource.class.getName());
+        return properties;
     }
 
 }

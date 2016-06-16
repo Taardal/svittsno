@@ -4,8 +4,8 @@ import no.svitts.core.repository.Repository;
 
 public interface TransactionManager<T> {
 
-    <R> R executeTransaction(TransactionCallback<T, R> transactionCallback);
-    void executeTransactionWithoutResult(TransactionCallbackWithoutResult<T> transactionCallbackWithoutResult);
+    <R> R transaction(TransactionCallback<T, R> transactionCallback);
+    void transactionWithoutResult(TransactionCallbackWithoutResult<T> transactionCallbackWithoutResult);
 
     void setRepository(Repository<T> repository);
 }
