@@ -2,6 +2,10 @@ package no.svitts.core.repository;
 
 import no.svitts.core.datasource.DataSource;
 import no.svitts.core.exception.RepositoryException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,8 +20,27 @@ abstract class CoreRepository<T> {
 
     DataSource dataSource;
 
+    private static SessionFactory sessionFactory;
+
     CoreRepository(DataSource dataSource) {
         this.dataSource = dataSource;
+    }
+
+    static SessionFactory getSessionFactory() {
+        if (sessionFactory == null) {
+            sessionFactory = buildSessionFactory();
+        }
+        return sessionFactory;
+    }
+
+    private Session getSession() {
+        return getSessionFactory().getCurrentSession();
+    }
+
+    private static SessionFactory buildSessionFactory() {
+        Configuration configuration = new Configuration().configure("hibernate_sp.cfg.xml");
+        StandardServiceRegistryBuilder ssrb = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties());
+        return configuration.buildSessionFactory(ssrb.build());
     }
 
     protected abstract List<T> getResults(ResultSet resultSet);

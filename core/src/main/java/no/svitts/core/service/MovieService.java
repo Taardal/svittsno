@@ -1,13 +1,18 @@
 package no.svitts.core.service;
 
+import no.svitts.core.dao.DaoManager;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.repository.Repository;
+import no.svitts.core.search.Criteria;
+import org.hibernate.HibernateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class MovieService {
+import static no.svitts.core.util.HibernateUtil.*;
+
+public class MovieService implements Service<Movie> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieService.class);
 
@@ -17,24 +22,40 @@ public class MovieService {
         this.movieRepository = movieRepository;
     }
 
-    public Movie getMovie(String id) {
-        return movieRepository.getSingle(id);
+    @Override
+    public Movie getById(String id) {
+        try {
+            beginTransaction();
+            Movie movie = movieRepository.getSingle(id);
+            commitTransaction();
+            return movie;
+        } catch (HibernateException e) {
+            rollbackTransaction();
+            throw new HibernateException("Could not get movie by ID [" + id + "]", e);
+        } finally {
+            closeSession();
+        }
     }
 
-    public List<Movie> getMovies(String name, String genre, int limit, int offset) {
-        return movieRepository.getMultiple(null);
+    @Override
+    public List<Movie> getAll(Criteria criteria) {
+        DaoManager.transaction(repository -> repository.getMultiple(null), movieRepository);
+        DaoManager.transaction(movieRepository)
+        return null;
     }
 
-    public String createMovie(Movie movie) {
-        return movieRepository.insertSingle(movie);
+    @Override
+    public String create(Movie movie) {
+        return null;
     }
 
-    public void updateMovie(Movie movie) {
-        movieRepository.updateSingle(movie);
+    @Override
+    public void update(Movie movie) {
+
     }
 
-    public void deleteMovie(String id) {
-        movieRepository.deleteSingle(id);
-    }
+    @Override
+    public void delete(String id) {
 
+    }
 }
