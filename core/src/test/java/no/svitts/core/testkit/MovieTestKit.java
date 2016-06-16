@@ -6,7 +6,7 @@ import static org.junit.Assert.assertEquals;
 
 public class MovieTestKit {
 
-    private MovieTestKit() {
+    public MovieTestKit() {
     }
 
     public static void assertMovie(Movie expectedMovie, Movie actualMovie) {

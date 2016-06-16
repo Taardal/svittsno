@@ -1,9 +1,6 @@
 package no.svitts.core.movie;
 
 import no.svitts.core.datasource.DataSource;
-import no.svitts.core.repository.MovieRepository;
-import no.svitts.core.resource.MovieResource;
-import no.svitts.core.service.MovieService;
 import no.svitts.core.util.Id;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
@@ -26,7 +23,6 @@ public class GetMovieIT extends JerseyTest {
     protected Application configure() {
         dataSource = getDataSource();
         ResourceConfig resourceConfig = new ResourceConfig();
-        resourceConfig.register(new MovieResource(new MovieService(new MovieRepository(dataSource))));
         return resourceConfig;
     }
 

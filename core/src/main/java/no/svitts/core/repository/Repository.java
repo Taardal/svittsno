@@ -2,16 +2,15 @@ package no.svitts.core.repository;
 
 import no.svitts.core.search.Criteria;
 
+import java.io.Serializable;
 import java.util.List;
 
 public interface Repository<T> {
-    T getSingle(String id);
+    T getOne(String id);
 
-    List<T> getMultiple(Criteria criteria);
+    List<T> getMany(Criteria criteria);
 
-    String insertSingle(T t);
+    <S extends Serializable> S save(T entity);
 
-    void updateSingle(T t);
-
-    void deleteSingle(String id);
+    void delete(String id);
 }

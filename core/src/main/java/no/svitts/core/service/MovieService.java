@@ -1,16 +1,16 @@
 package no.svitts.core.service;
 
-import no.svitts.core.dao.DaoManager;
+import no.svitts.core.exception.RepositoryException;
+import no.svitts.core.exception.ServiceException;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.repository.Repository;
 import no.svitts.core.search.Criteria;
+import no.svitts.core.util.HibernateUtil;
 import org.hibernate.HibernateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-
-import static no.svitts.core.util.HibernateUtil.*;
 
 public class MovieService implements Service<Movie> {
 
@@ -23,39 +23,46 @@ public class MovieService implements Service<Movie> {
     }
 
     @Override
-    public Movie getById(String id) {
+    public Movie getOne(String id) {
         try {
-            beginTransaction();
-            Movie movie = movieRepository.getSingle(id);
-            commitTransaction();
-            return movie;
-        } catch (HibernateException e) {
-            rollbackTransaction();
-            throw new HibernateException("Could not get movie by ID [" + id + "]", e);
-        } finally {
-            closeSession();
+            return HibernateUtil.transaction(movieRepository, repository -> repository.getOne(id));
+        } catch (RepositoryException | HibernateException e) {
+            LOGGER.error("Could not execute transaction", e);
+            throw new ServiceException(e);
         }
     }
 
     @Override
-    public List<Movie> getAll(Criteria criteria) {
-        DaoManager.transaction(repository -> repository.getMultiple(null), movieRepository);
-        DaoManager.transaction(movieRepository)
-        return null;
+    public List<Movie> getByCriteria(Criteria criteria) {
+        try {
+            return HibernateUtil.transaction(movieRepository, repository -> repository.getMany(criteria));
+        } catch (RepositoryException | HibernateException e) {
+            LOGGER.error("Could not execute transaction", e);
+            throw new ServiceException(e);
+        }
     }
 
     @Override
-    public String create(Movie movie) {
-        return null;
-    }
-
-    @Override
-    public void update(Movie movie) {
-
+    public String save(Movie movie) {
+        try {
+            return HibernateUtil.transaction(movieRepository, repository -> repository.save(movie));
+        } catch (RepositoryException | HibernateException e) {
+            LOGGER.error("Could not execute transaction", e);
+            throw new ServiceException(e);
+        }
     }
 
     @Override
     public void delete(String id) {
-
+        try {
+            HibernateUtil.transaction(movieRepository, repository -> {
+                repository.delete(id);
+                return null;
+            });
+        } catch (RepositoryException | HibernateException e) {
+            LOGGER.error("Could not execute transaction", e);
+            throw new ServiceException(e);
+        }
     }
+
 }

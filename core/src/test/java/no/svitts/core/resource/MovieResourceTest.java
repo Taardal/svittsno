@@ -7,7 +7,9 @@ import no.svitts.core.exception.mapper.WebApplicationExceptionMapper;
 import no.svitts.core.gson.GsonMessageBodyReader;
 import no.svitts.core.gson.GsonMessageBodyWriter;
 import no.svitts.core.movie.Movie;
+import no.svitts.core.search.Criteria;
 import no.svitts.core.service.MovieService;
+import no.svitts.core.service.Service;
 import no.svitts.core.util.Id;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
@@ -31,7 +33,7 @@ public class MovieResourceTest extends JerseyTest {
     private static final String MOVIE_RESOURCE = "movies";
 
     private MovieBuilder movieBuilder;
-    private MovieService movieServiceMock;
+    private Service<Movie> movieServiceMock;
     private GsonMessageBodyWriter gsonMessageBodyWriter;
     private GsonMessageBodyReader gsonMessageBodyReader;
 
@@ -59,37 +61,37 @@ public class MovieResourceTest extends JerseyTest {
     @Test
     public void getMovie_ValidRequest_ShouldReturnMovie() {
         Movie movie = movieBuilder.build();
-        when(movieServiceMock.getMovie(movie.getId())).thenReturn(movie);
+        when(movieServiceMock.getOne(movie.getId())).thenReturn(movie);
 
         Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE).path(movie.getId()).request().get();
 
         assertEquals(200, response.getStatus());
         assertMovie(movie, response.readEntity(Movie.class));
-        verify(movieServiceMock, times(1)).getMovie(movie.getId());
+        verify(movieServiceMock, times(1)).getOne(movie.getId());
         response.close();
     }
 
     @Test
     public void getMovie_MovieNotFound_ShouldReturnNotFoundResponse() {
         String id = Id.get();
-        when(movieServiceMock.getMovie(anyString())).thenReturn(null);
+        when(movieServiceMock.getOne(id)).thenReturn(null);
 
         Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path(id).request().get();
 
         assertEquals(404, response.getStatus());
-        verify(movieServiceMock, times(1)).getMovie(id);
+        verify(movieServiceMock, times(1)).getOne(id);
         response.close();
     }
 
     @Test
     public void getMovie_ThrowsRepositoryException_ShouldReturnInternalServerErrorResponse() {
         String id = Id.get();
-        when(movieServiceMock.getMovie(anyString())).thenThrow(new RepositoryException());
+        when(movieServiceMock.getOne(anyString())).thenThrow(new RepositoryException());
 
         Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path(id).request().get();
 
         assertEquals(500, response.getStatus());
-        verify(movieServiceMock, times(1)).getMovie(id);
+        verify(movieServiceMock, times(1)).getOne(id);
         response.close();
     }
 
@@ -102,7 +104,7 @@ public class MovieResourceTest extends JerseyTest {
         List<Movie> movies = new ArrayList<>();
         movies.add(movieBuilder.build());
         movies.add(movieBuilder.build());
-        when(movieServiceMock.getMovies(name, genre, limit, offset)).thenReturn(movies);
+        when(movieServiceMock.getByCriteria(new Criteria())).thenReturn(movies);
 
         Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE)
                 .queryParam("name", name)
@@ -125,7 +127,7 @@ public class MovieResourceTest extends JerseyTest {
         String genre = "genre";
         int limit = 10;
         int offset = 10;
-        when(movieServiceMock.getMovies(name, genre, limit, offset)).thenReturn(new ArrayList<>());
+        when(movieServiceMock.getByCriteria(new Criteria())).thenReturn(new ArrayList<>());
 
         Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE)
                 .queryParam("name", name)
@@ -144,53 +146,26 @@ public class MovieResourceTest extends JerseyTest {
     @Test
     public void createMovie_ValidMovie_ShouldReturnCreatedResponse() {
         Movie movie = movieBuilder.build();
-        when(movieServiceMock.createMovie(movie)).thenReturn(movie.getId());
+        when(movieServiceMock.save(movie)).thenReturn(movie.getId());
         Entity<Movie> movieEntity = Entity.entity(movie, MediaType.APPLICATION_JSON);
 
         Response response = client().register(gsonMessageBodyWriter).target(getBaseUri()).path(MOVIE_RESOURCE).request().post(movieEntity, Response.class);
 
         assertEquals(201, response.getStatus());
-        verify(movieServiceMock, times(1)).createMovie(any(Movie.class));
+        verify(movieServiceMock, times(1)).save(any(Movie.class));
         response.close();
     }
 
     @Test
     public void createMovie_ThrowsRepositoryException_ShouldReturnInternalServerErrorResponse() {
         Movie movie = movieBuilder.build();
-        when(movieServiceMock.createMovie(movie)).thenThrow(new RepositoryException());
+        when(movieServiceMock.save(movie)).thenThrow(new RepositoryException());
         Entity<Movie> movieEntity = Entity.entity(movie, MediaType.APPLICATION_JSON);
 
         Response response = client().register(gsonMessageBodyWriter).target(getBaseUri()).path(MOVIE_RESOURCE).request().post(movieEntity, Response.class);
 
         assertEquals(500, response.getStatus());
-        verify(movieServiceMock, times(1)).createMovie(movie);
-        response.close();
-    }
-
-    @Test
-    public void updateMovie_ValidMovie_ShouldReturnOkResponse() {
-        Movie movie = movieBuilder.build();
-        when(movieServiceMock.getMovie(movie.getId())).thenReturn(movie);
-        Entity<Movie> movieEntity = Entity.entity(movie, MediaType.APPLICATION_JSON);
-
-        Response response = client().register(gsonMessageBodyWriter).target(getBaseUri()).path(MOVIE_RESOURCE).path(movie.getId()).request().put(movieEntity, Response.class);
-
-        assertEquals(200, response.getStatus());
-        verify(movieServiceMock, times(1)).updateMovie(movie);
-        response.close();
-    }
-
-    @Test
-    public void updateMovie_ThrowsRepositoryException_ShouldReturnInternalServerErrorResponse() {
-        Movie movie = movieBuilder.build();
-        when(movieServiceMock.getMovie(movie.getId())).thenReturn(movie);
-        doThrow(new RepositoryException()).when(movieServiceMock).updateMovie(movie);
-        Entity<Movie> movieEntity = Entity.entity(movie, MediaType.APPLICATION_JSON);
-
-        Response response = client().register(gsonMessageBodyWriter).target(getBaseUri()).path(MOVIE_RESOURCE).path(movie.getId()).request().put(movieEntity, Response.class);
-
-        assertEquals(500, response.getStatus());
-        verify(movieServiceMock, times(1)).updateMovie(movie);
+        verify(movieServiceMock, times(1)).save(movie);
         response.close();
     }
 
@@ -201,19 +176,19 @@ public class MovieResourceTest extends JerseyTest {
         Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path(movie.getId()).request().delete();
 
         assertEquals(200, response.getStatus());
-        verify(movieServiceMock, times(1)).deleteMovie(movie.getId());
+        verify(movieServiceMock, times(1)).delete(movie.getId());
         response.close();
     }
 
     @Test
     public void deleteMovie_ThrowsRepositoryException_ShouldReturnInternalServerErrorResponse() {
         String id = Id.get();
-        doThrow(new RepositoryException()).when(movieServiceMock).deleteMovie(id);
+        doThrow(new RepositoryException()).when(movieServiceMock).delete(id);
 
         Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path(id).request().delete();
 
         assertEquals(500, response.getStatus());
-        verify(movieServiceMock, times(1)).deleteMovie(id);
+        verify(movieServiceMock, times(1)).delete(id);
         response.close();
     }
 

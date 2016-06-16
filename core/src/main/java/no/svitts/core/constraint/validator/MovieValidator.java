@@ -14,14 +14,14 @@ import java.util.stream.Collectors;
 
 public class MovieValidator extends CoreValidator implements ConstraintValidator<ValidMovie, Movie> {
 
-    static final int ID_MAX_LENGTH = 255;
-    static final int NAME_MAX_LENGTH = 255;
-    static final int IMDB_ID_MAX_LENGTH = 255;
-    static final int TAGLINE_MAX_LENGTH = 255;
-    static final int OVERVIEW_MAX_LENGTH = 510;
-    static final int VIDEO_FILE_PATH_MAX_LENGTH = 255;
-    static final int POSTER_IMAGE_FILE_PATH_MAX_LENGTH = 255;
-    static final int BACKDROP_IMAGE_FILE_PATH_MAX_LENGTH = 255;
+    public static final int ID_MAX_LENGTH = 255;
+    public static final int NAME_MAX_LENGTH = 255;
+    public static final int IMDB_ID_MAX_LENGTH = 255;
+    public static final int TAGLINE_MAX_LENGTH = 255;
+    public static final int OVERVIEW_MAX_LENGTH = 510;
+    public static final int VIDEO_FILE_PATH_MAX_LENGTH = 255;
+    public static final int POSTER_IMAGE_FILE_PATH_MAX_LENGTH = 255;
+    public static final int BACKDROP_IMAGE_FILE_PATH_MAX_LENGTH = 255;
 
     @Override
     public void initialize(ValidMovie constraintAnnotation) {

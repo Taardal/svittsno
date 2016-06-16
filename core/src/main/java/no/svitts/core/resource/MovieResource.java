@@ -4,8 +4,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import no.svitts.core.constraint.*;
 import no.svitts.core.exception.RepositoryException;
+import no.svitts.core.exception.ServiceException;
 import no.svitts.core.movie.Movie;
-import no.svitts.core.service.MovieService;
+import no.svitts.core.search.Criteria;
+import no.svitts.core.service.Service;
+import no.svitts.core.util.Id;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,9 +31,9 @@ public class MovieResource {
     @Context
     private UriInfo uriInfo;
 
-    private MovieService movieService;
+    private Service<Movie> movieService;
 
-    public MovieResource(MovieService movieService) {
+    public MovieResource(Service<Movie> movieService) {
         this.movieService = movieService;
     }
 
@@ -44,13 +47,9 @@ public class MovieResource {
     public Response getMovie(@ValidId @PathParam("id") String id) {
         LOGGER.info("Received request to GET movie with ID [{}]", id);
         try {
-            Movie movie = movieService.getMovie(id);
-            if (movie != null) {
-                return Response.ok().entity(movie).build();
-            } else {
-                throw new NotFoundException("Could not find movie with ID [" + id + "].");
-            }
-        } catch (RepositoryException e) {
+            Movie movie = movieService.getOne(id);
+            return Response.ok().entity(movie).build();
+        } catch (ServiceException e) {
             throw new InternalServerErrorException("Could not get movie with ID [" + id + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
         }
     }
@@ -71,7 +70,7 @@ public class MovieResource {
     ) {
         LOGGER.info("Received request to GET movie(s) with name [{}] and genre [{}] with limit [{}] and offset [{}]", name, genre, limit, offset);
         try {
-            List<Movie> movies = movieService.getMovies(name, genre, limit, offset);
+            List<Movie> movies = movieService.getByCriteria(new Criteria());
             return Response.ok().entity(movies).build();
         } catch (RepositoryException e) {
             throw new InternalServerErrorException("Could not get movies with name [" + name + "] and genre [" + genre + "] with limit [" + limit + "] and offset [" + offset + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
@@ -86,10 +85,10 @@ public class MovieResource {
     public Response createMovie(@ValidMovie Movie movie) {
         LOGGER.info("Received request to POST movie [{}]", movie.toString());
         try {
-            String insertedMovieId = movieService.createMovie(movie);
-            return Response.created(getLocation(insertedMovieId)).build();
+            Id id = movieService.save(movie);
+            return Response.created(getLocation(id)).build();
         } catch (RepositoryException e) {
-            throw new InternalServerErrorException("Could not create movie [" + movie.toString() + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
+            throw new InternalServerErrorException("Could not save movie [" + movie.toString() + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
         }
     }
 
@@ -102,7 +101,7 @@ public class MovieResource {
     public Response updateMovie(@ValidId @PathParam("id") String id, @ValidMovie Movie movie) {
         LOGGER.info("Received request to PUT movie [{}]", movie);
         try {
-            movieService.updateMovie(movie);
+            movieService.save(movie);
             return Response.ok().build();
         } catch (RepositoryException e) {
             throw new InternalServerErrorException("Could not update movie with ID [" + id + "] with values [" + movie.toString() + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
@@ -118,15 +117,15 @@ public class MovieResource {
     public Response deleteMovie(@ValidId @PathParam("id") String id) {
         LOGGER.info("Received request to DELETE movie with ID [{}]", id);
         try {
-            movieService.deleteMovie(id);
+            movieService.delete(id);
             return Response.ok().build();
         } catch (RepositoryException e) {
             throw new InternalServerErrorException("Could not delete movie with ID [" + id + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
         }
     }
 
-    private URI getLocation(String id) {
-        return uriInfo.getAbsolutePathBuilder().path(id).build();
+    private URI getLocation(Id id) {
+        return uriInfo.getAbsolutePathBuilder().path(id.toString()).build();
     }
 
 }
