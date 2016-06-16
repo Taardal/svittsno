@@ -1,46 +1,44 @@
 package no.svitts.core.util;
 
+import no.svitts.core.repository.Repository;
+import no.svitts.core.unitofwork.UnitOfWork;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class HibernateUtil {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HibernateUtil.class);
-    private static final SessionFactory SESSION_FACTORY;
+    private static final SessionFactory SESSION_FACTORY = buildSessionFactory();
 
-    static {
-        SESSION_FACTORY = buildSessionFactory();
-    }
-
-    public static SessionFactory getSessionFactory() {
-        return SESSION_FACTORY;
-    }
-
-    public static Session beginTransaction() {
-        Session currentSession = getCurrentSession();
-        currentSession.beginTransaction();
-        return currentSession;
-    }
-
-    public static void commitTransaction() {
-        getCurrentSession().getTransaction().commit();
-    }
-
-    public static void rollbackTransaction() {
-        getCurrentSession().getTransaction().rollback();
-    }
-
-    public static void closeSession() {
-        getCurrentSession().close();
-
+    public static <T, R> R transaction(Repository<T> repository, UnitOfWork<T, R> unitOfWork) {
+        try {
+            beginTransaction();
+            R result = unitOfWork.execute(repository);
+            commitTransaction();
+            return result;
+        } catch (HibernateException e) {
+            rollbackTransaction();
+            throw e;
+        }
     }
 
     public static Session getCurrentSession() {
         return SESSION_FACTORY.getCurrentSession();
+    }
+
+    private static Transaction beginTransaction() {
+        return getCurrentSession().beginTransaction();
+    }
+
+    private static void commitTransaction() {
+        getCurrentSession().getTransaction().commit();
+    }
+
+    private static void rollbackTransaction() {
+        getCurrentSession().getTransaction().rollback();
     }
 
     private static SessionFactory buildSessionFactory() {
