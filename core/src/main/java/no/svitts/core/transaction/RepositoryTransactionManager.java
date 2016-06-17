@@ -80,15 +80,9 @@ public class RepositoryTransactionManager<T> implements TransactionManager<T> {
     }
 
     private SessionFactory buildSessionFactory() {
-        Configuration configuration = getConfiguration();
+        Configuration configuration = new Configuration().configure("hibernate_sp.cfg.xml");
         StandardServiceRegistryBuilder standardServiceRegistryBuilder = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties());
         return configuration.buildSessionFactory(standardServiceRegistryBuilder.build());
-    }
-
-    private Configuration getConfiguration() {
-        Configuration configuration = new Configuration().configure("hibernate_sp.cfg.xml");
-        configuration.addProperties(getConnectionProviderProperties());
-        return configuration;
     }
 
     private Properties getConnectionProviderProperties() {
