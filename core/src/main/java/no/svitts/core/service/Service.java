@@ -2,7 +2,6 @@ package no.svitts.core.service;
 
 import no.svitts.core.search.Criteria;
 
-import java.io.Serializable;
 import java.util.List;
 
 public interface Service<T> {
@@ -11,7 +10,7 @@ public interface Service<T> {
 
     List<T> getByCriteria(Criteria criteria);
 
-    <S extends Serializable> S save(T t);
+    String save(T t);
 
     void delete(String id);
 

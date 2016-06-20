@@ -26,6 +26,7 @@ import java.util.List;
 
 import static no.svitts.core.testkit.MovieTestKit.assertMovie;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 
 public class MovieResourceTest extends JerseyTest {
@@ -72,13 +73,15 @@ public class MovieResourceTest extends JerseyTest {
     }
 
     @Test
-    public void getMovie_MovieNotFound_ShouldReturnNotFoundResponse() {
+    public void getMovie_MovieNotFound_ShouldReturnOkResponseWithNullEntity() {
         String id = Id.get();
         when(movieServiceMock.getById(id)).thenReturn(null);
 
         Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path(id).request().get();
+        Movie movie = response.readEntity(Movie.class);
 
-        assertEquals(404, response.getStatus());
+        assertEquals(200, response.getStatus());
+        assertNull(movie);
         verify(movieServiceMock, times(1)).getById(id);
         response.close();
     }
@@ -104,7 +107,7 @@ public class MovieResourceTest extends JerseyTest {
         List<Movie> movies = new ArrayList<>();
         movies.add(movieBuilder.build());
         movies.add(movieBuilder.build());
-        when(movieServiceMock.getByCriteria(new Criteria())).thenReturn(movies);
+        when(movieServiceMock.getByCriteria(any(Criteria.class))).thenReturn(movies);
 
         Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE)
                 .queryParam("name", name)

@@ -7,8 +7,8 @@ import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.exception.ServiceException;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.search.Criteria;
+import no.svitts.core.search.CriteriaKey;
 import no.svitts.core.service.Service;
-import no.svitts.core.util.Id;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +70,8 @@ public class MovieResource {
     ) {
         LOGGER.info("Received request to GET movie(s) with name [{}] and genre [{}] with limit [{}] and offset [{}]", name, genre, limit, offset);
         try {
-            List<Movie> movies = movieService.getByCriteria(new Criteria());
+            Criteria criteria = getCriteria(name, genre, limit, offset);
+            List<Movie> movies = movieService.getByCriteria(criteria);
             return Response.ok().entity(movies).build();
         } catch (RepositoryException e) {
             throw new InternalServerErrorException("Could not get movies with name [" + name + "] and genre [" + genre + "] with limit [" + limit + "] and offset [" + offset + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
@@ -85,8 +86,8 @@ public class MovieResource {
     public Response createMovie(@ValidMovie Movie movie) {
         LOGGER.info("Received request to POST movie [{}]", movie.toString());
         try {
-            Id id = movieService.save(movie);
-            return Response.created(getLocation(id)).build();
+            String createdMovieId = movieService.save(movie);
+            return Response.created(getLocation(createdMovieId)).build();
         } catch (RepositoryException e) {
             throw new InternalServerErrorException("Could not save movie [" + movie.toString() + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
         }
@@ -124,8 +125,17 @@ public class MovieResource {
         }
     }
 
-    private URI getLocation(Id id) {
-        return uriInfo.getAbsolutePathBuilder().path(id.toString()).build();
+    private Criteria getCriteria(String name, String genre, int limit, int offset) {
+        Criteria criteria = new Criteria();
+        criteria.addCriteria(CriteriaKey.NAME, name);
+        criteria.addCriteria(CriteriaKey.GENRE, genre);
+        criteria.setLimit(limit);
+        criteria.setOffset(offset);
+        return criteria;
+    }
+
+    private URI getLocation(String id) {
+        return uriInfo.getAbsolutePathBuilder().path(id).build();
     }
 
 }
