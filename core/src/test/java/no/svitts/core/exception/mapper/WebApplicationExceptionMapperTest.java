@@ -1,6 +1,6 @@
 package no.svitts.core.exception.mapper;
 
-import no.svitts.core.error.ClientErrorMessage;
+import no.svitts.core.errormessage.ClientErrorMessage;
 import org.junit.Before;
 import org.junit.Test;
 

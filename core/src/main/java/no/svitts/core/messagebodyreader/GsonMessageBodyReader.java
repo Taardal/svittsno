@@ -1,8 +1,8 @@
-package no.svitts.core.gson;
+package no.svitts.core.messagebodyreader;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import no.svitts.core.gson.deserializer.MovieDeserializer;
+import no.svitts.core.deserializer.MovieDeserializer;
 import no.svitts.core.movie.Movie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

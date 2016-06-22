@@ -1,13 +1,14 @@
 package no.svitts.core.resource;
 
+import com.google.inject.Inject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import no.svitts.core.constraint.*;
 import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.exception.ServiceException;
 import no.svitts.core.movie.Movie;
-import no.svitts.core.search.Criteria;
-import no.svitts.core.search.CriteriaKey;
+import no.svitts.core.criteria.Criteria;
+import no.svitts.core.criteria.CriteriaKey;
 import no.svitts.core.service.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,7 @@ public class MovieResource {
 
     private Service<Movie> movieService;
 
+    @Inject
     public MovieResource(Service<Movie> movieService) {
         this.movieService = movieService;
     }

@@ -1,11 +1,11 @@
 package no.svitts.core.service;
 
+import com.google.inject.Inject;
 import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.exception.ServiceException;
 import no.svitts.core.exception.TransactionException;
 import no.svitts.core.movie.Movie;
-import no.svitts.core.repository.Repository;
-import no.svitts.core.search.Criteria;
+import no.svitts.core.criteria.Criteria;
 import no.svitts.core.transaction.TransactionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +18,9 @@ public class MovieService implements Service<Movie> {
 
     private TransactionManager<Movie> transactionManager;
 
-    public MovieService(TransactionManager<Movie> transactionManager, Repository<Movie> movieRepository) {
+    @Inject
+    public MovieService(TransactionManager<Movie> transactionManager) {
         this.transactionManager = transactionManager;
-        this.transactionManager.setRepository(movieRepository);
     }
 
     @Override

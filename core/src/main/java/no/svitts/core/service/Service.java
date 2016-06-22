@@ -1,6 +1,6 @@
 package no.svitts.core.service;
 
-import no.svitts.core.search.Criteria;
+import no.svitts.core.criteria.Criteria;
 
 import java.util.List;
 

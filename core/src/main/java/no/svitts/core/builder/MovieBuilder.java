@@ -1,7 +1,7 @@
 package no.svitts.core.builder;
 
 import no.svitts.core.date.ReleaseDate;
-import no.svitts.core.util.Id;
+import no.svitts.core.id.Id;
 import no.svitts.core.genre.Genre;
 import no.svitts.core.movie.Movie;
 

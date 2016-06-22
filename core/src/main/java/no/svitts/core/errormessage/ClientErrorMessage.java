@@ -1,4 +1,4 @@
-package no.svitts.core.error;
+package no.svitts.core.errormessage;
 
 import javax.ws.rs.core.Response;
 import java.util.Arrays;

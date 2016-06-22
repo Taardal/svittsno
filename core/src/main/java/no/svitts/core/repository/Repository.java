@@ -1,8 +1,7 @@
 package no.svitts.core.repository;
 
-import no.svitts.core.search.Criteria;
+import no.svitts.core.criteria.Criteria;
 
-import java.io.Serializable;
 import java.util.List;
 
 public interface Repository<T> {
@@ -10,7 +9,7 @@ public interface Repository<T> {
 
     List<T> getMany(Criteria criteria);
 
-    <S extends Serializable> S save(T entity);
+    String save(T entity);
 
     void delete(String id);
 }

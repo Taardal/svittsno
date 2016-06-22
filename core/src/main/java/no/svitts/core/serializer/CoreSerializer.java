@@ -1,4 +1,4 @@
-package no.svitts.core.gson.serializer;
+package no.svitts.core.serializer;
 
 import com.google.gson.JsonPrimitive;
 import no.svitts.core.date.ReleaseDate;

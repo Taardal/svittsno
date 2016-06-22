@@ -1,4 +1,4 @@
-package no.svitts.core.search;
+package no.svitts.core.criteria;
 
 public enum CriteriaKey {
 

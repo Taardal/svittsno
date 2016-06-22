@@ -1,19 +1,14 @@
 package no.svitts.core.transaction;
 
-import no.svitts.core.datasource.CoreDataSource;
+import com.google.inject.Inject;
 import no.svitts.core.exception.TransactionException;
 import no.svitts.core.repository.Repository;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.cfg.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Properties;
 
 public class RepositoryTransactionManager<T> implements TransactionManager<T> {
 
@@ -22,10 +17,7 @@ public class RepositoryTransactionManager<T> implements TransactionManager<T> {
     private Repository<T> repository;
     private SessionFactory sessionFactory;
 
-    public RepositoryTransactionManager(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
-
+    @Inject
     public RepositoryTransactionManager(Repository<T> repository, SessionFactory sessionFactory) {
         this.repository = repository;
         this.sessionFactory = sessionFactory;
@@ -53,14 +45,9 @@ public class RepositoryTransactionManager<T> implements TransactionManager<T> {
             commitTransaction();
         } catch (HibernateException e) {
             rollbackTransaction();
-            LOGGER.error("Could not execute transaction", e);
+            LOGGER.error("Could not execute transaction without result", e);
             throw new TransactionException(e);
         }
-    }
-
-    @Override
-    public void setRepository(Repository<T> repository) {
-        this.repository = repository;
     }
 
     private Transaction beginTransaction() {
@@ -77,18 +64,6 @@ public class RepositoryTransactionManager<T> implements TransactionManager<T> {
 
     private Session getCurrentSession() {
         return sessionFactory.getCurrentSession();
-    }
-
-    private SessionFactory buildSessionFactory() {
-        Configuration configuration = new Configuration().configure("hibernate_sp.cfg.xml");
-        StandardServiceRegistryBuilder standardServiceRegistryBuilder = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties());
-        return configuration.buildSessionFactory(standardServiceRegistryBuilder.build());
-    }
-
-    private Properties getConnectionProviderProperties() {
-        Properties properties = new Properties();
-        properties.put(Environment.CONNECTION_PROVIDER, CoreDataSource.class.getName());
-        return properties;
     }
 
 }
