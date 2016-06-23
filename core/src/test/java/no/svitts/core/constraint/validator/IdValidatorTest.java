@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import javax.validation.ConstraintValidatorContext;
 
-import static no.svitts.core.constraint.validator.MovieValidator.ID_MAX_LENGTH;
+import static no.svitts.core.movie.Movie.ID_MAX_LENGTH;
 import static no.svitts.core.util.StringUtil.getRandomString;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.anyString;

@@ -7,7 +7,7 @@ import javax.validation.ConstraintValidatorContext;
 import java.util.ArrayList;
 import java.util.List;
 
-import static no.svitts.core.constraint.validator.MovieValidator.NAME_MAX_LENGTH;
+import static no.svitts.core.movie.Movie.NAME_MAX_LENGTH;
 
 public class NameValidator extends CoreValidator implements ConstraintValidator<ValidName, String> {
 

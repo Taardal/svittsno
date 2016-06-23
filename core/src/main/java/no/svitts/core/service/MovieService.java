@@ -1,11 +1,10 @@
 package no.svitts.core.service;
 
 import com.google.inject.Inject;
-import no.svitts.core.exception.RepositoryException;
+import no.svitts.core.criteria.Criteria;
 import no.svitts.core.exception.ServiceException;
 import no.svitts.core.exception.TransactionException;
 import no.svitts.core.movie.Movie;
-import no.svitts.core.criteria.Criteria;
 import no.svitts.core.transaction.TransactionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +26,8 @@ public class MovieService implements Service<Movie> {
     public Movie getById(String id) {
         try {
             return transactionManager.transaction(repository -> repository.getOne(id));
-        } catch (RepositoryException | TransactionException e) {
-            LOGGER.error("Could not transaction transaction", e);
+        } catch (TransactionException e) {
+            LOGGER.error("Could not get movie by ID [{}]", id, e);
             throw new ServiceException(e);
         }
     }
@@ -37,8 +36,8 @@ public class MovieService implements Service<Movie> {
     public List<Movie> getByCriteria(Criteria criteria) {
         try {
             return transactionManager.transaction(repository -> repository.getMany(criteria));
-        } catch (RepositoryException | TransactionException e) {
-            LOGGER.error("Could not transaction transaction", e);
+        } catch (TransactionException e) {
+            LOGGER.error("Could not get movies by criteria [{}]", criteria, e);
             throw new ServiceException(e);
         }
     }
@@ -47,8 +46,8 @@ public class MovieService implements Service<Movie> {
     public String save(Movie movie) {
         try {
             return transactionManager.transaction(repository -> repository.save(movie));
-        } catch (RepositoryException | TransactionException e) {
-            LOGGER.error("Could not transaction transaction", e);
+        } catch (TransactionException e) {
+            LOGGER.error("Could not save movie [{}]", movie.toString(), e);
             throw new ServiceException(e);
         }
     }
@@ -57,8 +56,8 @@ public class MovieService implements Service<Movie> {
     public void delete(String id) {
         try {
             transactionManager.transactionWithoutResult(repository -> repository.delete(id));
-        } catch (RepositoryException | TransactionException e) {
-            LOGGER.error("Could not transaction transaction", e);
+        } catch (TransactionException e) {
+            LOGGER.error("Could not delete movie by ID [{}]", id, e);
             throw new ServiceException(e);
         }
     }

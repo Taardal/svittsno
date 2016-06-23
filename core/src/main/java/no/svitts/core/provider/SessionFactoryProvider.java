@@ -27,7 +27,7 @@ public class SessionFactoryProvider implements Provider<SessionFactory> {
     }
 
     private static SessionFactory buildSessionFactory() {
-        Configuration configuration = new Configuration().configure("hibernate_sp.cfg.xml");
+        Configuration configuration = new Configuration().configure("hibernate.cfg.xml");
         StandardServiceRegistryBuilder standardServiceRegistryBuilder = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties());
         return configuration.buildSessionFactory(standardServiceRegistryBuilder.build());
     }

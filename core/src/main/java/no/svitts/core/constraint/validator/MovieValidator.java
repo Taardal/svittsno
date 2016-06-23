@@ -12,16 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MovieValidator extends CoreValidator implements ConstraintValidator<ValidMovie, Movie> {
+import static no.svitts.core.movie.Movie.*;
 
-    public static final int ID_MAX_LENGTH = 255;
-    public static final int NAME_MAX_LENGTH = 255;
-    public static final int IMDB_ID_MAX_LENGTH = 255;
-    public static final int TAGLINE_MAX_LENGTH = 255;
-    public static final int OVERVIEW_MAX_LENGTH = 510;
-    public static final int VIDEO_FILE_PATH_MAX_LENGTH = 255;
-    public static final int POSTER_IMAGE_FILE_PATH_MAX_LENGTH = 255;
-    public static final int BACKDROP_IMAGE_FILE_PATH_MAX_LENGTH = 255;
+public class MovieValidator extends CoreValidator implements ConstraintValidator<ValidMovie, Movie> {
 
     @Override
     public void initialize(ValidMovie constraintAnnotation) {

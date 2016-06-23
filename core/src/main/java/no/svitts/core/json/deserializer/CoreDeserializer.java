@@ -1,4 +1,4 @@
-package no.svitts.core.deserializer;
+package no.svitts.core.json.deserializer;
 
 import com.google.gson.JsonElement;
 

@@ -25,12 +25,7 @@ public class MovieRepository implements Repository<Movie> {
 
     @Override
     public Movie getOne(String id) {
-        try {
-            return getCurrentSession().get(Movie.class, id);
-        } catch (HibernateException e) {
-            LOGGER.error("Could not get movie with ID [{}]", id, e);
-            throw new RepositoryException(e);
-        }
+        return getCurrentSession().get(Movie.class, id);
     }
 
     @Override
@@ -40,22 +35,12 @@ public class MovieRepository implements Repository<Movie> {
 
     @Override
     public String save(Movie movie)  {
-        try {
-            return (String) getCurrentSession().save(movie);
-        } catch (HibernateException e) {
-            LOGGER.error("Could not save movie [{}]", movie.toString(), e);
-            throw new RepositoryException(e);
-        }
+        return (String) getCurrentSession().save(movie);
     }
 
     @Override
     public void delete(String  id)  {
-        try {
-            getCurrentSession().delete(getOne(id));
-        } catch (HibernateException e) {
-            LOGGER.error("Could not delete movie with ID [{}]", id, e);
-            throw new RepositoryException(e);
-        }
+        getCurrentSession().delete(getOne(id));
     }
 
     private Session getCurrentSession() {

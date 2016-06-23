@@ -7,16 +7,16 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.validation.ConstraintValidatorContext;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static no.svitts.core.constraint.validator.MovieValidator.*;
+import static no.svitts.core.movie.Movie.*;
 import static no.svitts.core.util.StringUtil.getRandomString;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class MovieValidatorTest {
 

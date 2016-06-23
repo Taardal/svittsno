@@ -90,7 +90,7 @@ public class MovieResource {
         try {
             String createdMovieId = movieService.save(movie);
             return Response.created(getLocation(createdMovieId)).build();
-        } catch (RepositoryException e) {
+        } catch (ServiceException e) {
             throw new InternalServerErrorException("Could not save movie [" + movie.toString() + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
         }
     }

@@ -3,12 +3,28 @@ package no.svitts.core.movie;
 import no.svitts.core.date.ReleaseDate;
 import no.svitts.core.genre.Genre;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.File;
+import java.sql.Date;
 import java.util.List;
 
+@Entity
+@Table(name = "movie")
 public class Movie {
 
-    private final String id;
+    public static final int ID_MAX_LENGTH = 255;
+    public static final int NAME_MAX_LENGTH = 255;
+    public static final int IMDB_ID_MAX_LENGTH = 255;
+    public static final int TAGLINE_MAX_LENGTH = 255;
+    public static final int OVERVIEW_MAX_LENGTH = 510;
+    public static final int VIDEO_FILE_PATH_MAX_LENGTH = 255;
+    public static final int POSTER_IMAGE_FILE_PATH_MAX_LENGTH = 255;
+    public static final int BACKDROP_IMAGE_FILE_PATH_MAX_LENGTH = 255;
+
+    private String id;
     private String name;
     private String imdbId;
     private String tagline;
@@ -53,7 +69,7 @@ public class Movie {
 
     @Override
     public boolean equals(Object object) {
-        if (getClass() == object.getClass()) {
+        if (object != null && getClass() == object.getClass()) {
             Movie movie = (Movie) object;
             return id.equals(movie.getId())
                     && name.equals(movie.getName())
@@ -71,10 +87,13 @@ public class Movie {
         }
     }
 
+    @Id
+    @Column(name = "id", nullable = false, length = ID_MAX_LENGTH)
     public String getId() {
         return id;
     }
 
+    @Column(name = "name", nullable = false, length = NAME_MAX_LENGTH)
     public String getName() {
         return name;
     }
@@ -83,6 +102,7 @@ public class Movie {
         this.name = name;
     }
 
+    @Column(name = "imdb_id", length = IMDB_ID_MAX_LENGTH)
     public String getImdbId() {
         return imdbId;
     }
@@ -91,6 +111,7 @@ public class Movie {
         this.imdbId = imdbId;
     }
 
+    @Column(name = "tagline", length = TAGLINE_MAX_LENGTH)
     public String getTagline() {
         return tagline;
     }
@@ -99,6 +120,7 @@ public class Movie {
         this.tagline = tagline;
     }
 
+    @Column(name = "overview", length = OVERVIEW_MAX_LENGTH)
     public String getOverview() {
         return overview;
     }
@@ -107,6 +129,7 @@ public class Movie {
         this.overview = overview;
     }
 
+    @Column(name = "runtime")
     public int getRuntime() {
         return runtime;
     }
@@ -119,9 +142,14 @@ public class Movie {
         return releaseDate;
     }
 
+    public Date getReleaseDateAsSqlDate() {
+        return releaseDate.toSqlDate();
+    }
+
     public void setReleaseDate(ReleaseDate releaseDate) {
         this.releaseDate = releaseDate;
     }
+
 
     public List<Genre> getGenres() {
         return genres;

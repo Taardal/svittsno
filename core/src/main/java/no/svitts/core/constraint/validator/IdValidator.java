@@ -7,7 +7,7 @@ import javax.validation.ConstraintValidatorContext;
 import java.util.ArrayList;
 import java.util.List;
 
-import static no.svitts.core.constraint.validator.MovieValidator.ID_MAX_LENGTH;
+import static no.svitts.core.movie.Movie.ID_MAX_LENGTH;
 
 public class IdValidator extends CoreValidator implements ConstraintValidator<ValidId, String> {
 

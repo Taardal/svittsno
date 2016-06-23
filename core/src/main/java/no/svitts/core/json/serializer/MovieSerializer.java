@@ -1,4 +1,4 @@
-package no.svitts.core.serializer;
+package no.svitts.core.json.serializer;
 
 import com.google.gson.*;
 import no.svitts.core.genre.Genre;

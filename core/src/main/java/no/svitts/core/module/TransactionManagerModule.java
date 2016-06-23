@@ -13,7 +13,7 @@ public class TransactionManagerModule implements Module {
 
     @Override
     public void configure(Binder binder) {
-        binder.bind(new TypeLiteral<Repository<Movie>>() {}).to(MovieRepository.class);
         binder.bind(SessionFactory.class).toProvider(SessionFactoryProvider.class);
+        binder.bind(new TypeLiteral<Repository<Movie>>() {}).to(MovieRepository.class);
     }
 }

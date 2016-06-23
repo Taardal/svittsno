@@ -1,6 +1,7 @@
 package no.svitts.core.transaction;
 
 import com.google.inject.Inject;
+import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.exception.TransactionException;
 import no.svitts.core.repository.Repository;
 import org.hibernate.HibernateException;
@@ -24,13 +25,13 @@ public class RepositoryTransactionManager<T> implements TransactionManager<T> {
     }
 
     @Override
-    public <R> R transaction(TransactionCallback<T, R> transactionCallback) {
+    public <R> R transaction(UnitOfWork<T, R> unitOfWork) {
         try {
             beginTransaction();
-            R result = transactionCallback.execute(repository);
+            R result = unitOfWork.execute(repository);
             commitTransaction();
             return result;
-        } catch (HibernateException e) {
+        } catch (HibernateException | RepositoryException e) {
             rollbackTransaction();
             LOGGER.error("Could not execute transaction", e);
             throw new TransactionException(e);
@@ -38,12 +39,12 @@ public class RepositoryTransactionManager<T> implements TransactionManager<T> {
     }
 
     @Override
-    public void transactionWithoutResult(TransactionCallbackWithoutResult<T> transactionCallbackWithoutResult) {
+    public void transactionWithoutResult(UnitOfWorkWithoutResult<T> unitOfWorkWithoutResult) {
         try {
             beginTransaction();
-            transactionCallbackWithoutResult.execute(repository);
+            unitOfWorkWithoutResult.execute(repository);
             commitTransaction();
-        } catch (HibernateException e) {
+        } catch (HibernateException | RepositoryException e) {
             rollbackTransaction();
             LOGGER.error("Could not execute transaction without result", e);
             throw new TransactionException(e);
