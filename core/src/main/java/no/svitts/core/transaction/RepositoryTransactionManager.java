@@ -33,8 +33,9 @@ public class RepositoryTransactionManager<T> implements TransactionManager<T> {
             return result;
         } catch (HibernateException | RepositoryException e) {
             rollbackTransaction();
-            LOGGER.error("Could not execute transaction", e);
-            throw new TransactionException(e);
+            String errorMessage = "Could not execute transaction";
+            LOGGER.error(errorMessage, e);
+            throw new TransactionException(errorMessage, e);
         }
     }
 
@@ -46,8 +47,9 @@ public class RepositoryTransactionManager<T> implements TransactionManager<T> {
             commitTransaction();
         } catch (HibernateException | RepositoryException e) {
             rollbackTransaction();
-            LOGGER.error("Could not execute transaction without result", e);
-            throw new TransactionException(e);
+            String errorMessage = "Could not execute transaction without result";
+            LOGGER.error(errorMessage, e);
+            throw new TransactionException(errorMessage, e);
         }
     }
 
@@ -60,7 +62,13 @@ public class RepositoryTransactionManager<T> implements TransactionManager<T> {
     }
 
     private void rollbackTransaction() {
-        getCurrentSession().getTransaction().rollback();
+        try {
+            getCurrentSession().getTransaction().rollback();
+        } catch (HibernateException e) {
+            String errorMessage = "Could not rollback transaction";
+            LOGGER.error(errorMessage, e);
+            throw new TransactionException(errorMessage, e);
+        }
     }
 
     private Session getCurrentSession() {

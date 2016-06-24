@@ -27,7 +27,8 @@ public class MovieService implements Service<Movie> {
         try {
             return transactionManager.transaction(repository -> repository.getOne(id));
         } catch (TransactionException e) {
-            LOGGER.error("Could not get movie by ID [{}]", id, e);
+            String errorMessage = "Could not get movie by ID [" + id + "]";
+            LOGGER.error(errorMessage, e);
             throw new ServiceException(e);
         }
     }

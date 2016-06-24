@@ -85,13 +85,13 @@ public class MovieResource {
             notes = "Invalid JSON will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s)."
     )
     @POST
-    public Response createMovie(@ValidMovie Movie movie) {
+    public Response createMovie(Movie movie) {
         LOGGER.info("Received request to POST movie [{}]", movie.toString());
         try {
             String createdMovieId = movieService.save(movie);
             return Response.created(getLocation(createdMovieId)).build();
         } catch (ServiceException e) {
-            throw new InternalServerErrorException("Could not save movie [" + movie.toString() + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
+            throw new InternalServerErrorException("Could not save movie [" + movie.toString() + "].", e);
         }
     }
 

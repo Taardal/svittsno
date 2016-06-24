@@ -16,8 +16,8 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
 
     @Override
     public Response toResponse(ConstraintViolationException exception) {
-        List<String> constraintViolationMessages = exception.getConstraintViolations().stream().map(ConstraintViolation::getMessage).collect(Collectors.toList());
-        ClientErrorMessage clientErrorMessage = new ClientErrorMessage(Response.Status.BAD_REQUEST, constraintViolationMessages);
+        List<String> constraintViolations = exception.getConstraintViolations().stream().map(ConstraintViolation::getMessage).collect(Collectors.toList());
+        ClientErrorMessage clientErrorMessage = new ClientErrorMessage(Response.Status.BAD_REQUEST, constraintViolations);
         return Response.status(clientErrorMessage.getStatus()).entity(clientErrorMessage).type(MediaType.APPLICATION_JSON).build();
     }
 

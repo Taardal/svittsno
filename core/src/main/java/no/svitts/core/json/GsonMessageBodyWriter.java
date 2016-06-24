@@ -34,11 +34,16 @@ public class GsonMessageBodyWriter implements MessageBodyWriter<Object> {
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return mediaType.getType().equals(MediaType.APPLICATION_JSON_TYPE.getType());
+        if (mediaType.getType().equals(MediaType.APPLICATION_JSON_TYPE.getType()) || mediaType.getType().equals(MediaType.APPLICATION_JSON)) {
+            return true;
+        } else {
+            LOGGER.warn("Could not write message body due to unsupported media type.");
+            return false;
+        }
     }
 
     @Override
-    public long getSize(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+    public long getSize(Object object, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return 0;
     }
 

@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.File;
-import java.sql.Date;
 import java.util.List;
 
 @Entity
@@ -142,14 +141,9 @@ public class Movie {
         return releaseDate;
     }
 
-    public Date getReleaseDateAsSqlDate() {
-        return releaseDate.toSqlDate();
-    }
-
     public void setReleaseDate(ReleaseDate releaseDate) {
         this.releaseDate = releaseDate;
     }
-
 
     public List<Genre> getGenres() {
         return genres;

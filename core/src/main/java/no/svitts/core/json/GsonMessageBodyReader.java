@@ -34,7 +34,12 @@ public class GsonMessageBodyReader implements MessageBodyReader<Object> {
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return mediaType.getType().equals(MediaType.APPLICATION_JSON_TYPE.getType());
+        if (mediaType.getType().equals(MediaType.APPLICATION_JSON_TYPE.getType()) || mediaType.getType().equals(MediaType.APPLICATION_JSON)) {
+            return true;
+        } else {
+            LOGGER.warn("Could not read message body due to unsupported media type.");
+            return false;
+        }
     }
 
     @Override
