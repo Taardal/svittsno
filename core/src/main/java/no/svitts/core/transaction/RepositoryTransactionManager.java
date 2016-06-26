@@ -11,68 +11,82 @@ import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.PersistenceException;
+import javax.persistence.RollbackException;
+
 public class RepositoryTransactionManager<T> implements TransactionManager<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RepositoryTransactionManager.class);
 
-    private Repository<T> repository;
     private SessionFactory sessionFactory;
 
     @Inject
-    public RepositoryTransactionManager(Repository<T> repository, SessionFactory sessionFactory) {
-        this.repository = repository;
+    public RepositoryTransactionManager(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 
     @Override
-    public <R> R transaction(UnitOfWork<T, R> unitOfWork) {
+    public <R> R transaction(Repository<T> repository, UnitOfWork<T, R> unitOfWork) {
+        Session currentSession = getCurrentSession();
+        Transaction transaction = currentSession.beginTransaction();
         try {
-            beginTransaction();
             R result = unitOfWork.execute(repository);
-            commitTransaction();
+            transaction.commit();
             return result;
-        } catch (HibernateException | RepositoryException e) {
-            rollbackTransaction();
-            String errorMessage = "Could not execute transaction";
-            LOGGER.error(errorMessage, e);
-            throw new TransactionException(errorMessage, e);
+        } catch (RepositoryException | IllegalStateException | RollbackException e) {
+            rollbackTransaction(transaction);
+            LOGGER.error("Could not execute transcation", e);
+            throw new TransactionException(e);
+        } finally {
+            if (currentSession.isOpen()) {
+                closeSession(currentSession);
+            }
         }
     }
 
     @Override
-    public void transactionWithoutResult(UnitOfWorkWithoutResult<T> unitOfWorkWithoutResult) {
+    public void transactionWithoutResult(Repository<T> repository, UnitOfWorkWithoutResult<T> unitOfWorkWithoutResult) {
+        Session currentSession = getCurrentSession();
+        Transaction execute = currentSession.beginTransaction();
         try {
-            beginTransaction();
             unitOfWorkWithoutResult.execute(repository);
-            commitTransaction();
-        } catch (HibernateException | RepositoryException e) {
-            rollbackTransaction();
-            String errorMessage = "Could not execute transaction without result";
-            LOGGER.error(errorMessage, e);
-            throw new TransactionException(errorMessage, e);
-        }
-    }
-
-    private Transaction beginTransaction() {
-        return getCurrentSession().beginTransaction();
-    }
-
-    private void commitTransaction() {
-        getCurrentSession().getTransaction().commit();
-    }
-
-    private void rollbackTransaction() {
-        try {
-            getCurrentSession().getTransaction().rollback();
-        } catch (HibernateException e) {
-            String errorMessage = "Could not rollback transaction";
-            LOGGER.error(errorMessage, e);
-            throw new TransactionException(errorMessage, e);
+            execute.commit();
+        } catch (RepositoryException | IllegalStateException | RollbackException e) {
+            rollbackTransaction(execute);
+            LOGGER.error("Could not execute transcation", e);
+            throw new TransactionException(e);
+        } finally {
+            if (currentSession.isOpen()) {
+                closeSession(currentSession);
+            }
         }
     }
 
     private Session getCurrentSession() {
-        return sessionFactory.getCurrentSession();
+        try {
+            return sessionFactory.getCurrentSession();
+        } catch (HibernateException e) {
+            LOGGER.error("Could not get current session", e);
+            throw new TransactionException(e);
+        }
+    }
+
+    private void rollbackTransaction(Transaction transaction) {
+        try {
+            transaction.rollback();
+        } catch (IllegalStateException | PersistenceException e) {
+            LOGGER.error("Could not rollback transaction", e);
+            throw new TransactionException(e);
+        }
+    }
+
+    private void closeSession(Session session) {
+        try {
+            session.close();
+        } catch (HibernateException e) {
+            LOGGER.error("Could not close session", e);
+            throw new TransactionException(e);
+        }
     }
 
 }

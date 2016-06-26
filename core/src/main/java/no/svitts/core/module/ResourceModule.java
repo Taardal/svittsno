@@ -1,16 +1,17 @@
 package no.svitts.core.module;
 
-import com.google.inject.AbstractModule;
+import com.google.inject.Binder;
+import com.google.inject.Module;
 import com.google.inject.TypeLiteral;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.service.MovieService;
 import no.svitts.core.service.Service;
 
-public class ResourceModule extends AbstractModule {
+public class ResourceModule implements Module {
 
     @Override
-    protected void configure() {
-        bind(new TypeLiteral<Service<Movie>>(){}).to(MovieService.class);
+    public void configure(Binder binder) {
+        binder.bind(new TypeLiteral<Service<Movie>>(){}).to(MovieService.class);
     }
 
 }

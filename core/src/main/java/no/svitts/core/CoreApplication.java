@@ -2,7 +2,6 @@ package no.svitts.core;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.TypeLiteral;
 import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.jaxrs.listing.ApiListingResource;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
@@ -14,13 +13,9 @@ import no.svitts.core.exception.mapper.ConstraintViolationExceptionMapper;
 import no.svitts.core.exception.mapper.WebApplicationExceptionMapper;
 import no.svitts.core.json.GsonMessageBodyReader;
 import no.svitts.core.json.GsonMessageBodyWriter;
-import no.svitts.core.module.RepositoryModule;
-import no.svitts.core.module.ServiceModule;
-import no.svitts.core.module.TransactionManagerModule;
-import no.svitts.core.movie.Movie;
+import no.svitts.core.module.PersistenceModule;
+import no.svitts.core.module.ResourceModule;
 import no.svitts.core.resource.MovieResource;
-import no.svitts.core.service.MovieService;
-import no.svitts.core.service.Service;
 import org.glassfish.jersey.server.ResourceConfig;
 
 
@@ -31,11 +26,7 @@ public class CoreApplication extends ResourceConfig {
         DataSource dataSource = new CoreDataSource(getDataSourceConfig(applicationProperties));
 //        register(new MovieResource(new MovieService(new MovieRepository(dataSource))));
 
-        Injector injector = Guice.createInjector(
-                binder -> binder.bind(new TypeLiteral<Service<Movie>>(){}).to(MovieService.class),
-                new ServiceModule(),
-                new TransactionManagerModule(),
-                new RepositoryModule());
+        Injector injector = Guice.createInjector(new ResourceModule(), new PersistenceModule());
 
         register(injector.getInstance(MovieResource.class));
 
