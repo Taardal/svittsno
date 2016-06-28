@@ -167,7 +167,7 @@
             <properties>
                 <profile.id>dev</profile.id>
                 <db.driver>org.h2.Driver</db.driver>
-                <db.username>root</db.username>
+                <db.username>svitts</db.username>
                 <db.password>svitts</db.password>
                 <db.main.url>jdbc:h2:file:./target/main;MODE=MySQL</db.main.url>
                 <db.itest.url>jdbc:h2:file:./target/itest;MODE=MySQL</db.itest.url>
