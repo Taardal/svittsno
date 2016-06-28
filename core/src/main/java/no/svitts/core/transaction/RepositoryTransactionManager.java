@@ -47,12 +47,12 @@ public class RepositoryTransactionManager<T> implements TransactionManager<T> {
     @Override
     public void transactionWithoutResult(Repository<T> repository, UnitOfWorkWithoutResult<T> unitOfWorkWithoutResult) {
         Session currentSession = getCurrentSession();
-        Transaction execute = currentSession.beginTransaction();
+        Transaction transaction = currentSession.beginTransaction();
         try {
             unitOfWorkWithoutResult.execute(repository);
-            execute.commit();
+            transaction.commit();
         } catch (RepositoryException | IllegalStateException | RollbackException e) {
-            rollbackTransaction(execute);
+            rollbackTransaction(transaction);
             LOGGER.error("Could not execute transcation", e);
             throw new TransactionException(e);
         } finally {

@@ -1,27 +1,25 @@
-package no.svitts.core.application;
+package no.svitts.core.configuration;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class ApplicationProperties {
+public class CoreApplicationProperties extends Properties implements ApplicationProperties {
 
     private static final String APPLICATION_PROPERTIES_FILE = "application.properties";
-    private Properties properties;
 
-    public ApplicationProperties() {
-        properties = getApplicationProperties();
+    public CoreApplicationProperties() {
+        loadApplicationProperties();
     }
 
-    public String get(String property) {
-        return properties.getProperty(property);
+    @Override
+    public String get(String key) {
+        return getProperty(key);
     }
 
-    private Properties getApplicationProperties() {
+    private void loadApplicationProperties() {
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(APPLICATION_PROPERTIES_FILE)) {
-            Properties properties = new Properties();
-            properties.load(inputStream);
-            return properties;
+            load(inputStream);
         } catch (IOException e) {
             throw new RuntimeException("Could not load input stream for file [" + APPLICATION_PROPERTIES_FILE + "]");
         }

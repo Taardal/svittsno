@@ -2,7 +2,7 @@ package no.svitts.core.provider;
 
 import com.google.inject.Provider;
 import com.zaxxer.hikari.HikariConfig;
-import no.svitts.core.application.ApplicationProperties;
+import no.svitts.core.configuration.ApplicationProperties;
 import no.svitts.core.datasource.CoreDataSource;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -29,7 +29,7 @@ public class SessionFactoryProvider implements Provider<SessionFactory> {
     }
 
     private static SessionFactory buildSessionFactory() {
-        Configuration configuration = new Configuration().configure("hibernate.cfg.xml");
+        Configuration configuration = new Configuration().configure("hibernate.properties");
         StandardServiceRegistryBuilder standardServiceRegistryBuilder = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties());
         return configuration.buildSessionFactory(standardServiceRegistryBuilder.build());
     }

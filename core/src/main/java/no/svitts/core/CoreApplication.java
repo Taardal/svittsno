@@ -5,7 +5,8 @@ import com.google.inject.Injector;
 import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.jaxrs.listing.ApiListingResource;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
-import no.svitts.core.application.ApplicationProperties;
+import no.svitts.core.configuration.ApplicationProperties;
+import no.svitts.core.configuration.CoreApplicationProperties;
 import no.svitts.core.datasource.CoreDataSource;
 import no.svitts.core.datasource.DataSource;
 import no.svitts.core.datasource.DataSourceConfig;
@@ -22,9 +23,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 public class CoreApplication extends ResourceConfig {
 
     public CoreApplication() {
-        ApplicationProperties applicationProperties = new ApplicationProperties();
+        ApplicationProperties applicationProperties = new CoreApplicationProperties();
         DataSource dataSource = new CoreDataSource(getDataSourceConfig(applicationProperties));
-//        register(new MovieResource(new MovieService(new MovieRepository(dataSource))));
 
         Injector injector = Guice.createInjector(new ResourceModule(), new PersistenceModule());
 
