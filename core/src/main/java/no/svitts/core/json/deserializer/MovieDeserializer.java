@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MovieDeserializer extends CoreDeserializer implements JsonDeserializer<Movie> {
 
@@ -26,7 +26,7 @@ public class MovieDeserializer extends CoreDeserializer implements JsonDeseriali
         String overview = getString(jsonObject.get("overview"));
         int runtime = getInt(jsonObject.get("runtime"));
         ReleaseDate releaseDate = getKeyDate(jsonObject.get("releaseDate"));
-        List<Genre> genres = getGenres(jsonObject.get("genres"));
+        Set<Genre> genres = getGenres(jsonObject.get("genres"));
         File videoFile = getFile(jsonObject.get("videoFile"));
         File posterImageFile = getFile(jsonObject.get("posterImageFile"));
         File backdropImageFile = getFile(jsonObject.get("backdropImageFile"));
@@ -45,12 +45,12 @@ public class MovieDeserializer extends CoreDeserializer implements JsonDeseriali
         return isNotNull(jsonElement) ? ReleaseDate.fromString(getString(jsonElement)) : null;
     }
 
-    private List<Genre> getGenres(JsonElement jsonElement) {
+    private Set<Genre> getGenres(JsonElement jsonElement) {
         return isNotNull(jsonElement) ? getGenres(jsonElement.getAsJsonArray()) : null;
     }
 
-    private List<Genre> getGenres(JsonArray jsonArray) {
-        List<Genre> genres = new ArrayList<>();
+    private Set<Genre> getGenres(JsonArray jsonArray) {
+        Set<Genre> genres = new HashSet<>();
         for (JsonElement jsonElement : jsonArray) {
             String genreString = jsonElement.getAsString().toUpperCase().replaceAll("-", "_");
             genres.add(getGenre(genreString));

@@ -8,8 +8,8 @@ import org.junit.Test;
 
 import javax.validation.ConstraintValidatorContext;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import static no.svitts.core.movie.Movie.*;
 import static no.svitts.core.util.StringUtil.getRandomString;
@@ -134,7 +134,7 @@ public class MovieValidatorTest {
 
     @Test
     public void isValid_InvalidGenre_ShouldReturnFalse() throws Exception {
-        List<Genre> genres = new ArrayList<>();
+        Set<Genre> genres = new HashSet<>();
         genres.add(null);
         Movie movie = movieBuilder.genres(genres).build();
         assertFalse(movieValidator.isValid(movie, constraintValidatorContextMock));

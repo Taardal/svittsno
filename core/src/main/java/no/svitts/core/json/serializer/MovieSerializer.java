@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.reflect.Type;
-import java.util.List;
+import java.util.Set;
 
 public class MovieSerializer extends CoreSerializer implements JsonSerializer<Movie> {
 
@@ -45,11 +45,11 @@ public class MovieSerializer extends CoreSerializer implements JsonSerializer<Mo
         }
     }
 
-    private JsonArray getGenresAsJsonArray(List<Genre> genres) {
+    private JsonArray getGenresAsJsonArray(Set<Genre> genres) {
         if (genres != null) {
             JsonArray jsonArray = new JsonArray();
             for (Genre genre : genres) {
-                jsonArray.add(genre.getValue());
+                jsonArray.add(genre.toString());
             }
             return jsonArray;
         } else {

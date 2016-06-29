@@ -27,15 +27,18 @@ public class RepositoryTransactionManager<T> implements TransactionManager<T> {
 
     @Override
     public <R> R transaction(Repository<T> repository, UnitOfWork<T, R> unitOfWork) {
+        LOGGER.info("Making transaction.");
         Session currentSession = getCurrentSession();
         Transaction transaction = currentSession.beginTransaction();
         try {
+            LOGGER.info("Executing unit of work.");
             R result = unitOfWork.execute(repository);
             transaction.commit();
+            LOGGER.info("Transaction committed.");
             return result;
         } catch (RepositoryException | IllegalStateException | RollbackException e) {
             rollbackTransaction(transaction);
-            LOGGER.error("Could not execute transcation", e);
+            LOGGER.error("Could not do transcation.", e);
             throw new TransactionException(e);
         } finally {
             if (currentSession.isOpen()) {
@@ -46,14 +49,17 @@ public class RepositoryTransactionManager<T> implements TransactionManager<T> {
 
     @Override
     public void transactionWithoutResult(Repository<T> repository, UnitOfWorkWithoutResult<T> unitOfWorkWithoutResult) {
+        LOGGER.info("Making transaction without result.");
         Session currentSession = getCurrentSession();
         Transaction transaction = currentSession.beginTransaction();
         try {
+            LOGGER.info("Executing unit of work.");
             unitOfWorkWithoutResult.execute(repository);
             transaction.commit();
+            LOGGER.info("Transaction committed.");
         } catch (RepositoryException | IllegalStateException | RollbackException e) {
             rollbackTransaction(transaction);
-            LOGGER.error("Could not execute transcation", e);
+            LOGGER.error("Could not do transcation.", e);
             throw new TransactionException(e);
         } finally {
             if (currentSession.isOpen()) {
@@ -63,28 +69,31 @@ public class RepositoryTransactionManager<T> implements TransactionManager<T> {
     }
 
     private Session getCurrentSession() {
+        LOGGER.info("Getting current session.");
         try {
             return sessionFactory.getCurrentSession();
         } catch (HibernateException e) {
-            LOGGER.error("Could not get current session", e);
+            LOGGER.error("Could not get current session.", e);
             throw new TransactionException(e);
         }
     }
 
     private void rollbackTransaction(Transaction transaction) {
+        LOGGER.info("Rolling back transaction [{}].", transaction.toString());
         try {
             transaction.rollback();
         } catch (IllegalStateException | PersistenceException e) {
-            LOGGER.error("Could not rollback transaction", e);
+            LOGGER.error("Could not rollback transaction[{}].", transaction.toString(), e);
             throw new TransactionException(e);
         }
     }
 
     private void closeSession(Session session) {
+        LOGGER.info("Closing session [{}].", session.toString());
         try {
             session.close();
         } catch (Exception e) {
-            LOGGER.error("Could not close session", e);
+            LOGGER.error("Could not close session [{}].", session.toString(), e);
             throw new TransactionException(e);
         }
     }

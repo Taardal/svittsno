@@ -6,7 +6,6 @@ import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.jaxrs.listing.ApiListingResource;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
 import no.svitts.core.configuration.ApplicationProperties;
-import no.svitts.core.configuration.CoreApplicationProperties;
 import no.svitts.core.datasource.CoreDataSource;
 import no.svitts.core.datasource.DataSource;
 import no.svitts.core.datasource.DataSourceConfig;
@@ -16,6 +15,7 @@ import no.svitts.core.json.GsonMessageBodyReader;
 import no.svitts.core.json.GsonMessageBodyWriter;
 import no.svitts.core.module.PersistenceModule;
 import no.svitts.core.module.ResourceModule;
+import no.svitts.core.provider.SessionFactoryProvider;
 import no.svitts.core.resource.MovieResource;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -23,10 +23,10 @@ import org.glassfish.jersey.server.ResourceConfig;
 public class CoreApplication extends ResourceConfig {
 
     public CoreApplication() {
-        ApplicationProperties applicationProperties = new CoreApplicationProperties();
+        ApplicationProperties applicationProperties = new ApplicationProperties();
         DataSource dataSource = new CoreDataSource(getDataSourceConfig(applicationProperties));
 
-        Injector injector = Guice.createInjector(new ResourceModule(), new PersistenceModule());
+        Injector injector = Guice.createInjector(new ResourceModule(), new PersistenceModule(new SessionFactoryProvider()));
 
         register(injector.getInstance(MovieResource.class));
 
@@ -41,10 +41,10 @@ public class CoreApplication extends ResourceConfig {
 
     private DataSourceConfig getDataSourceConfig(ApplicationProperties applicationProperties) {
         return new DataSourceConfig(
-                applicationProperties.get("db.main.url"),
-                applicationProperties.get("db.username"),
-                applicationProperties.get("db.password"),
-                applicationProperties.get("db.driver"));
+                applicationProperties.getProperty("db.main.url"),
+                applicationProperties.getProperty("db.username"),
+                applicationProperties.getProperty("db.password"),
+                applicationProperties.getProperty("db.driver"));
     }
 
     private void createSwaggerBean(ApplicationProperties applicationProperties) {
@@ -52,7 +52,7 @@ public class CoreApplication extends ResourceConfig {
         beanConfig.setTitle("Svitts API");
         beanConfig.setDescription("This is the API for the Svitts movie library application.");
         beanConfig.setContact("Torbjørn Årdal - torbjorn.aardal@gmail.com");
-        beanConfig.setVersion(applicationProperties.get("swagger.version"));
+        beanConfig.setVersion(applicationProperties.getProperty("swagger.version"));
         beanConfig.setSchemes(new String[]{"http"});
         beanConfig.setHost("localhost:8080");
         beanConfig.setBasePath("/api");

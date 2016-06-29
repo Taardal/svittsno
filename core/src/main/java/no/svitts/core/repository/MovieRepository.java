@@ -22,7 +22,13 @@ public class MovieRepository extends CoreRepository<Movie> {
 
     @Override
     public Movie getOne(String id) {
-        return getCurrentSession().get(Movie.class, id);
+        LOGGER.info("Getting movie with ID [{}] from database.", id);
+        try {
+            return getCurrentSession().get(Movie.class, id);
+        } catch (Throwable e) {
+            LOGGER.error("Could not get movie", e);
+            throw new RepositoryException(e);
+        }
     }
 
     @Override
@@ -31,9 +37,11 @@ public class MovieRepository extends CoreRepository<Movie> {
     }
 
     @Override
-    public String save(Movie movie)  {
+    public String save(Movie movie) {
+        LOGGER.info("Inserting movie [{}] into database.", movie.toString());
         try {
-            return (String) getCurrentSession().save(movie);
+            getCurrentSession().save(movie);
+            return movie.getId();
         } catch (HibernateException e) {
             LOGGER.error("Could not save movie", e);
             throw new RepositoryException(e);
@@ -41,7 +49,7 @@ public class MovieRepository extends CoreRepository<Movie> {
     }
 
     @Override
-    public void delete(String  id)  {
+    public void delete(String id) {
         getCurrentSession().delete(getOne(id));
     }
 

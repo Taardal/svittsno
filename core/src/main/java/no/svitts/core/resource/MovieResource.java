@@ -4,11 +4,11 @@ import com.google.inject.Inject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import no.svitts.core.constraint.*;
+import no.svitts.core.criteria.Criteria;
+import no.svitts.core.criteria.CriteriaKey;
 import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.exception.ServiceException;
 import no.svitts.core.movie.Movie;
-import no.svitts.core.criteria.Criteria;
-import no.svitts.core.criteria.CriteriaKey;
 import no.svitts.core.service.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ public class MovieResource {
         try {
             Movie movie = movieService.getById(id);
             return Response.ok().entity(movie).build();
-        } catch (ServiceException e) {
+        } catch (Throwable e) {
             throw new InternalServerErrorException("Could not get movie with ID [" + id + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
         }
     }

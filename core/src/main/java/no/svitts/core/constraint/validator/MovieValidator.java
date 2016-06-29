@@ -10,6 +10,7 @@ import javax.validation.ConstraintValidatorContext;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static no.svitts.core.movie.Movie.*;
@@ -123,7 +124,7 @@ public class MovieValidator extends CoreValidator implements ConstraintValidator
         return violations;
     }
 
-    private List<String> getGenresViolations(List<Genre> genres) {
+    private List<String> getGenresViolations(Set<Genre> genres) {
         List<String> violations = new ArrayList<>();
         if (genres != null) {
             violations.addAll(genres.stream().filter(genre -> genre == null).map(genre -> "A genre was invalid or not supported.").collect(Collectors.toList()));

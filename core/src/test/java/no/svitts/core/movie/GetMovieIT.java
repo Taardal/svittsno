@@ -2,23 +2,17 @@ package no.svitts.core.movie;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.TypeLiteral;
 import no.svitts.core.builder.MovieBuilder;
 import no.svitts.core.exception.mapper.ConstraintViolationExceptionMapper;
 import no.svitts.core.exception.mapper.WebApplicationExceptionMapper;
 import no.svitts.core.json.GsonMessageBodyReader;
 import no.svitts.core.json.GsonMessageBodyWriter;
+import no.svitts.core.module.PersistenceModule;
 import no.svitts.core.module.ResourceModule;
 import no.svitts.core.provider.ItestSessionFactoryProvider;
-import no.svitts.core.repository.MovieRepository;
-import no.svitts.core.repository.Repository;
 import no.svitts.core.resource.MovieResource;
-import no.svitts.core.transaction.RepositoryTransactionManager;
-import no.svitts.core.transaction.TransactionManager;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
-import org.hibernate.SessionFactory;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,25 +32,15 @@ public class GetMovieIT extends JerseyTest {
 
     @Override
     protected Application configure() {
-        ResourceConfig resourceConfig = new ResourceConfig();
-
-        Injector injector = Guice.createInjector(binder -> {
-            binder.bind(SessionFactory.class).toProvider(ItestSessionFactoryProvider.class);
-            binder.bind(new TypeLiteral<Repository<Movie>>() {
-            }).to(MovieRepository.class);
-            binder.bind(new TypeLiteral<TransactionManager<Movie>>() {
-            }).to(new TypeLiteral<RepositoryTransactionManager<Movie>>() {
-            });
-        }, new ResourceModule());
-
+        Injector injector = Guice.createInjector(new ResourceModule(), new PersistenceModule(new ItestSessionFactoryProvider()));
         MovieResource movieResource = injector.getInstance(MovieResource.class);
-        resourceConfig.register(movieResource);
 
+        ResourceConfig resourceConfig = new ResourceConfig();
+        resourceConfig.register(movieResource);
         resourceConfig.register(new WebApplicationExceptionMapper());
         resourceConfig.register(new ConstraintViolationExceptionMapper());
         resourceConfig.register(new GsonMessageBodyReader());
         resourceConfig.register(new GsonMessageBodyWriter());
-
         return resourceConfig;
     }
 
@@ -67,18 +51,6 @@ public class GetMovieIT extends JerseyTest {
         super.setUp();
     }
 
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    @Test
-    public void name() throws Exception {
-
-
-    }
-
     @Test
     public void getMovieById_MovieDoesNotExist_ShouldReturnNotFoundResponse() {
         client().register(new GsonMessageBodyReader()).register(new GsonMessageBodyWriter());
@@ -87,13 +59,14 @@ public class GetMovieIT extends JerseyTest {
 
         Response createMovieResponse = client().target(getBaseUri()).path(MOVIE_RESOURCE).request().post(movieEntity, Response.class);
         assertEquals(201, createMovieResponse.getStatus());
-        assertMovie(movie, createMovieResponse.readEntity(Movie.class));
         createMovieResponse.close();
 
-//        Response getMovieResponse = client().target(getBaseUri()).path(MOVIE_RESOURCE).path(movie.getId()).request().get();
-//        assertEquals(200, getMovieResponse.getStatus());
-//        assertMovie(movie, getMovieResponse.readEntity(Movie.class));
-//        getMovieResponse.close();
+        Response getMovieResponse = client().target(getBaseUri()).path(MOVIE_RESOURCE).path(movie.getId()).request().get();
+        assertEquals(200, getMovieResponse.getStatus());
+        assertMovie(movie, getMovieResponse.readEntity(Movie.class));
+        getMovieResponse.close();
     }
+
+
 
 }

@@ -35,7 +35,7 @@ public class UpdateMovieIT extends JerseyTest {
 //    @Test
 //    public void updateMovie_NameTooLong_ShouldAbortAndReturnServerError() {
 //        Movie movie = movieBuilder.build();
-//        movie.setName(getRandomString(NAME_MAX_LENGTH + 1));
+//        movie.setName(getRandomString(MAX_LENGTH + 1));
 //        Entity<Movie> movieEntity = Entity.entity(movie, MediaType.APPLICATION_JSON);
 //
 //        Response response = target(MOVIE_RESOURCE).path("updateSingle").path(movie.getId()).request().put(movieEntity);

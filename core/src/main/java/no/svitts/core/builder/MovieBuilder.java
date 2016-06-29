@@ -1,13 +1,13 @@
 package no.svitts.core.builder;
 
 import no.svitts.core.date.ReleaseDate;
-import no.svitts.core.id.Id;
 import no.svitts.core.genre.Genre;
+import no.svitts.core.id.Id;
 import no.svitts.core.movie.Movie;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MovieBuilder implements Builder<Movie> {
 
@@ -18,7 +18,7 @@ public class MovieBuilder implements Builder<Movie> {
     private String overview;
     private int runtime;
     private ReleaseDate releaseDate;
-    private List<Genre> genres;
+    private Set<Genre> genres;
     private File videoFile;
     private File posterImageFile;
     private File backdropImageFile;
@@ -77,7 +77,7 @@ public class MovieBuilder implements Builder<Movie> {
         return this;
     }
 
-    public MovieBuilder genres(List<Genre> genres) {
+    public MovieBuilder genres(Set<Genre> genres) {
         this.genres = genres;
         return this;
     }
@@ -112,8 +112,8 @@ public class MovieBuilder implements Builder<Movie> {
         return this;
     }
 
-    private List<Genre> getDefaultGenres() {
-        List<Genre> genres = new ArrayList<>();
+    private Set<Genre> getDefaultGenres() {
+        Set<Genre> genres = new HashSet<>();
         genres.add(Genre.FILM_NOIR);
         genres.add(Genre.MUSICAL);
         return genres;

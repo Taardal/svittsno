@@ -6,6 +6,11 @@ import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.Embeddable;
+import javax.persistence.Entity;
+
+@Entity
+@Embeddable
 public class ReleaseDate {
 
     private static final String RELEASE_DATE_REGEX = "((19|20)(\\d)(\\d))(0?[1-9]|1[012])(0?[1-9]|[12][0-9]|3[01])";
@@ -32,16 +37,16 @@ public class ReleaseDate {
         this.dateTime = dateTime;
     }
 
-    public static ReleaseDate fromString(String date) {
-        if (date != null && !date.equals("")) {
-            DateTime dateTime = parseDateTime(date);
+    public static ReleaseDate fromString(String dateString) {
+        if (dateString != null && !dateString.equals("")) {
+            DateTime dateTime = parseDateTime(dateString);
             if (dateTime != null) {
                 return new ReleaseDate(dateTime);
             } else {
-                LOGGER.warn("Could not parse date string [" + date + "] to release date because it did not match any supported regex.");
+                LOGGER.warn("Could not parse date string [" + dateString + "] to release date because it did not match any supported regex.");
             }
         } else {
-            LOGGER.warn("Could not parse date string [" + date + "] to release date because it was null or empty.");
+            LOGGER.warn("Could not parse date string [" + dateString + "] to release date because it was null or empty.");
         }
         return null;
     }
@@ -61,12 +66,17 @@ public class ReleaseDate {
         }
     }
 
+
     public java.sql.Date toSqlDate() {
         return new java.sql.Date(getTime());
     }
 
     public long getTime() {
         return dateTime.toInstant().getMillis();
+    }
+
+    public void setTime(long millis) {
+        dateTime = new DateTime(millis);
     }
 
     private static DateTime parseDateTime(String date) {

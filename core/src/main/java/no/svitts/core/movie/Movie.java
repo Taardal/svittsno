@@ -2,10 +2,11 @@ package no.svitts.core.movie;
 
 import no.svitts.core.date.ReleaseDate;
 import no.svitts.core.genre.Genre;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.io.File;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "movie")
@@ -27,12 +28,15 @@ public class Movie {
     private String overview;
     private int runtime;
     private ReleaseDate releaseDate;
-    private List<Genre> genres;
+    private Set<Genre> genres;
     private File videoFile;
     private File posterImageFile;
     private File backdropImageFile;
 
-    public Movie(String id, String name, String imdbId, String tagline, String overview, int runtime, ReleaseDate releaseDate, List<Genre> genres, File videoFile, File posterImageFile, File backdropImageFile) {
+    public Movie() {
+    }
+
+    public Movie(String id, String name, String imdbId, String tagline, String overview, int runtime, ReleaseDate releaseDate, Set<Genre> genres, File videoFile, File posterImageFile, File backdropImageFile) {
         this.id = id;
         this.name = name;
         this.imdbId = imdbId;
@@ -89,6 +93,11 @@ public class Movie {
         return id;
     }
 
+    //Hibernate requirement
+    private void setId(String id) {
+        this.id = id;
+    }
+
     @Column(name = "name", nullable = false, length = NAME_MAX_LENGTH)
     public String getName() {
         return name;
@@ -135,6 +144,7 @@ public class Movie {
     }
 
     @Column(name = "release_date")
+    @Type(type="org.joda.time.contrib.hibernate.PersistentDateTime")
     public ReleaseDate getReleaseDate() {
         return releaseDate;
     }
@@ -143,13 +153,13 @@ public class Movie {
         this.releaseDate = releaseDate;
     }
 
-    @Column(name = "genre")
-    @OneToMany(targetEntity = Genre.class, mappedBy = "genres", fetch = FetchType.EAGER)
-    public List<Genre> getGenres() {
+    @Enumerated(EnumType.STRING)
+    @ElementCollection(targetClass = Genre.class, fetch = FetchType.EAGER)
+    public Set<Genre> getGenres() {
         return genres;
     }
 
-    public void setGenres(List<Genre> genres) {
+    public void setGenres(Set<Genre> genres) {
         this.genres = genres;
     }
 
