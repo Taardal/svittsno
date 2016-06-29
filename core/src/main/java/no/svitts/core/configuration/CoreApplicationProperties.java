@@ -9,7 +9,11 @@ public class CoreApplicationProperties extends Properties implements Application
     private static final String APPLICATION_PROPERTIES_FILE = "application.properties";
 
     public CoreApplicationProperties() {
-        loadApplicationProperties();
+        loadApplicationProperties(APPLICATION_PROPERTIES_FILE);
+    }
+
+    public CoreApplicationProperties(String propertiesFile) {
+        loadApplicationProperties(propertiesFile);
     }
 
     @Override
@@ -17,11 +21,11 @@ public class CoreApplicationProperties extends Properties implements Application
         return getProperty(key);
     }
 
-    private void loadApplicationProperties() {
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(APPLICATION_PROPERTIES_FILE)) {
+    private void loadApplicationProperties(String applicationPropertiesFile) {
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(applicationPropertiesFile)) {
             load(inputStream);
         } catch (IOException e) {
-            throw new RuntimeException("Could not load input stream for file [" + APPLICATION_PROPERTIES_FILE + "]");
+            throw new RuntimeException("Could not load input stream for file [" + applicationPropertiesFile + "]");
         }
     }
 }

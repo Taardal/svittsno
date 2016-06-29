@@ -83,7 +83,7 @@ public class RepositoryTransactionManager<T> implements TransactionManager<T> {
     private void closeSession(Session session) {
         try {
             session.close();
-        } catch (HibernateException e) {
+        } catch (Exception e) {
             LOGGER.error("Could not close session", e);
             throw new TransactionException(e);
         }

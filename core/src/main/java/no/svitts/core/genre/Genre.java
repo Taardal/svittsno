@@ -1,8 +1,15 @@
 package no.svitts.core.genre;
 
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name = "genre")
 public enum Genre {
 
     ACTION(1, "Action"),
@@ -38,10 +45,13 @@ public enum Genre {
         this.value = value;
     }
 
+    @Id
+    @Column(name = "id")
     public int getId() {
         return id;
     }
 
+    @Column(name = "name", length = GENRE_MAX_LENGTH)
     public String getValue() {
         return value;
     }

@@ -2,6 +2,7 @@ package no.svitts.core.service;
 
 import com.google.inject.Inject;
 import no.svitts.core.criteria.Criteria;
+import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.exception.ServiceException;
 import no.svitts.core.exception.TransactionException;
 import no.svitts.core.movie.Movie;
@@ -45,7 +46,7 @@ public class MovieService extends CoreService<Movie> {
     public String save(Movie movie) {
         try {
             return transaction(repository -> repository.save(movie));
-        } catch (TransactionException e) {
+        } catch (TransactionException | RepositoryException e) {
             LOGGER.error("Could not save movie [{}]", movie.toString(), e);
             throw new ServiceException(e);
         }

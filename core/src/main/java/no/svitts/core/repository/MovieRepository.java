@@ -2,7 +2,9 @@ package no.svitts.core.repository;
 
 import com.google.inject.Inject;
 import no.svitts.core.criteria.Criteria;
+import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.movie.Movie;
+import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +32,12 @@ public class MovieRepository extends CoreRepository<Movie> {
 
     @Override
     public String save(Movie movie)  {
-        return (String) getCurrentSession().save(movie);
+        try {
+            return (String) getCurrentSession().save(movie);
+        } catch (HibernateException e) {
+            LOGGER.error("Could not save movie", e);
+            throw new RepositoryException(e);
+        }
     }
 
     @Override

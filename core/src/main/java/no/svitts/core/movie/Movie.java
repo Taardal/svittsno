@@ -3,10 +3,7 @@ package no.svitts.core.movie;
 import no.svitts.core.date.ReleaseDate;
 import no.svitts.core.genre.Genre;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.File;
 import java.util.List;
 
@@ -137,6 +134,7 @@ public class Movie {
         this.runtime = runtime;
     }
 
+    @Column(name = "release_date")
     public ReleaseDate getReleaseDate() {
         return releaseDate;
     }
@@ -145,6 +143,8 @@ public class Movie {
         this.releaseDate = releaseDate;
     }
 
+    @Column(name = "genre")
+    @OneToMany(targetEntity = Genre.class, mappedBy = "genres", fetch = FetchType.EAGER)
     public List<Genre> getGenres() {
         return genres;
     }
@@ -153,6 +153,7 @@ public class Movie {
         this.genres = genres;
     }
 
+    @Column(name = "video_file")
     public File getVideoFile() {
         return videoFile;
     }
@@ -161,6 +162,7 @@ public class Movie {
         this.videoFile = videoFile;
     }
 
+    @Column(name = "poster_image_file")
     public File getPosterImageFile() {
         return posterImageFile;
     }
@@ -169,6 +171,7 @@ public class Movie {
         this.posterImageFile = posterImageFile;
     }
 
+    @Column(name = "backdrop_image_file")
     public File getBackdropImageFile() {
         return backdropImageFile;
     }
