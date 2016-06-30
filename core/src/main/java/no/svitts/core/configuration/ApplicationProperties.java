@@ -6,17 +6,17 @@ import java.util.Properties;
 
 public class ApplicationProperties extends Properties {
 
-    private static final String APPLICATION_PROPERTIES_FILE = "application.properties";
+    private static final String APPLICATION_PROPERTIES = "application.properties";
 
     public ApplicationProperties() {
-        loadApplicationProperties(APPLICATION_PROPERTIES_FILE);
+        loadProperties(APPLICATION_PROPERTIES);
     }
 
     public ApplicationProperties(String propertiesFile) {
-        loadApplicationProperties(propertiesFile);
+        loadProperties(propertiesFile);
     }
 
-    private void loadApplicationProperties(String applicationPropertiesFile) {
+    private void loadProperties(String applicationPropertiesFile) {
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(applicationPropertiesFile)) {
             load(inputStream);
         } catch (IOException e) {

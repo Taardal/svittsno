@@ -58,5 +58,14 @@ public class GsonMessageBodyWriter implements MessageBodyWriter<Object> {
         }
     }
 
+    private boolean isSupportedType(Class<?> type) {
+        try {
+            return gson.getAdapter(type) != null;
+        } catch (IllegalArgumentException e) {
+            LOGGER.error("Could not get GSON adapter for type [{}].", type, e);
+            return false;
+        }
+    }
+
 
 }

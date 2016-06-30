@@ -6,15 +6,12 @@ import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.jaxrs.listing.ApiListingResource;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
 import no.svitts.core.configuration.ApplicationProperties;
-import no.svitts.core.datasource.CoreDataSource;
-import no.svitts.core.datasource.DataSource;
-import no.svitts.core.datasource.DataSourceConfig;
 import no.svitts.core.exception.mapper.ConstraintViolationExceptionMapper;
 import no.svitts.core.exception.mapper.WebApplicationExceptionMapper;
 import no.svitts.core.json.GsonMessageBodyReader;
 import no.svitts.core.json.GsonMessageBodyWriter;
 import no.svitts.core.module.PersistenceModule;
-import no.svitts.core.module.ResourceModule;
+import no.svitts.core.module.WebModule;
 import no.svitts.core.provider.SessionFactoryProvider;
 import no.svitts.core.resource.MovieResource;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -23,28 +20,19 @@ import org.glassfish.jersey.server.ResourceConfig;
 public class CoreApplication extends ResourceConfig {
 
     public CoreApplication() {
-        ApplicationProperties applicationProperties = new ApplicationProperties();
-        DataSource dataSource = new CoreDataSource(getDataSourceConfig(applicationProperties));
-
-        Injector injector = Guice.createInjector(new ResourceModule(), new PersistenceModule(new SessionFactoryProvider()));
-
-        register(injector.getInstance(MovieResource.class));
-
-        register(new WebApplicationExceptionMapper());
-        register(new ConstraintViolationExceptionMapper());
-        register(new GsonMessageBodyReader());
-        register(new GsonMessageBodyWriter());
-        register(new ApiListingResource());
-        register(new SwaggerSerializers());
-        createSwaggerBean(applicationProperties);
+        Injector injector = Guice.createInjector(new WebModule(), new PersistenceModule(new SessionFactoryProvider()));
+        registerComponents(injector);
+        createSwaggerBean(new ApplicationProperties());
     }
 
-    private DataSourceConfig getDataSourceConfig(ApplicationProperties applicationProperties) {
-        return new DataSourceConfig(
-                applicationProperties.getProperty("db.main.url"),
-                applicationProperties.getProperty("db.username"),
-                applicationProperties.getProperty("db.password"),
-                applicationProperties.getProperty("db.driver"));
+    private void registerComponents(Injector injector) {
+        register(injector.getInstance(MovieResource.class));
+        register(WebApplicationExceptionMapper.class);
+        register(ConstraintViolationExceptionMapper.class);
+        register(GsonMessageBodyReader.class);
+        register(GsonMessageBodyWriter.class);
+        register(ApiListingResource.class);
+        register(SwaggerSerializers.class);
     }
 
     private void createSwaggerBean(ApplicationProperties applicationProperties) {
