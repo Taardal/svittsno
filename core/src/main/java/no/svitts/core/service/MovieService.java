@@ -2,7 +2,6 @@ package no.svitts.core.service;
 
 import com.google.inject.Inject;
 import no.svitts.core.criteria.Criteria;
-import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.exception.ServiceException;
 import no.svitts.core.exception.TransactionException;
 import no.svitts.core.movie.Movie;
@@ -26,7 +25,7 @@ public class MovieService extends CoreService<Movie> {
         try {
             return transaction(repository -> repository.getSingle(id));
         } catch (TransactionException e) {
-            LOGGER.error("Could not get movie by ID [{}]", id, e);
+            LOGGER.error("Could not do transaction to get movie by ID [{}]", id, e);
             throw new ServiceException(e);
         }
     }
@@ -36,7 +35,7 @@ public class MovieService extends CoreService<Movie> {
         try {
             return transaction(repository -> repository.getMultiple(criteria));
         } catch (TransactionException e) {
-            LOGGER.error("Could not get movies by criteria [{}]", criteria, e);
+            LOGGER.error("Could not do transaction to get movies by criteria [{}]", criteria, e);
             throw new ServiceException(e);
         }
     }
@@ -45,8 +44,8 @@ public class MovieService extends CoreService<Movie> {
     public String saveSingle(Movie movie) {
         try {
             return transaction(repository -> repository.saveSingle(movie));
-        } catch (TransactionException | RepositoryException e) {
-            LOGGER.error("Could not saveSingle movie [{}]", movie.toString(), e);
+        } catch (TransactionException e) {
+            LOGGER.error("Could not do transaction to save single movie [{}]", movie.toString(), e);
             throw new ServiceException(e);
         }
     }
@@ -56,7 +55,7 @@ public class MovieService extends CoreService<Movie> {
         try {
             transactionWithoutResult(repository -> repository.deleteSingle(id));
         } catch (TransactionException e) {
-            LOGGER.error("Could not delete movie by ID [{}]", id, e);
+            LOGGER.error("Could not do transaction without result to delete movie by ID [{}]", id, e);
             throw new ServiceException(e);
         }
     }

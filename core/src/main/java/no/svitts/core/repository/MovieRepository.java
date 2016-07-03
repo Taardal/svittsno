@@ -26,9 +26,8 @@ public class MovieRepository extends CoreRepository<Movie> {
         try {
             return getCurrentSession().get(Movie.class, id);
         } catch (HibernateException e) {
-            String errorMessage = "Could not get movie with ID [" + id + "] from database.";
-            LOGGER.error(errorMessage, e);
-            throw new RepositoryException(errorMessage, e);
+            LOGGER.error("Could not get movie with ID [{}] from database.", id, e);
+            throw new RepositoryException(e);
         }
     }
 
@@ -44,9 +43,8 @@ public class MovieRepository extends CoreRepository<Movie> {
             getCurrentSession().save(movie);
             return movie.getId();
         } catch (HibernateException e) {
-            String errorMessage = "Could not save movie to database.";
-            LOGGER.error(errorMessage, e);
-            throw new RepositoryException(errorMessage, e);
+            LOGGER.error("Could not save movie [{}] to database.", movie.toString(), e);
+            throw new RepositoryException(e);
         }
     }
 
