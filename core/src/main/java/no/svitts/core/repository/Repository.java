@@ -6,11 +6,11 @@ import java.util.List;
 
 public interface Repository<T> {
 
-    T getOne(String id);
+    T getSingle(String id);
 
-    List<T> getMany(Criteria criteria);
+    List<T> getMultiple(Criteria criteria);
 
-    String save(T entity);
+    String saveSingle(T entity);
 
-    void delete(String id);
+    void deleteSingle(String id);
 }

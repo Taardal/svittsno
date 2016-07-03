@@ -35,7 +35,6 @@ public enum Genre {
         return value;
     }
 
-    //Hibernate requirement
     private void setValue(String value) {
         this.value = value;
     }

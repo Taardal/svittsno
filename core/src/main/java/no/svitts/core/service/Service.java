@@ -6,12 +6,12 @@ import java.util.List;
 
 public interface Service<T> {
 
-    T getById(String id);
+    T getSingle(String id);
 
-    List<T> getByCriteria(Criteria criteria);
+    List<T> getMultiple(Criteria criteria);
 
-    String save(T t);
+    String saveSingle(T t);
 
-    void delete(String id);
+    void deleteSingle(String id);
 
 }

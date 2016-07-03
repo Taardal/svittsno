@@ -33,7 +33,7 @@ public class Movie {
     private File posterImageFile;
     private File backdropImageFile;
 
-    public Movie() {
+    private Movie() {
     }
 
     public Movie(String id, String name, String imdbId, String tagline, String overview, int runtime, ReleaseDate releaseDate, Set<Genre> genres, File videoFile, File posterImageFile, File backdropImageFile) {
@@ -93,7 +93,6 @@ public class Movie {
         return id;
     }
 
-    //Hibernate requirement
     private void setId(String id) {
         this.id = id;
     }

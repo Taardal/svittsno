@@ -18,15 +18,17 @@ public class RepositoryTransactionManager<T> implements TransactionManager<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RepositoryTransactionManager.class);
 
+    private Repository<T> repository;
     private SessionFactory sessionFactory;
 
     @Inject
-    public RepositoryTransactionManager(SessionFactory sessionFactory) {
+    public RepositoryTransactionManager(Repository<T> repository, SessionFactory sessionFactory) {
+        this.repository = repository;
         this.sessionFactory = sessionFactory;
     }
 
     @Override
-    public <R> R transaction(Repository<T> repository, UnitOfWork<T, R> unitOfWork) {
+    public <R> R transaction(UnitOfWork<T, R> unitOfWork) {
         LOGGER.info("Making transaction.");
         Session currentSession = getCurrentSession();
         Transaction transaction = currentSession.beginTransaction();
@@ -41,14 +43,12 @@ public class RepositoryTransactionManager<T> implements TransactionManager<T> {
             LOGGER.error("Could not do transcation.", e);
             throw new TransactionException(e);
         } finally {
-            if (currentSession.isOpen()) {
-                closeSession(currentSession);
-            }
+            closeSession(currentSession);
         }
     }
 
     @Override
-    public void transactionWithoutResult(Repository<T> repository, UnitOfWorkWithoutResult<T> unitOfWorkWithoutResult) {
+    public void transactionWithoutResult(UnitOfWorkWithoutResult<T> unitOfWorkWithoutResult) {
         LOGGER.info("Making transaction without result.");
         Session currentSession = getCurrentSession();
         Transaction transaction = currentSession.beginTransaction();
@@ -62,9 +62,7 @@ public class RepositoryTransactionManager<T> implements TransactionManager<T> {
             LOGGER.error("Could not do transcation.", e);
             throw new TransactionException(e);
         } finally {
-            if (currentSession.isOpen()) {
-                closeSession(currentSession);
-            }
+            closeSession(currentSession);
         }
     }
 
@@ -92,7 +90,7 @@ public class RepositoryTransactionManager<T> implements TransactionManager<T> {
         LOGGER.info("Closing session [{}].", session.toString());
         try {
             session.close();
-        } catch (Exception e) {
+        } catch (HibernateException e) {
             LOGGER.error("Could not close session [{}].", session.toString(), e);
             throw new TransactionException(e);
         }
