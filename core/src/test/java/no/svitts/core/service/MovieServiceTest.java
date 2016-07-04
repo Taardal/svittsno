@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+@SuppressWarnings("unchecked")
 public class MovieServiceTest {
 
     private MovieService movieService;
@@ -38,17 +39,17 @@ public class MovieServiceTest {
     @Test
     public void getSingle_ValidId_ShouldMakeTransactionAndReturnMovie() {
         Movie movie = movieBuilder.build();
-        when(transactionManagerMock.transaction(anyUnitOfWork())).thenReturn(movie);
+        when(transactionManagerMock.transaction(any(UnitOfWork.class))).thenReturn(movie);
 
         Movie movieFromService = movieService.getSingle(movie.getId());
 
         assertEquals(movie, movieFromService);
-        verify(transactionManagerMock, times(1)).transaction(anyUnitOfWork());
+        verify(transactionManagerMock, times(1)).transaction(any(UnitOfWork.class));
     }
 
     @Test(expected = ServiceException.class)
     public void getSingle_ThrowsTransactionException_ShouldCatchTransactionExceptionAndThrowServiceException() {
-        when(transactionManagerMock.transaction(anyUnitOfWork())).thenThrow(new TransactionException());
+        when(transactionManagerMock.transaction(any(UnitOfWork.class))).thenThrow(new TransactionException());
         movieService.getSingle("id");
     }
 
@@ -57,59 +58,51 @@ public class MovieServiceTest {
         List<Movie> movies = new ArrayList<>();
         movies.add(movieBuilder.name("movie1").build());
         movies.add(movieBuilder.name("movie2").build());
-        when(transactionManagerMock.transaction(anyUnitOfWork())).thenReturn(movies);
+        when(transactionManagerMock.transaction(any(UnitOfWork.class))).thenReturn(movies);
 
         List<Movie> moviesFromService = movieService.getMultiple(new Criteria());
 
         assertArrayEquals(movies.toArray(), moviesFromService.toArray());
-        verify(transactionManagerMock, times(1)).transaction(anyUnitOfWork());
+        verify(transactionManagerMock, times(1)).transaction(any(UnitOfWork.class));
     }
 
     @Test(expected = ServiceException.class)
     public void getMultiple_ThrowsTransactionException_ShouldCatchTransactionExceptionAndThrowServiceException() {
-        when(transactionManagerMock.transaction(anyUnitOfWork())).thenThrow(new TransactionException());
+        when(transactionManagerMock.transaction(any(UnitOfWork.class))).thenThrow(new TransactionException());
         movieService.getMultiple(new Criteria());
     }
 
     @Test
     public void saveSingle_ValidMovie_ShouldMakeTransactionAndReturnIdOfSavedMovie() {
         Movie movie = movieBuilder.build();
-        when(transactionManagerMock.transaction(anyUnitOfWork())).thenReturn(movie.getId());
+        when(transactionManagerMock.transaction(any(UnitOfWork.class))).thenReturn(movie.getId());
 
         String savedMovieId = movieService.saveSingle(movie);
 
         assertEquals(movie.getId(), savedMovieId);
-        verify(transactionManagerMock, times(1)).transaction(anyUnitOfWork());
+        verify(transactionManagerMock, times(1)).transaction(any(UnitOfWork.class));
     }
 
     @Test(expected = ServiceException.class)
     public void saveSingle_ThrowsTransactionException_ShouldCatchTransactionExceptionAndThrowServiceException() {
-        when(transactionManagerMock.transaction(anyUnitOfWork())).thenThrow(new TransactionException());
+        when(transactionManagerMock.transaction(any(UnitOfWork.class))).thenThrow(new TransactionException());
         movieService.saveSingle(movieBuilder.build());
     }
 
     @Test
     public void deleteSingle_ValidId_ShouldMakeTransaction() {
         Movie movie = movieBuilder.build();
-        doNothing().when(transactionManagerMock).transactionWithoutResult(anyUnitOfWorkWithoutResult());
+        doNothing().when(transactionManagerMock).transactionWithoutResult(any(UnitOfWorkWithoutResult.class));
 
         movieService.deleteSingle(movie.getId());
 
-        verify(transactionManagerMock, times(1)).transactionWithoutResult(anyUnitOfWorkWithoutResult());
+        verify(transactionManagerMock, times(1)).transactionWithoutResult(any(UnitOfWorkWithoutResult.class));
     }
 
     @Test(expected = ServiceException.class)
     public void deleteSingle_ThrowsTransactionException_ShouldCatchTransactionExceptionAndThrowServiceException() {
-        doThrow(new TransactionException()).when(transactionManagerMock).transactionWithoutResult(anyUnitOfWorkWithoutResult());
+        doThrow(new TransactionException()).when(transactionManagerMock).transactionWithoutResult(any(UnitOfWorkWithoutResult.class));
         movieService.deleteSingle("id");
     }
 
-    private UnitOfWork anyUnitOfWork() {
-        return any(UnitOfWork.class);
-    }
-
-    private UnitOfWorkWithoutResult<Movie> anyUnitOfWorkWithoutResult() {
-        UnitOfWorkWithoutResult<Movie> unitOfWorkWithoutResult = repository -> {};
-        return any(unitOfWorkWithoutResult.getClass());
-    }
 }

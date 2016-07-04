@@ -11,6 +11,8 @@ public class Criteria {
 
     public Criteria() {
         criteria = new HashMap<>();
+        limit = 10;
+        offset = 0;
     }
 
     @Override
@@ -22,12 +24,12 @@ public class Criteria {
                 '}';
     }
 
-    public void addCriteria(CriteriaKey criteriaKey, String criteria) {
-        this.criteria.put(criteriaKey, criteria);
+    public String get(CriteriaKey criteriaKey) {
+        return criteria.get(criteriaKey);
     }
 
-    public String getCriteria(CriteriaKey criteriaKey) {
-        return criteria.get(criteriaKey);
+    public void add(CriteriaKey criteriaKey, String value) {
+        criteria.put(criteriaKey, value);
     }
 
     public int getLimit() {

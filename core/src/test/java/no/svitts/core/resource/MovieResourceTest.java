@@ -1,13 +1,13 @@
 package no.svitts.core.resource;
 
 import no.svitts.core.builder.MovieBuilder;
+import no.svitts.core.criteria.Criteria;
 import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.exception.mapper.ConstraintViolationExceptionMapper;
 import no.svitts.core.exception.mapper.WebApplicationExceptionMapper;
 import no.svitts.core.json.GsonMessageBodyReader;
 import no.svitts.core.json.GsonMessageBodyWriter;
 import no.svitts.core.movie.Movie;
-import no.svitts.core.criteria.Criteria;
 import no.svitts.core.service.MovieService;
 import no.svitts.core.service.Service;
 import no.svitts.core.id.Id;

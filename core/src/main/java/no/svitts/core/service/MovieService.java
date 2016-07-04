@@ -53,7 +53,10 @@ public class MovieService extends CoreService<Movie> {
     @Override
     public void deleteSingle(String id) {
         try {
-            transactionWithoutResult(repository -> repository.deleteSingle(id));
+            transactionWithoutResult(repository -> {
+                Movie movie = repository.getSingle(id);
+                repository.deleteSingle(movie);
+            });
         } catch (TransactionException e) {
             LOGGER.error("Could not do transaction without result to delete movie by ID [{}]", id, e);
             throw new ServiceException(e);
