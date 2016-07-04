@@ -5,12 +5,12 @@ import no.svitts.core.criteria.Criteria;
 import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.exception.mapper.ConstraintViolationExceptionMapper;
 import no.svitts.core.exception.mapper.WebApplicationExceptionMapper;
+import no.svitts.core.id.Id;
 import no.svitts.core.json.GsonMessageBodyReader;
 import no.svitts.core.json.GsonMessageBodyWriter;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.service.MovieService;
 import no.svitts.core.service.Service;
-import no.svitts.core.id.Id;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Before;
@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static no.svitts.core.testkit.MovieTestKit.assertMovie;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
@@ -67,7 +66,7 @@ public class MovieResourceTest extends JerseyTest {
         Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE).path(movie.getId()).request().get();
 
         assertEquals(200, response.getStatus());
-        assertMovie(movie, response.readEntity(Movie.class));
+        assertEquals(movie, response.readEntity(Movie.class));
         verify(movieServiceMock, times(1)).getSingle(movie.getId());
         response.close();
     }
@@ -120,7 +119,7 @@ public class MovieResourceTest extends JerseyTest {
 
         assertEquals(200, response.getStatus());
         assertEquals(movies.size(), moviesFromResponse.size());
-        movies.stream().forEach(movie -> moviesFromResponse.stream().forEach(movieFromResponse -> assertMovie(movie, movieFromResponse)));
+        movies.stream().forEach(movie -> moviesFromResponse.stream().forEach(movieFromResponse -> assertEquals(movie, movieFromResponse)));
         response.close();
     }
 

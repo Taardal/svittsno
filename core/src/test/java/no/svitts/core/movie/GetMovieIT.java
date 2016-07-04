@@ -23,7 +23,6 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static no.svitts.core.testkit.MovieTestKit.assertMovie;
 import static org.junit.Assert.assertEquals;
 
 public class GetMovieIT extends JerseyTest {
@@ -58,7 +57,7 @@ public class GetMovieIT extends JerseyTest {
 
         Response getMovieResponse = client().target(getBaseUri()).path(MOVIE_RESOURCE).path(movie.getId()).request().get();
         assertEquals(200, getMovieResponse.getStatus());
-        assertMovie(movie, getMovieResponse.readEntity(Movie.class));
+        assertEquals(movie, getMovieResponse.readEntity(Movie.class));
         getMovieResponse.close();
     }
 

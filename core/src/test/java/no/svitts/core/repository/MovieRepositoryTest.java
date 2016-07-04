@@ -19,7 +19,6 @@ import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 
-import static no.svitts.core.testkit.MovieTestKit.assertMovie;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -51,7 +50,7 @@ public class MovieRepositoryTest {
 
         Movie movieFromRepository = movieRepository.getSingle(movie.getId());
 
-        assertMovie(movie, movieFromRepository);
+        assertEquals(movie, movieFromRepository);
         verify(sessionFactoryMock, times(1)).getCurrentSession();
         verify(sessionMock, times(1)).get(Movie.class, movie.getId());
     }
