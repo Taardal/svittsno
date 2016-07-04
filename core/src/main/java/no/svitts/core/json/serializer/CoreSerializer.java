@@ -21,7 +21,7 @@ abstract class CoreSerializer {
         return releaseDate != null ? getJsonPrimitive(releaseDate.toString()) : getJsonPrimitiveNullString();
     }
 
-    JsonPrimitive getJsonPrimitiveNullString() {
+    private JsonPrimitive getJsonPrimitiveNullString() {
         return new JsonPrimitive("null");
     }
 

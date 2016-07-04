@@ -26,18 +26,18 @@ import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.List;
 
-@Api(value = "Movie resource", produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON)
 @Path("movies")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
+@Api(value = "Movie resource", produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON)
 public class MovieResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieResource.class);
 
+    private Service<Movie> movieService;
+
     @Context
     private UriInfo uriInfo;
-
-    private Service<Movie> movieService;
 
     @Inject
     public MovieResource(Service<Movie> movieService) {
@@ -47,27 +47,27 @@ public class MovieResource {
     @GET
     @Path("{id}")
     @ApiOperation(
-            value = "Get a single movie by its ID.",
-            notes = "Requesting a movie that does not exist will generate a \"not found\" response." +
-                    "An invalid ID will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s)."
+            value = "Get a single movie by its ID. ",
+            notes = "Requesting a movie that does not exist will generate a \"not found\" response. " +
+                    "An invalid ID will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s). "
     )
     public Response getMovie(@PathParam("id") @NotNullOrEmpty @ValidCharacters @Length(length = Movie.ID_MAX_LENGTH) String id) {
         LOGGER.info("Received request to GET movie with ID [{}]", id);
         try {
             Movie movie = movieService.getSingle(id);
-            return Response.ok().entity(movie).build();
-        } catch (Throwable e) {
+            return Response.ok(movie, MediaType.APPLICATION_JSON).build();
+        } catch (ServiceException e) {
             throw new InternalServerErrorException("Could not get movie with ID [" + id + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
         }
     }
 
     @GET
     @ApiOperation(
-            value = "Get multiple movies.",
-            notes = "Results can be narrowed down with the \"name\" and \"genre\" parameters. If no name or genre is specified, the server returns all movies." +
-                    "Number of results can be limited with the \"limit\" parameter." +
-                    "Pagination can be achieved with the \"offset\" parameter." +
-                    "Invalid parameter(s) will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s)."
+            value = "Get multiple movies. ",
+            notes = "Results can be narrowed down with the \"name\" and \"genre\" parameters. If no name or genre is specified, the server returns all movies. " +
+                    "Number of results can be limited with the \"limit\" parameter. " +
+                    "Pagination can be achieved with the \"offset\" parameter. " +
+                    "Invalid parameter(s) will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s). "
     )
     public Response getMovies(
             @QueryParam("name") @ValidCharacters @Length(length = Movie.NAME_MAX_LENGTH) String name,
@@ -79,7 +79,7 @@ public class MovieResource {
         try {
             Criteria criteria = getCriteria(name, genre, limit, offset);
             List<Movie> movies = movieService.getMultiple(criteria);
-            return Response.ok().entity(movies).build();
+            return Response.ok(movies.toArray(), MediaType.APPLICATION_JSON).build();
         } catch (RepositoryException e) {
             throw new InternalServerErrorException("Could not get movies with name [" + name + "] and genre [" + genre + "] with limit [" + limit + "] and offset [" + offset + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
         }
@@ -87,8 +87,8 @@ public class MovieResource {
 
     @POST
     @ApiOperation(
-            value = "Create a single movie",
-            notes = "Invalid JSON will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s)."
+            value = "Create a single movie. ",
+            notes = "Invalid JSON will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s). "
     )
     public Response createMovie(@Valid Movie movie) {
         LOGGER.info("Received request to POST movie [{}]", movie.toString());
@@ -96,22 +96,22 @@ public class MovieResource {
             String createdMovieId = movieService.saveSingle(movie);
             return Response.created(getLocation(createdMovieId)).build();
         } catch (ServiceException e) {
-            throw new InternalServerErrorException("Could not saveSingle movie [" + movie.toString() + "].", e);
+            throw new InternalServerErrorException("Could not saveSingle movie [" + movie.toString() + "]. ", e);
         }
     }
 
     @PUT
     @Path("{id}")
     @ApiOperation(
-            value = "Update a single movie.",
-            notes = "Invalid JSON will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s)."
+            value = "Update a single movie. ",
+            notes = "Invalid JSON will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s). "
     )
     public Response updateMovie(@PathParam("id") @NotNullOrEmpty @ValidCharacters @Length(length = Movie.ID_MAX_LENGTH) String id, @Valid Movie movie) {
         LOGGER.info("Received request to PUT movie [{}]", movie);
         try {
             movieService.saveSingle(movie);
             return Response.ok().build();
-        } catch (RepositoryException e) {
+        } catch (ServiceException e) {
             throw new InternalServerErrorException("Could not update movie with ID [" + id + "] with values [" + movie.toString() + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
         }
     }
@@ -119,15 +119,15 @@ public class MovieResource {
     @DELETE
     @Path("{id}")
     @ApiOperation(
-            value = "Delete a single movie by its ID.",
-            notes = "Invalid ID will generate a \"bad request\"-response with a list of error messages to provide more details about the problem(s)."
+            value = "Delete a single movie by its ID. ",
+            notes = "Invalid ID will generate a \"bad request\"-response with a list of error messages to provide more details about the problem(s). "
     )
     public Response deleteMovie(@PathParam("id") @NotNullOrEmpty @ValidCharacters @Length(length = Movie.ID_MAX_LENGTH) String id) {
         LOGGER.info("Received request to DELETE movie with ID [{}]", id);
         try {
             movieService.deleteSingle(id);
             return Response.ok().build();
-        } catch (RepositoryException e) {
+        } catch (ServiceException e) {
             throw new InternalServerErrorException("Could not delete movie with ID [" + id + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
         }
     }

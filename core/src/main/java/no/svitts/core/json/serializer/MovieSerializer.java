@@ -41,6 +41,7 @@ public class MovieSerializer extends CoreSerializer implements JsonSerializer<Mo
             jsonObject.add("size", getJsonPrimitive(mediaFile.getSize()));
             return jsonObject;
         } else {
+            LOGGER.warn("Could not serialize media file because it was null.");
             return null;
         }
     }
@@ -53,6 +54,7 @@ public class MovieSerializer extends CoreSerializer implements JsonSerializer<Mo
             }
             return jsonArray;
         } else {
+            LOGGER.warn("Could not serialize genres set because it was null.");
             return null;
         }
     }
