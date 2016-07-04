@@ -25,6 +25,8 @@ public enum Genre {
     WAR("War"),
     WESTERN("Western");
 
+    public static final int MAX_LENGTH = 255;
+
     private String value;
 
     Genre(String value) {

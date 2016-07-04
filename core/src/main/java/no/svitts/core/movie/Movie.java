@@ -1,10 +1,15 @@
 package no.svitts.core.movie;
 
+import no.svitts.core.constraint.Length;
+import no.svitts.core.constraint.NonNegative;
+import no.svitts.core.constraint.NotNullOrEmpty;
+import no.svitts.core.constraint.ValidCharacters;
 import no.svitts.core.date.ReleaseDate;
 import no.svitts.core.genre.Genre;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import javax.validation.Valid;
 import java.io.File;
 import java.util.Set;
 
@@ -20,6 +25,7 @@ public class Movie {
     public static final int VIDEO_FILE_PATH_MAX_LENGTH = 255;
     public static final int POSTER_IMAGE_FILE_PATH_MAX_LENGTH = 255;
     public static final int BACKDROP_IMAGE_FILE_PATH_MAX_LENGTH = 255;
+
 
     private String id;
     private String name;
@@ -87,6 +93,9 @@ public class Movie {
         }
     }
 
+    @NotNullOrEmpty
+    @ValidCharacters
+    @Length(length = ID_MAX_LENGTH)
     @Id
     @Column(name = "id", nullable = false, length = ID_MAX_LENGTH)
     public String getId() {
@@ -97,6 +106,9 @@ public class Movie {
         this.id = id;
     }
 
+    @NotNullOrEmpty
+    @ValidCharacters
+    @Length(length = NAME_MAX_LENGTH)
     @Column(name = "name", nullable = false, length = NAME_MAX_LENGTH)
     public String getName() {
         return name;
@@ -106,6 +118,8 @@ public class Movie {
         this.name = name;
     }
 
+    @ValidCharacters
+    @Length(length = IMDB_ID_MAX_LENGTH)
     @Column(name = "imdb_id", length = IMDB_ID_MAX_LENGTH)
     public String getImdbId() {
         return imdbId;
@@ -115,6 +129,8 @@ public class Movie {
         this.imdbId = imdbId;
     }
 
+    @ValidCharacters
+    @Length(length = TAGLINE_MAX_LENGTH)
     @Column(name = "tagline", length = TAGLINE_MAX_LENGTH)
     public String getTagline() {
         return tagline;
@@ -124,6 +140,8 @@ public class Movie {
         this.tagline = tagline;
     }
 
+    @ValidCharacters
+    @Length(length = OVERVIEW_MAX_LENGTH)
     @Column(name = "overview", length = OVERVIEW_MAX_LENGTH)
     public String getOverview() {
         return overview;
@@ -133,6 +151,7 @@ public class Movie {
         this.overview = overview;
     }
 
+    @NonNegative
     @Column(name = "runtime")
     public int getRuntime() {
         return runtime;
@@ -142,6 +161,7 @@ public class Movie {
         this.runtime = runtime;
     }
 
+    @Valid
     @Column(name = "release_date")
     @Type(type="org.joda.time.contrib.hibernate.PersistentDateTime")
     public ReleaseDate getReleaseDate() {
@@ -152,6 +172,7 @@ public class Movie {
         this.releaseDate = releaseDate;
     }
 
+    @Valid
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = Genre.class, fetch = FetchType.EAGER)
     public Set<Genre> getGenres() {
@@ -162,6 +183,7 @@ public class Movie {
         this.genres = genres;
     }
 
+    @Valid
     @Column(name = "video_file")
     public File getVideoFile() {
         return videoFile;
@@ -171,6 +193,7 @@ public class Movie {
         this.videoFile = videoFile;
     }
 
+    @Valid
     @Column(name = "poster_image_file")
     public File getPosterImageFile() {
         return posterImageFile;
@@ -180,6 +203,7 @@ public class Movie {
         this.posterImageFile = posterImageFile;
     }
 
+    @Valid
     @Column(name = "backdrop_image_file")
     public File getBackdropImageFile() {
         return backdropImageFile;

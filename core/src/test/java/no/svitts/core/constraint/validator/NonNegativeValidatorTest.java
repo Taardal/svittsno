@@ -5,21 +5,20 @@ import org.junit.Test;
 
 import javax.validation.ConstraintValidatorContext;
 
-import static no.svitts.core.constraint.validator.GenreValidator.GENRE_MAX_LENGTH;
-import static no.svitts.core.util.StringUtil.getRandomString;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class GenreValidatorTest {
+public class NonNegativeValidatorTest {
 
-    private GenreValidator genreValidator;
+    private NonNegativeValidator nonNegativeValidator;
     private ConstraintValidatorContext constraintValidatorContextMock;
 
     @Before
     public void setUp() {
-        genreValidator = new GenreValidator();
+        nonNegativeValidator = new NonNegativeValidator();
         constraintValidatorContextMock = mock(ConstraintValidatorContext.class);
         ConstraintValidatorContext.ConstraintViolationBuilder constraintViolationBuilderMock = mock(ConstraintValidatorContext.ConstraintViolationBuilder.class);
         when(constraintValidatorContextMock.buildConstraintViolationWithTemplate(anyString())).thenReturn(constraintViolationBuilderMock);
@@ -27,17 +26,18 @@ public class GenreValidatorTest {
     }
 
     @Test
-    public void isValid_GenreTooLong_ShouldReturnFalse() {
-        String id = getRandomString(GENRE_MAX_LENGTH + 1);
-        assertFalse(genreValidator.isValid(id, constraintValidatorContextMock));
+    public void isValid_ValueIsANegativeNumber_ShouldReturnFalse() {
+        assertFalse(nonNegativeValidator.isValid(-1, constraintValidatorContextMock));
     }
 
     @Test
-    public void isValid_GenreContainsIllegalCharacters_ShouldReturnFalse() {
-        String[] illegalCharacters = {"\\~", "\\#", "\\@", "\\*", "\\+", "\\%", "\\<", "\\>", "\\[", "\\]", "\\|", "\"", "\\_", "\\^", "\\£", "\\$", "\\€", "\\´"};
-        for (String illegalCharacter : illegalCharacters) {
-            assertFalse(genreValidator.isValid(illegalCharacter, constraintValidatorContextMock));
-        }
+    public void isValid_ValueIsZero_ShouldReturnTrue() {
+        assertTrue(nonNegativeValidator.isValid(0, constraintValidatorContextMock));
     }
-    
+
+    @Test
+    public void isValid_ValueIsAboveZero_ShouldReturnTrue() {
+        assertTrue(nonNegativeValidator.isValid(1, constraintValidatorContextMock));
+    }
+
 }

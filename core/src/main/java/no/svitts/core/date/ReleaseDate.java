@@ -1,5 +1,6 @@
 package no.svitts.core.date;
 
+import no.svitts.core.constraint.ValidDate;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -71,6 +72,7 @@ public class ReleaseDate {
         return new java.sql.Date(getTime());
     }
 
+    @ValidDate
     public long getTime() {
         return dateTime.toInstant().getMillis();
     }
