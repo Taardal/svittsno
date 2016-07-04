@@ -12,6 +12,7 @@
     <artifactId>core</artifactId>
 
     <properties>
+        <api.version>1</api.version>
         <web-app.directory>src/main/webapp</web-app.directory>
         <resources.directory>src/main/resources</resources.directory>
     </properties>
@@ -171,11 +172,6 @@
             </activation>
             <properties>
                 <profile.id>dev</profile.id>
-                <db.driver>org.h2.Driver</db.driver>
-                <db.username>svitts</db.username>
-                <db.password>svitts</db.password>
-                <db.main.url>jdbc:h2:file:./target/main;MODE=MySQL</db.main.url>
-                <db.itest.url>jdbc:h2:file:./target/itest;MODE=MySQL</db.itest.url>
             </properties>
             <build>
                 <plugins>
@@ -192,58 +188,6 @@
                                     <goal>integration-test</goal>
                                     <goal>verify</goal>
                                 </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>sql-maven-plugin</artifactId>
-                        <version>${sql-maven-plugin.version}</version>
-                        <dependencies>
-                            <dependency>
-                                <groupId>com.h2database</groupId>
-                                <artifactId>h2</artifactId>
-                                <version>${h2-database-engine.version}</version>
-                            </dependency>
-                        </dependencies>
-                        <configuration>
-                            <encoding>${project.build.sourceEncoding}</encoding>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>create-main-database</id>
-                                <phase>process-test-resources</phase>
-                                <goals>
-                                    <goal>execute</goal>
-                                </goals>
-                                <configuration>
-                                    <url>${db.main.url}</url>
-                                    <username>${db.username}</username>
-                                    <password>${db.password}</password>
-                                    <driver>${db.driver}</driver>
-                                    <autocommit>true</autocommit>
-                                    <srcFiles>
-                                        <srcFile>${resources.directory}/${profile.id}/database.sql</srcFile>
-                                        <srcFile>${resources.directory}/${profile.id}/test_data.sql</srcFile>
-                                    </srcFiles>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>create-integration-test-database</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>execute</goal>
-                                </goals>
-                                <configuration>
-                                    <url>${db.itest.url}</url>
-                                    <username>${db.username}</username>
-                                    <password>${db.password}</password>
-                                    <driver>${db.driver}</driver>
-                                    <autocommit>true</autocommit>
-                                    <srcFiles>
-                                        <srcFile>${resources.directory}/${profile.id}/database.sql</srcFile>
-                                    </srcFiles>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

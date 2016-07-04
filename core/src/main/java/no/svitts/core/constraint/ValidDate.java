@@ -3,6 +3,7 @@ package no.svitts.core.constraint;
 import no.svitts.core.constraint.validator.DateValidator;
 
 import javax.validation.Constraint;
+import javax.validation.Payload;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -15,5 +16,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface ValidDate {
 
     String message() default "Could not validate date.";
+
+    Class<?>[] groups() default {};
+
+    Class<? extends Payload>[] payload() default {};
 
 }

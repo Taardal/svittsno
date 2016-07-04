@@ -40,7 +40,7 @@ public class CoreApplication extends ResourceConfig {
         beanConfig.setTitle("Svitts API");
         beanConfig.setDescription("This is the API for the Svitts movie library application.");
         beanConfig.setContact("Torbjørn Årdal - torbjorn.aardal@gmail.com");
-        beanConfig.setVersion(applicationProperties.getProperty("swagger.version"));
+        beanConfig.setVersion(applicationProperties.getProperty("api.version"));
         beanConfig.setSchemes(new String[]{"http"});
         beanConfig.setHost("localhost:8080");
         beanConfig.setBasePath("/api");

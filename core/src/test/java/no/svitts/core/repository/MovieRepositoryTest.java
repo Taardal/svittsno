@@ -96,7 +96,7 @@ public class MovieRepositoryTest {
     @Test
     public void saveSingle_ValidMovie_ShouldReturnIdOfSavedMovie() {
         Movie movie = movieBuilder.build();
-        when(sessionMock.save(movie)).thenReturn("");
+        when(sessionMock.save(movie)).thenReturn(movie.getId());
 
         String savedMovieId = movieRepository.saveSingle(movie);
 
@@ -116,6 +116,7 @@ public class MovieRepositoryTest {
     public void deleteSingle_ValidMovie_ShouldDeleteMovie() {
         Movie movie = movieBuilder.build();
         doNothing().when(sessionMock).delete(movie);
+        movieRepository.deleteSingle(movie);
         verify(sessionMock, times(1)).delete(movie);
     }
 

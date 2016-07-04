@@ -38,20 +38,6 @@ public class ReleaseDate {
         this.dateTime = dateTime;
     }
 
-    public static ReleaseDate fromString(String dateString) {
-        if (dateString != null && !dateString.equals("")) {
-            DateTime dateTime = parseDateTime(dateString);
-            if (dateTime != null) {
-                return new ReleaseDate(dateTime);
-            } else {
-                LOGGER.warn("Could not parse date string [" + dateString + "] to release date because it did not match any supported regex.");
-            }
-        } else {
-            LOGGER.warn("Could not parse date string [" + dateString + "] to release date because it was null or empty.");
-        }
-        return null;
-    }
-
     @Override
     public String toString() {
         return RELEASE_DATE_PATTERN.print(getTime());
@@ -67,10 +53,20 @@ public class ReleaseDate {
         }
     }
 
-
-    public java.sql.Date toSqlDate() {
-        return new java.sql.Date(getTime());
+    public static ReleaseDate fromString(String dateString) {
+        if (dateString != null && !dateString.equals("")) {
+            DateTime dateTime = parseDateTime(dateString);
+            if (dateTime != null) {
+                return new ReleaseDate(dateTime);
+            } else {
+                LOGGER.warn("Could not parse date string [" + dateString + "] to release date because it did not match any supported regex.");
+            }
+        } else {
+            LOGGER.warn("Could not parse date string [" + dateString + "] to release date because it was null or empty.");
+        }
+        return null;
     }
+
 
     @ValidDate
     public long getTime() {
@@ -79,6 +75,10 @@ public class ReleaseDate {
 
     public void setTime(long millis) {
         dateTime = new DateTime(millis);
+    }
+
+    public java.sql.Date toSqlDate() {
+        return new java.sql.Date(getTime());
     }
 
     private static DateTime parseDateTime(String date) {
