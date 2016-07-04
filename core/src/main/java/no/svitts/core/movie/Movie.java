@@ -5,12 +5,12 @@ import no.svitts.core.constraint.NonNegative;
 import no.svitts.core.constraint.NotNullOrEmpty;
 import no.svitts.core.constraint.ValidCharacters;
 import no.svitts.core.date.ReleaseDate;
+import no.svitts.core.file.MediaFile;
 import no.svitts.core.genre.Genre;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.Valid;
-import java.io.File;
 import java.util.Set;
 
 @Entity
@@ -22,10 +22,6 @@ public class Movie {
     public static final int IMDB_ID_MAX_LENGTH = 255;
     public static final int TAGLINE_MAX_LENGTH = 255;
     public static final int OVERVIEW_MAX_LENGTH = 510;
-    public static final int VIDEO_FILE_PATH_MAX_LENGTH = 255;
-    public static final int POSTER_IMAGE_FILE_PATH_MAX_LENGTH = 255;
-    public static final int BACKDROP_IMAGE_FILE_PATH_MAX_LENGTH = 255;
-
 
     private String id;
     private String name;
@@ -35,14 +31,14 @@ public class Movie {
     private int runtime;
     private ReleaseDate releaseDate;
     private Set<Genre> genres;
-    private File videoFile;
-    private File posterImageFile;
-    private File backdropImageFile;
+    private MediaFile videoFile;
+    private MediaFile posterImageFile;
+    private MediaFile backdropImageFile;
 
     private Movie() {
     }
 
-    public Movie(String id, String name, String imdbId, String tagline, String overview, int runtime, ReleaseDate releaseDate, Set<Genre> genres, File videoFile, File posterImageFile, File backdropImageFile) {
+    public Movie(String id, String name, String imdbId, String tagline, String overview, int runtime, ReleaseDate releaseDate, Set<Genre> genres, MediaFile videoFile, MediaFile posterImageFile, MediaFile backdropImageFile) {
         this.id = id;
         this.name = name;
         this.imdbId = imdbId;
@@ -185,31 +181,31 @@ public class Movie {
 
     @Valid
     @Column(name = "video_file")
-    public File getVideoFile() {
+    public MediaFile getVideoFile() {
         return videoFile;
     }
 
-    public void setVideoFile(File videoFile) {
+    public void setVideoFile(MediaFile videoFile) {
         this.videoFile = videoFile;
     }
 
     @Valid
     @Column(name = "poster_image_file")
-    public File getPosterImageFile() {
+    public MediaFile getPosterImageFile() {
         return posterImageFile;
     }
 
-    public void setPosterImageFile(File posterImageFile) {
+    public void setPosterImageFile(MediaFile posterImageFile) {
         this.posterImageFile = posterImageFile;
     }
 
     @Valid
     @Column(name = "backdrop_image_file")
-    public File getBackdropImageFile() {
+    public MediaFile getBackdropImageFile() {
         return backdropImageFile;
     }
 
-    public void setBackdropImageFile(File backdropImageFile) {
+    public void setBackdropImageFile(MediaFile backdropImageFile) {
         this.backdropImageFile = backdropImageFile;
     }
 }

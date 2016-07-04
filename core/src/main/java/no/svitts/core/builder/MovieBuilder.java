@@ -1,11 +1,11 @@
 package no.svitts.core.builder;
 
 import no.svitts.core.date.ReleaseDate;
+import no.svitts.core.file.MediaFile;
 import no.svitts.core.genre.Genre;
 import no.svitts.core.id.Id;
 import no.svitts.core.movie.Movie;
 
-import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,9 +19,9 @@ public class MovieBuilder implements Builder<Movie> {
     private int runtime;
     private ReleaseDate releaseDate;
     private Set<Genre> genres;
-    private File videoFile;
-    private File posterImageFile;
-    private File backdropImageFile;
+    private MediaFile videoFile;
+    private MediaFile posterImageFile;
+    private MediaFile backdropImageFile;
 
     public MovieBuilder() {
         id = Id.get();
@@ -32,9 +32,9 @@ public class MovieBuilder implements Builder<Movie> {
         runtime = 0;
         releaseDate = new ReleaseDate(2016, 1, 1);
         genres = getDefaultGenres();
-        videoFile = new File("videoFilePath");
-        posterImageFile = new File("posterImageFilePath");
-        backdropImageFile = new File("backdropImageFilePath");
+        videoFile = new MediaFile("videoFilePath");
+        posterImageFile = new MediaFile("posterImageFilePath");
+        backdropImageFile = new MediaFile("backdropImageFilePath");
     }
 
     @Override
@@ -82,33 +82,33 @@ public class MovieBuilder implements Builder<Movie> {
         return this;
     }
 
-    public MovieBuilder videoFile(File videoFile) {
+    public MovieBuilder videoFile(MediaFile videoFile) {
         this.videoFile = videoFile;
         return this;
     }
 
     public MovieBuilder videoFile(String path) {
-        this.videoFile = new File(path);
+        this.videoFile = new MediaFile(path);
         return this;
     }
 
-    public MovieBuilder posterImageFile(File posterImageFile) {
+    public MovieBuilder posterImageFile(MediaFile posterImageFile) {
         this.posterImageFile = posterImageFile;
         return this;
     }
 
     public MovieBuilder posterImageFile(String path) {
-        this.posterImageFile = new File(path);
+        this.posterImageFile = new MediaFile(path);
         return this;
     }
 
-    public MovieBuilder backdropImageFile(File backdropImageFile) {
+    public MovieBuilder backdropImageFile(MediaFile backdropImageFile) {
         this.backdropImageFile = backdropImageFile;
         return this;
     }
 
     public MovieBuilder backdropImageFile(String path) {
-        this.backdropImageFile = new File(path);
+        this.backdropImageFile = new MediaFile(path);
         return this;
     }
 

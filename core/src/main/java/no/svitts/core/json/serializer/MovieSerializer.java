@@ -1,12 +1,12 @@
 package no.svitts.core.json.serializer;
 
 import com.google.gson.*;
+import no.svitts.core.file.MediaFile;
 import no.svitts.core.genre.Genre;
 import no.svitts.core.movie.Movie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.lang.reflect.Type;
 import java.util.Set;
 
@@ -33,12 +33,12 @@ public class MovieSerializer extends CoreSerializer implements JsonSerializer<Mo
         return jsonObject;
     }
 
-    private JsonElement getFileAsJsonObject(File file) {
-        if (file != null) {
+    private JsonElement getFileAsJsonObject(MediaFile mediaFile) {
+        if (mediaFile != null) {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.add("name", getJsonPrimitive(file.getName()));
-            jsonObject.add("path", getJsonPrimitive(file.getPath()));
-            jsonObject.add("size", getJsonPrimitive(file.length()));
+            jsonObject.add("name", getJsonPrimitive(mediaFile.getName()));
+            jsonObject.add("path", getJsonPrimitive(mediaFile.getPath()));
+            jsonObject.add("size", getJsonPrimitive(mediaFile.getSize()));
             return jsonObject;
         } else {
             return null;

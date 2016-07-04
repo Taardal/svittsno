@@ -2,12 +2,12 @@ package no.svitts.core.json.deserializer;
 
 import com.google.gson.*;
 import no.svitts.core.date.ReleaseDate;
+import no.svitts.core.file.MediaFile;
 import no.svitts.core.genre.Genre;
 import no.svitts.core.movie.Movie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,9 +27,9 @@ public class MovieDeserializer extends CoreDeserializer implements JsonDeseriali
         int runtime = getInt(jsonObject.get("runtime"));
         ReleaseDate releaseDate = getKeyDate(jsonObject.get("releaseDate"));
         Set<Genre> genres = getGenres(jsonObject.get("genres"));
-        File videoFile = getFile(jsonObject.get("videoFile"));
-        File posterImageFile = getFile(jsonObject.get("posterImageFile"));
-        File backdropImageFile = getFile(jsonObject.get("backdropImageFile"));
+        MediaFile videoFile = getFile(jsonObject.get("videoFile"));
+        MediaFile posterImageFile = getFile(jsonObject.get("posterImageFile"));
+        MediaFile backdropImageFile = getFile(jsonObject.get("backdropImageFile"));
         return new Movie(id, name, imdbId, tagline, overview, runtime, releaseDate, genres, videoFile, posterImageFile, backdropImageFile);
     }
 
@@ -62,18 +62,17 @@ public class MovieDeserializer extends CoreDeserializer implements JsonDeseriali
         try {
             return Genre.valueOf(genreString);
         } catch (IllegalArgumentException e) {
-            LOGGER.error("Could not convert genre [" + genreString + "] from string to an appropriate enum.", e);
-            // Letting invalid genre pass as null because it should be handled in movie constraint validator.
-            return null;
+            LOGGER.error("Could not convert genre [{}] from string to an appropriate enum.", genreString, e);
+            throw e;
         }
     }
 
-    private File getFile(JsonElement jsonElement) {
+    private MediaFile getFile(JsonElement jsonElement) {
         return isNotNull(jsonElement) ? getFile(jsonElement.getAsJsonObject()) : null;
     }
 
-    private File getFile(JsonObject jsonObject) {
-        return isNotNull(jsonObject.get("path")) ? new File(jsonObject.get("path").getAsString()) : null;
+    private MediaFile getFile(JsonObject jsonObject) {
+        return isNotNull(jsonObject.get("path")) ? new MediaFile(jsonObject.get("path").getAsString()) : null;
     }
 
 }
