@@ -3,6 +3,7 @@ package no.svitts.core.json;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import no.svitts.core.json.serializer.MovieSerializer;
+import no.svitts.core.json.serializer.MoviesSerializer;
 import no.svitts.core.movie.Movie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,10 @@ public class GsonMessageBodyWriter implements MessageBodyWriter<Object> {
     private Gson gson;
 
     public GsonMessageBodyWriter() {
-        gson = new GsonBuilder().registerTypeAdapter(Movie.class, new MovieSerializer()).create();
+        gson = new GsonBuilder()
+                .registerTypeAdapter(Movie[].class, new MoviesSerializer())
+                .registerTypeAdapter(Movie.class, new MovieSerializer())
+                .create();
     }
 
     @Override
@@ -57,15 +61,5 @@ public class GsonMessageBodyWriter implements MessageBodyWriter<Object> {
             throw new InternalServerErrorException(errorMessage, e);
         }
     }
-
-    private boolean isSupportedType(Class<?> type) {
-        try {
-            return gson.getAdapter(type) != null;
-        } catch (IllegalArgumentException e) {
-            LOGGER.error("Could not get GSON adapter for type [{}].", type, e);
-            return false;
-        }
-    }
-
 
 }
