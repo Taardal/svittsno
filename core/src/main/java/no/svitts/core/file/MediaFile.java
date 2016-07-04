@@ -4,14 +4,21 @@ import no.svitts.core.constraint.Length;
 import no.svitts.core.constraint.NotNullOrEmpty;
 
 import javax.annotation.Nonnegative;
+import javax.persistence.Embeddable;
+import javax.persistence.Transient;
 import java.io.File;
 
+@Embeddable
 public class MediaFile {
 
     private static final int PATH_MAX_LENGTH = 255;
     private static final int NAME_MAX_LENGTH = 255;
 
+    @Transient
     private File file;
+
+    private MediaFile() {
+    }
 
     public MediaFile(String path) {
         file = new File(path);
@@ -44,13 +51,19 @@ public class MediaFile {
         return file.getPath();
     }
 
+    private void setPath(String path) {
+        file = new File(path);
+    }
+
     @NotNullOrEmpty
     @Length(length = NAME_MAX_LENGTH)
+    @Transient
     public String getName() {
         return file.getName();
     }
 
     @Nonnegative
+    @Transient
     public long getSize() {
         return file.length();
     }

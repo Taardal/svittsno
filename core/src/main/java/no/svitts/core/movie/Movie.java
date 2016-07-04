@@ -181,6 +181,10 @@ public class Movie {
 
     @Valid
     @Column(name = "video_file")
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "path", column = @Column(name = "video_file_path"))
+    })
     public MediaFile getVideoFile() {
         return videoFile;
     }
@@ -191,6 +195,10 @@ public class Movie {
 
     @Valid
     @Column(name = "poster_image_file")
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "path", column = @Column(name = "poster_image_file_path"))
+    })
     public MediaFile getPosterImageFile() {
         return posterImageFile;
     }
@@ -201,6 +209,10 @@ public class Movie {
 
     @Valid
     @Column(name = "backdrop_image_file")
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "path", column = @Column(name = "backdrop_image_file_path"))
+    })
     public MediaFile getBackdropImageFile() {
         return backdropImageFile;
     }
