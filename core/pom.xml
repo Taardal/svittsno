@@ -12,7 +12,7 @@
     <artifactId>core</artifactId>
 
     <properties>
-        <api.version>1</api.version>
+        <jetty.port>8080</jetty.port>
         <web-app.directory>src/main/webapp</web-app.directory>
         <resources.directory>src/main/resources</resources.directory>
     </properties>
@@ -161,6 +161,33 @@
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${maven-war-plugin.version}</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>${jetty.version}</version>
+                <configuration>
+                    <scanIntervalSeconds>0</scanIntervalSeconds>
+                    <webAppSourceDirectory>${web-app.directory}</webAppSourceDirectory>
+                    <webAppConfig>
+                        <contextPath>/</contextPath>
+                        <defaultsDescriptor>${resources.directory}/webdefault.xml</defaultsDescriptor>
+                        <webInfIncludeJarPattern>.*/core-[^/]*\.jar$</webInfIncludeJarPattern>
+                    </webAppConfig>
+                    <httpConnector>
+                        <port>${jetty.port}</port>
+                    </httpConnector>
+                    <stopPort>9999</stopPort>
+                    <stopKey>STOP</stopKey>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -190,22 +217,6 @@
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.eclipse.jetty</groupId>
-                        <artifactId>jetty-maven-plugin</artifactId>
-                        <version>${jetty.version}</version>
-                        <configuration>
-                            <scanIntervalSeconds>0</scanIntervalSeconds>
-                            <webAppSourceDirectory>${web-app.directory}</webAppSourceDirectory>
-                            <webAppConfig>
-                                <contextPath>/</contextPath>
-                                <defaultsDescriptor>${resources.directory}/webdefault.xml</defaultsDescriptor>
-                                <webInfIncludeJarPattern>.*/core-[^/]*\.jar$</webInfIncludeJarPattern>
-                            </webAppConfig>
-                            <stopPort>9999</stopPort>
-                            <stopKey>STOP</stopKey>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>

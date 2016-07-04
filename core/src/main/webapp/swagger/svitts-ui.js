@@ -1,6 +1,6 @@
 (function () {
     window.swaggerUi = new SwaggerUi({
-        url: "/api/swagger.json",
+        url: "/api/v1/swagger.json",
         dom_id: "swagger-ui-container",
         supportedSubmitMethods: ['get', 'post', 'put', 'delete'],
         docExpansion: "list",

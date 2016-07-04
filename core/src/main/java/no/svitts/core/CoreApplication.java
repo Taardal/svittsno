@@ -16,36 +16,45 @@ import no.svitts.core.provider.SessionFactoryProvider;
 import no.svitts.core.resource.MovieResource;
 import org.glassfish.jersey.server.ResourceConfig;
 
+import javax.ws.rs.ApplicationPath;
 
+import static no.svitts.core.CoreApplication.APPLICATION_PATH;
+
+@ApplicationPath(value = APPLICATION_PATH)
 public class CoreApplication extends ResourceConfig {
+
+    static final String APPLICATION_NAME = "Svitts API";
+    static final String APPLICATION_VERSION = "v1";
+    static final String APPLICATION_PATH = "api/" + APPLICATION_VERSION;
 
     public CoreApplication() {
         Injector injector = Guice.createInjector(new WebModule(), new PersistenceModule(new SessionFactoryProvider()));
         registerComponents(injector);
+        setApplicationName(APPLICATION_NAME);
         createSwaggerBean(new ApplicationProperties());
     }
 
     private void registerComponents(Injector injector) {
         register(injector.getInstance(MovieResource.class));
-        register(WebApplicationExceptionMapper.class);
-        register(ConstraintViolationExceptionMapper.class);
-        register(GsonMessageBodyReader.class);
-        register(GsonMessageBodyWriter.class);
+        register(injector.getInstance(WebApplicationExceptionMapper.class));
+        register(injector.getInstance(ConstraintViolationExceptionMapper.class));
+        register(injector.getInstance(GsonMessageBodyReader.class));
+        register(injector.getInstance(GsonMessageBodyWriter.class));
         register(ApiListingResource.class);
         register(SwaggerSerializers.class);
     }
 
     private void createSwaggerBean(ApplicationProperties applicationProperties) {
         BeanConfig beanConfig = new BeanConfig();
-        beanConfig.setTitle("Svitts API");
-        beanConfig.setDescription("This is the API for the Svitts movie library application.");
-        beanConfig.setContact("Torbjørn Årdal - torbjorn.aardal@gmail.com");
-        beanConfig.setVersion(applicationProperties.getProperty("api.version"));
-        beanConfig.setSchemes(new String[]{"http"});
-        beanConfig.setHost("localhost:8080");
-        beanConfig.setBasePath("/api");
+        beanConfig.setTitle(getApplicationName());
         beanConfig.setResourcePackage("no.svitts.core.resource");
         beanConfig.setScan(true);
+        beanConfig.setSchemes(new String[]{"http"});
+        beanConfig.setHost("localhost:" + applicationProperties.getProperty("jetty.port"));
+        beanConfig.setBasePath(APPLICATION_PATH);
+        beanConfig.setVersion(APPLICATION_VERSION);
+        beanConfig.setDescription("This is the API for the Svitts movie library application.");
+        beanConfig.setContact("Torbjørn Årdal - torbjorn.aardal@gmail.com");
     }
 
 }
