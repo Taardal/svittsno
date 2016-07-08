@@ -5,7 +5,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import no.svitts.core.constraint.Length;
 import no.svitts.core.constraint.NonNegative;
-import no.svitts.core.constraint.NotNullOrEmpty;
 import no.svitts.core.constraint.ValidCharacters;
 import no.svitts.core.criteria.Criteria;
 import no.svitts.core.criteria.CriteriaKey;
@@ -51,7 +50,7 @@ public class MovieResource {
             notes = "Requesting a movie that does not exist will generate a \"not found\" response. " +
                     "An invalid ID will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s). "
     )
-    public Response getMovie(@PathParam("id") @NotNullOrEmpty @ValidCharacters @Length(length = Movie.ID_MAX_LENGTH) String id) {
+    public Response getMovie(@PathParam("id") @ValidCharacters @Length(length = Movie.ID_MAX_LENGTH) String id) {
         LOGGER.info("Received request to GET movie with ID [{}]", id);
         try {
             Movie movie = movieService.getSingle(id);
@@ -70,8 +69,8 @@ public class MovieResource {
                     "Invalid parameter(s) will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s). "
     )
     public Response getMovies(
-            @QueryParam("name") @ValidCharacters @Length(length = Movie.NAME_MAX_LENGTH) String name,
-            @QueryParam("genre") @ValidCharacters @Length(length = Genre.MAX_LENGTH) String genre,
+            @QueryParam("name") @DefaultValue("") @ValidCharacters @Length(length = Movie.NAME_MAX_LENGTH) String name,
+            @QueryParam("genre") @DefaultValue("") @ValidCharacters @Length(length = Genre.MAX_LENGTH) String genre,
             @QueryParam("limit") @DefaultValue("10") @NonNegative int limit,
             @QueryParam("offset") @DefaultValue("0") @NonNegative int offset
     ) {
@@ -106,7 +105,7 @@ public class MovieResource {
             value = "Update a single movie. ",
             notes = "Invalid JSON will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s). "
     )
-    public Response updateMovie(@PathParam("id") @NotNullOrEmpty @ValidCharacters @Length(length = Movie.ID_MAX_LENGTH) String id, @Valid Movie movie) {
+    public Response updateMovie(@PathParam("id") @ValidCharacters @Length(length = Movie.ID_MAX_LENGTH) String id, @Valid Movie movie) {
         LOGGER.info("Received request to PUT movie [{}]", movie);
         try {
             movieService.saveSingle(movie);
@@ -122,7 +121,7 @@ public class MovieResource {
             value = "Delete a single movie by its ID. ",
             notes = "Invalid ID will generate a \"bad request\"-response with a list of error messages to provide more details about the problem(s). "
     )
-    public Response deleteMovie(@PathParam("id") @NotNullOrEmpty @ValidCharacters @Length(length = Movie.ID_MAX_LENGTH) String id) {
+    public Response deleteMovie(@PathParam("id") @ValidCharacters @Length(length = Movie.ID_MAX_LENGTH) String id) {
         LOGGER.info("Received request to DELETE movie with ID [{}]", id);
         try {
             movieService.deleteSingle(id);

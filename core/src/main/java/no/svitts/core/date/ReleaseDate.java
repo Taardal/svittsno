@@ -1,16 +1,15 @@
 package no.svitts.core.date;
 
-import no.svitts.core.constraint.ValidDate;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.Entity;
+import javax.persistence.Transient;
 
-@Entity
 @Embeddable
 public class ReleaseDate {
 
@@ -20,6 +19,7 @@ public class ReleaseDate {
     private static final DateTimeFormatter SQL_DATE_PATTERN = DateTimeFormat.forPattern("yyyy-MM-dd");
     private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseDate.class);
 
+    @Transient
     private DateTime dateTime;
 
     public ReleaseDate() {
@@ -67,8 +67,7 @@ public class ReleaseDate {
         return null;
     }
 
-
-    @ValidDate
+    @Column(name = "datetime")
     public long getTime() {
         return dateTime.toInstant().getMillis();
     }

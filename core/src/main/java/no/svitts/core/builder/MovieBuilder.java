@@ -6,7 +6,6 @@ import no.svitts.core.genre.Genre;
 import no.svitts.core.id.Id;
 import no.svitts.core.movie.Movie;
 
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -88,43 +87,13 @@ public class MovieBuilder implements Builder<Movie> {
         return this;
     }
 
-    public MovieBuilder videoFile(String path) {
-        this.videoFile = new MediaFile(path);
-        return this;
-    }
-
-    public MovieBuilder videoFile(Path path) {
-        this.videoFile = new MediaFile(path.toString());
-        return this;
-    }
-
     public MovieBuilder posterImageFile(MediaFile posterImageFile) {
         this.posterImageFile = posterImageFile;
         return this;
     }
 
-    public MovieBuilder posterImageFile(String path) {
-        this.posterImageFile = new MediaFile(path);
-        return this;
-    }
-
-    public MovieBuilder posterImageFile(Path path) {
-        this.posterImageFile = new MediaFile(path.toString());
-        return this;
-    }
-
     public MovieBuilder backdropImageFile(MediaFile backdropImageFile) {
         this.backdropImageFile = backdropImageFile;
-        return this;
-    }
-
-    public MovieBuilder backdropImageFile(String path) {
-        this.backdropImageFile = new MediaFile(path);
-        return this;
-    }
-
-    public MovieBuilder backdropImageFile(Path path) {
-        this.backdropImageFile = new MediaFile(path.toString());
         return this;
     }
 
