@@ -14,6 +14,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MovieRepository extends CoreRepository<Movie> {
 
@@ -40,8 +41,12 @@ public class MovieRepository extends CoreRepository<Movie> {
         LOGGER.info("Getting multiple movies from database by criteria [{}].", criteria.toString());
         try {
             CriteriaBuilder criteriaBuilder = getCurrentSession().getCriteriaBuilder();
-            CriteriaQuery<Movie> movieCriteriaQuery = getMovieCriteriaQuery(criteria, criteriaBuilder);
-            return getCurrentSession().createQuery(movieCriteriaQuery).setMaxResults(criteria.getLimit()).setFirstResult(criteria.getOffset()).getResultList();
+            CriteriaQuery<Movie> movieCriteriaQuery = getMultipleMoviesCriteriaQuery(criteria, criteriaBuilder);
+            List<Movie> movies = getCurrentSession().createQuery(movieCriteriaQuery).setMaxResults(criteria.getLimit()).setFirstResult(criteria.getOffset()).getResultList();
+            if (isNotNullOrEmpty(criteria.get(CriteriaKey.GENRE))) {
+                movies = filterByGenre(criteria.get(CriteriaKey.GENRE), movies);
+            }
+            return movies;
         } catch (HibernateException | IllegalStateException e) {
             LOGGER.error("Could not get multiple movies from database by criteria [{}]", criteria.toString());
             throw new RepositoryException(e);
@@ -70,17 +75,25 @@ public class MovieRepository extends CoreRepository<Movie> {
         }
     }
 
-    private CriteriaQuery<Movie> getMovieCriteriaQuery(Criteria criteria, CriteriaBuilder criteriaBuilder) {
+    private CriteriaQuery<Movie> getMultipleMoviesCriteriaQuery(Criteria criteria, CriteriaBuilder criteriaBuilder) {
         CriteriaQuery<Movie> movieCriteriaQuery = criteriaBuilder.createQuery(Movie.class);
         Root<Movie> movieRoot = movieCriteriaQuery.from(Movie.class);
         movieCriteriaQuery.select(movieRoot);
-        if (criteria.get(CriteriaKey.NAME) != null) {
-            movieCriteriaQuery.where(criteriaBuilder.like(movieRoot.get("name"), criteria.get(CriteriaKey.NAME)));
-        }
-        if (criteria.get(CriteriaKey.GENRE) != null) {
-            movieCriteriaQuery.having(criteriaBuilder.like(movieRoot.get("genre"), criteria.get(CriteriaKey.GENRE)));
+        if (isNotNullOrEmpty(criteria.get(CriteriaKey.NAME))) {
+            movieCriteriaQuery.where(criteriaBuilder.like(movieRoot.get("name"), "%" + criteria.get(CriteriaKey.NAME) + "%"));
         }
         return movieCriteriaQuery;
+    }
+
+    private List<Movie> filterByGenre(String genreCriteria, List<Movie> movies) {
+        return movies.stream()
+                .filter(movie -> movie.getGenres().stream()
+                        .anyMatch(genre -> genre.toString().contains(genreCriteria.toUpperCase())))
+                .collect(Collectors.toList());
+    }
+
+    private boolean isNotNullOrEmpty(String criteria) {
+        return criteria != null && !criteria.equals("");
     }
 
 }
