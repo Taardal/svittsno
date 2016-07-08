@@ -75,6 +75,7 @@ public class MovieResourceTest extends JerseyTest {
     public void getMovie_MovieNotFound_ShouldReturnOkResponseWithNullEntity() {
         String id = Id.get();
         when(movieServiceMock.getSingle(id)).thenReturn(null);
+        client().register(gsonMessageBodyReader);
 
         Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path(id).request().get();
         Movie movie = response.readEntity(Movie.class);

@@ -4,6 +4,7 @@ import no.svitts.core.builder.MovieBuilder;
 import no.svitts.core.criteria.Criteria;
 import no.svitts.core.criteria.CriteriaKey;
 import no.svitts.core.exception.RepositoryException;
+import no.svitts.core.genre.Genre;
 import no.svitts.core.movie.Movie;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -16,14 +17,16 @@ import org.mockito.Mock;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+@SuppressWarnings("unchecked")
 public class MovieRepositoryTest {
 
     private MovieRepository movieRepository;
@@ -64,8 +67,15 @@ public class MovieRepositoryTest {
 
     @Test
     public void getMultiple_ValidCriteria_ShouldReturnMovies() {
-        List<Movie> movies = getMovies();
-        Criteria criteria = getCriteria();
+        List<Movie> movies = Arrays.stream(new Movie[]{
+                movieBuilder.name("movie1").genres(Arrays.stream(new Genre[]{Genre.BIOGRAPHY}).collect(Collectors.toSet())).build()
+        }).collect(Collectors.toList());
+
+        Criteria criteria = new Criteria();
+        criteria.add(CriteriaKey.NAME, "movie");
+        criteria.add(CriteriaKey.GENRE, "biography");
+        criteria.setLimit(10);
+        criteria.setOffset(0);
 
         CriteriaBuilder criteriaBuilderMock = mock(CriteriaBuilder.class);
         when(sessionMock.getCriteriaBuilder()).thenReturn(criteriaBuilderMock);
@@ -125,22 +135,6 @@ public class MovieRepositoryTest {
         Movie movie = movieBuilder.build();
         doThrow(new HibernateException("Exception")).when(sessionMock).delete(movie);
         movieRepository.deleteSingle(movie);
-    }
-
-    private List<Movie> getMovies() {
-        List<Movie> movies = new ArrayList<>();
-        movies.add(movieBuilder.name("movie1").build());
-        movies.add(movieBuilder.name("movie2").build());
-        return movies;
-    }
-
-    private Criteria getCriteria() {
-        Criteria criteria = new Criteria();
-        criteria.setLimit(50);
-        criteria.setOffset(10);
-        criteria.add(CriteriaKey.NAME, "name");
-        criteria.add(CriteriaKey.GENRE, "genre");
-        return criteria;
     }
 
 }
