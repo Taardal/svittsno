@@ -9,13 +9,15 @@ import java.util.regex.Pattern;
 
 public class CharacterValidator extends CoreValidator implements ConstraintValidator<ValidCharacters, String> {
 
+    private static final Pattern INVALID_CHARACTERS_PATTERN = Pattern.compile("[~#@*+%{}<>\\[\\]|\"_^£\\$€´]");
+
     @Override
     public void initialize(ValidCharacters validCharacters) {
     }
 
     @Override
     public boolean isValid(String string, ConstraintValidatorContext constraintValidatorContext) {
-        if (isValidCharacters(string)) {
+        if (string == null || isValidCharacters(string)) {
             return true;
         } else {
             addConstraintViolation("Contains illegal characters.", constraintValidatorContext);
@@ -24,8 +26,7 @@ public class CharacterValidator extends CoreValidator implements ConstraintValid
     }
 
     private boolean isValidCharacters(String string) {
-        Pattern pattern = Pattern.compile("[~#@*+%{}<>\\[\\]|\"_^£\\$€´]");
-        Matcher matcher = pattern.matcher(string);
+        Matcher matcher = INVALID_CHARACTERS_PATTERN.matcher(string);
         return !matcher.find();
     }
 

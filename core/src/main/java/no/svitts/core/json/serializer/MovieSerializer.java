@@ -1,6 +1,7 @@
 package no.svitts.core.json.serializer;
 
 import com.google.gson.*;
+import no.svitts.core.date.ReleaseDate;
 import no.svitts.core.file.MediaFile;
 import no.svitts.core.genre.Genre;
 import no.svitts.core.movie.Movie;
@@ -24,13 +25,22 @@ public class MovieSerializer extends CoreSerializer implements JsonSerializer<Mo
             jsonObject.add("tagline", getJsonPrimitive(movie.getTagline()));
             jsonObject.add("overview", getJsonPrimitive(movie.getOverview()));
             jsonObject.add("runtime", getJsonPrimitive(movie.getRuntime()));
-            jsonObject.add("releaseDate", getJsonPrimitive(movie.getReleaseDate()));
+            jsonObject.add("releaseDate", getReleaseDateJsonPrimitive(movie.getReleaseDate()));
             jsonObject.add("genres", getGenresAsJsonArray(movie.getGenres()));
             jsonObject.add("videoFile", getFileAsJsonObject(movie.getVideoFile()));
             jsonObject.add("posterImageFile", getFileAsJsonObject(movie.getPosterImageFile()));
             jsonObject.add("backdropImageFile", getFileAsJsonObject(movie.getBackdropImageFile()));
         }
         return jsonObject;
+    }
+
+    private JsonPrimitive getReleaseDateJsonPrimitive(ReleaseDate releaseDate) {
+        if (releaseDate != null) {
+            return new JsonPrimitive(releaseDate.toString());
+        } else {
+            LOGGER.warn("Could not serialize release date because it was null");
+            return null;
+        }
     }
 
     private JsonElement getFileAsJsonObject(MediaFile mediaFile) {

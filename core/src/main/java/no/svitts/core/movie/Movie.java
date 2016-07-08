@@ -73,17 +73,17 @@ public class Movie {
     public boolean equals(Object object) {
         if (object != null && getClass() == object.getClass()) {
             Movie movie = (Movie) object;
-            return id.equals(movie.getId())
-                    && name.equals(movie.getName())
-                    && imdbId.equals(movie.getImdbId())
-                    && tagline.equals(movie.getTagline())
-                    && overview.equals(movie.getOverview())
+            return (id == null && movie.getId() == null) || id.equals(movie.getId())
+                    && (name == null && movie.getName() == null) || name.equals(movie.getName())
+                    && (imdbId == null && movie.getImdbId() == null) || imdbId.equals(movie.getImdbId())
+                    && (tagline == null && movie.getTagline() == null) || tagline.equals(movie.getTagline())
+                    && (overview == null && movie.getOverview() == null) || overview.equals(movie.getOverview())
                     && runtime == movie.getRuntime()
-                    && releaseDate.equals(movie.getReleaseDate())
-                    && genres.equals(movie.genres)
-                    && videoFile.equals(movie.getVideoFile())
-                    && posterImageFile.equals(movie.getPosterImageFile())
-                    && backdropImageFile.equals(movie.getBackdropImageFile());
+                    && (releaseDate == null && movie.getReleaseDate() == null) || releaseDate.equals(movie.getReleaseDate())
+                    && (genres == null && movie.getGenres() == null) || genres.equals(movie.genres)
+                    && (videoFile == null && movie.getVideoFile() == null) || videoFile.equals(movie.getVideoFile())
+                    && (posterImageFile == null && movie.getPosterImageFile() == null) || posterImageFile.equals(movie.getPosterImageFile())
+                    && (backdropImageFile == null && movie.getBackdropImageFile() == null) || backdropImageFile.equals(movie.getBackdropImageFile());
         } else {
             return false;
         }
@@ -157,7 +157,7 @@ public class Movie {
         this.runtime = runtime;
     }
 
-    @Valid
+    @Embedded
     @Column(name = "release_date")
     @Type(type="org.joda.time.contrib.hibernate.PersistentDateTime")
     public ReleaseDate getReleaseDate() {
@@ -180,8 +180,8 @@ public class Movie {
     }
 
     @Valid
-    @Column(name = "video_file")
     @Embedded
+    @Column(name = "video_file")
     @AttributeOverrides({
             @AttributeOverride(name = "path", column = @Column(name = "video_file_path"))
     })
@@ -194,8 +194,8 @@ public class Movie {
     }
 
     @Valid
-    @Column(name = "poster_image_file")
     @Embedded
+    @Column(name = "poster_image_file")
     @AttributeOverrides({
             @AttributeOverride(name = "path", column = @Column(name = "poster_image_file_path"))
     })
@@ -208,8 +208,8 @@ public class Movie {
     }
 
     @Valid
-    @Column(name = "backdrop_image_file")
     @Embedded
+    @Column(name = "backdrop_image_file")
     @AttributeOverrides({
             @AttributeOverride(name = "path", column = @Column(name = "backdrop_image_file_path"))
     })

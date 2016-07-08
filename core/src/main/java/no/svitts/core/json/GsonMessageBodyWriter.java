@@ -33,6 +33,7 @@ public class GsonMessageBodyWriter implements MessageBodyWriter<Object> {
         gson = new GsonBuilder()
                 .registerTypeAdapter(Movie[].class, new MoviesSerializer())
                 .registerTypeAdapter(Movie.class, new MovieSerializer())
+                .serializeNulls()
                 .create();
     }
 

@@ -16,7 +16,7 @@ public class LengthValidator extends CoreValidator implements ConstraintValidato
 
     @Override
     public boolean isValid(String string, ConstraintValidatorContext constraintValidatorContext) {
-        if (string.length() <= length) {
+        if (string == null || string.length() <= length) {
             return true;
         } else {
             addConstraintViolation("Length is too long.", constraintValidatorContext);
