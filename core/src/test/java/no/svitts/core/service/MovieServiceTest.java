@@ -90,6 +90,22 @@ public class MovieServiceTest {
     }
 
     @Test
+    public void updateSingle_ValidMovie_ShouldMakeTransactionWithoutResult() {
+        Movie movie = movieBuilder.build();
+        doNothing().when(transactionManagerMock).transactionWithoutResult(any(UnitOfWorkWithoutResult.class));
+
+        movieService.updateSingle(movie);
+
+        verify(transactionManagerMock, times(1)).transactionWithoutResult(any(UnitOfWorkWithoutResult.class));
+    }
+
+    @Test(expected = ServiceException.class)
+    public void updateSingle_ThrowsTransactionException_ShouldCatchTransactionExceptionAndThrowServiceException() {
+        doThrow(new TransactionException()).when(transactionManagerMock).transactionWithoutResult(any(UnitOfWorkWithoutResult.class));
+        movieService.updateSingle(movieBuilder.build());
+    }
+
+    @Test
     public void deleteSingle_ValidId_ShouldMakeTransaction() {
         Movie movie = movieBuilder.build();
         doNothing().when(transactionManagerMock).transactionWithoutResult(any(UnitOfWorkWithoutResult.class));

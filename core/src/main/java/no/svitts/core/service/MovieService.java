@@ -51,6 +51,16 @@ public class MovieService extends CoreService<Movie> {
     }
 
     @Override
+    public void updateSingle(Movie movie) {
+        try {
+            transactionWithoutResult(repository -> repository.updateSingle(movie));
+        } catch (TransactionException e) {
+            LOGGER.error("Could not do transaction without result to update single movie [{}]", movie.toString(), e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
     public void deleteSingle(String id) {
         try {
             transactionWithoutResult(repository -> {

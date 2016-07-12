@@ -12,5 +12,7 @@ public interface Repository<T> {
 
     String saveSingle(T entity);
 
+    void updateSingle(T entity);
+
     void deleteSingle(T entity);
 }

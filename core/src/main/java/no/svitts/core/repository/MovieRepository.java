@@ -65,6 +65,17 @@ public class MovieRepository extends CoreRepository<Movie> {
     }
 
     @Override
+    public void updateSingle(Movie movie) {
+        LOGGER.info("Updating movie [{}] in database.", movie.toString());
+        try {
+            getCurrentSession().update(movie);
+        } catch (HibernateException e) {
+            LOGGER.error("Could not update movie [{}] in database.", movie.toString(), e);
+            throw new RepositoryException(e);
+        }
+    }
+
+    @Override
     public void deleteSingle(Movie movie) {
         LOGGER.info("Deleting movie [{}] from database.", movie.toString());
         try {

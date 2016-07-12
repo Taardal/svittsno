@@ -27,9 +27,9 @@ public class MovieDeserializer extends CoreDeserializer implements JsonDeseriali
         int runtime = getInt(jsonObject.get("runtime"));
         ReleaseDate releaseDate = getKeyDate(jsonObject.get("releaseDate"));
         Set<Genre> genres = getGenres(jsonObject.get("genres"));
-        MediaFile videoFile = getFile(jsonObject.get("videoFile"));
-        MediaFile posterImageFile = getFile(jsonObject.get("posterImageFile"));
-        MediaFile backdropImageFile = getFile(jsonObject.get("backdropImageFile"));
+        MediaFile videoFile = getMediaFile(jsonObject.get("videoFile"));
+        MediaFile posterImageFile = getMediaFile(jsonObject.get("posterImageFile"));
+        MediaFile backdropImageFile = getMediaFile(jsonObject.get("backdropImageFile"));
         return new Movie(id, name, imdbId, tagline, overview, runtime, releaseDate, genres, videoFile, posterImageFile, backdropImageFile);
     }
 
@@ -53,25 +53,16 @@ public class MovieDeserializer extends CoreDeserializer implements JsonDeseriali
         Set<Genre> genres = new HashSet<>();
         for (JsonElement jsonElement : jsonArray) {
             String genreString = jsonElement.getAsString().toUpperCase().replaceAll("-", "_");
-            genres.add(getGenre(genreString));
+            genres.add(Genre.valueOf(genreString));
         }
         return genres;
     }
 
-    private Genre getGenre(String genreString) {
-        try {
-            return Genre.valueOf(genreString);
-        } catch (IllegalArgumentException e) {
-            LOGGER.error("Could not convert genre [{}] from string to an appropriate enum.", genreString, e);
-            throw e;
-        }
+    private MediaFile getMediaFile(JsonElement jsonElement) {
+        return isNotNull(jsonElement) ? getMediaFile(jsonElement.getAsJsonObject()) : null;
     }
 
-    private MediaFile getFile(JsonElement jsonElement) {
-        return isNotNull(jsonElement) ? getFile(jsonElement.getAsJsonObject()) : null;
-    }
-
-    private MediaFile getFile(JsonObject jsonObject) {
+    private MediaFile getMediaFile(JsonObject jsonObject) {
         return isNotNull(jsonObject.get("path")) ? new MediaFile(jsonObject.get("path").getAsString()) : null;
     }
 

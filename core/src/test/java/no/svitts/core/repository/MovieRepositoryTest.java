@@ -123,10 +123,31 @@ public class MovieRepositoryTest {
     }
 
     @Test
+    public void updateSingle_ValidMovie_ShouldUpdateMovie() {
+        Movie movie = movieBuilder.build();
+        doNothing().when(sessionMock).update(movie);
+
+        movieRepository.updateSingle(movie);
+
+        verify(sessionFactoryMock, times(1)).getCurrentSession();
+        verify(sessionMock, times(1)).update(movie);
+    }
+
+    @Test(expected = RepositoryException.class)
+    public void updateSingle_ThrowsHibernateException_ShouldCatchHibernateExceptionAndThrowRepositoryException() {
+        Movie movie = movieBuilder.build();
+        doThrow(new HibernateException("Exception")).when(sessionMock).update(movie);
+        movieRepository.updateSingle(movie);
+    }
+
+    @Test
     public void deleteSingle_ValidMovie_ShouldDeleteMovie() {
         Movie movie = movieBuilder.build();
         doNothing().when(sessionMock).delete(movie);
+
         movieRepository.deleteSingle(movie);
+
+        verify(sessionFactoryMock, times(1)).getCurrentSession();
         verify(sessionMock, times(1)).delete(movie);
     }
 

@@ -108,7 +108,7 @@ public class MovieResource {
     public Response updateMovie(@PathParam("id") @ValidCharacters @Length(length = Movie.ID_MAX_LENGTH) String id, @Valid Movie movie) {
         LOGGER.info("Received request to PUT movie [{}]", movie);
         try {
-            movieService.saveSingle(movie);
+            movieService.updateSingle(movie);
             return Response.ok().build();
         } catch (ServiceException e) {
             throw new InternalServerErrorException("Could not update movie with ID [" + id + "] with values [" + movie.toString() + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);

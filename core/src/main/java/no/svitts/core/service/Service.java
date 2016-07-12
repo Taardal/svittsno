@@ -12,6 +12,8 @@ public interface Service<T> {
 
     String saveSingle(T t);
 
+    void updateSingle(T entity);
+
     void deleteSingle(String id);
 
 }

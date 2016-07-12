@@ -1,9 +1,9 @@
 package no.svitts.core.file;
 
 import no.svitts.core.constraint.Length;
+import no.svitts.core.constraint.NonNegative;
 import no.svitts.core.constraint.NotNullOrEmpty;
 
-import javax.annotation.Nonnegative;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 import java.io.File;
@@ -62,7 +62,7 @@ public class MediaFile {
         return file.getName();
     }
 
-    @Nonnegative
+    @NonNegative
     @Transient
     public long getSize() {
         return file.length();
