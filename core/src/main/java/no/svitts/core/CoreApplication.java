@@ -13,6 +13,7 @@ import no.svitts.core.json.GsonMessageBodyWriter;
 import no.svitts.core.module.PersistenceModule;
 import no.svitts.core.module.WebModule;
 import no.svitts.core.provider.SessionFactoryProvider;
+import no.svitts.core.resource.GenreResource;
 import no.svitts.core.resource.MovieResource;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -35,13 +36,14 @@ public class CoreApplication extends ResourceConfig {
     }
 
     private void registerComponents(Injector injector) {
+        register(injector.getInstance(GenreResource.class));
         register(injector.getInstance(MovieResource.class));
         register(injector.getInstance(WebApplicationExceptionMapper.class));
         register(injector.getInstance(ConstraintViolationExceptionMapper.class));
         register(injector.getInstance(GsonMessageBodyReader.class));
         register(injector.getInstance(GsonMessageBodyWriter.class));
-        register(ApiListingResource.class);
-        register(SwaggerSerializers.class);
+        register(injector.getInstance(ApiListingResource.class));
+        register(injector.getInstance(SwaggerSerializers.class));
     }
 
     private void createSwaggerBean(ApplicationProperties applicationProperties) {
@@ -54,7 +56,7 @@ public class CoreApplication extends ResourceConfig {
         beanConfig.setBasePath(APPLICATION_PATH);
         beanConfig.setVersion(APPLICATION_VERSION);
         beanConfig.setDescription("This is the API for the Svitts movie library application.");
-        beanConfig.setContact("Torbjørn Årdal - torbjorn.aardal@gmail.com");
+        beanConfig.setContact("Torbjørn Årdal\ntorbjorn.aardal@gmail.com");
     }
 
 }
