@@ -1,8 +1,10 @@
-package no.svitts.core.transaction;
+package no.svitts.core.service;
 
 import no.svitts.core.exception.RepositoryException;
-import no.svitts.core.exception.TransactionException;
+import no.svitts.core.exception.ServiceException;
 import no.svitts.core.repository.Repository;
+import no.svitts.core.transaction.UnitOfWork;
+import no.svitts.core.transaction.UnitOfWorkWithoutResult;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -14,18 +16,12 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class RepositoryTransactionManagerTest {
+public class CoreServiceTest {
 
-    private RepositoryTransactionManager<Object> repositoryTransactionManager;
+    private CoreServiceMock coreServiceMock;
 
     @Mock
     private Repository<Object> repositoryMock;
-
-    @Mock
-    private UnitOfWork<Object, Object> unitOfWorkMock;
-
-    @Mock
-    private UnitOfWorkWithoutResult<Object> unitOfWorkWithoutResultMock;
 
     @Mock
     private SessionFactory sessionFactoryMock;
@@ -36,19 +32,25 @@ public class RepositoryTransactionManagerTest {
     @Mock
     private Transaction transactionMock;
 
+    @Mock
+    private UnitOfWork<Object, Object> unitOfWorkMock;
+
+    @Mock
+    private UnitOfWorkWithoutResult<Object> unitOfWorkWithoutResultMock;
+
     @Before
     public void setUp() {
         initMocks(this);
         when(sessionFactoryMock.getCurrentSession()).thenReturn(sessionMock);
         when(sessionMock.beginTransaction()).thenReturn(transactionMock);
-        repositoryTransactionManager = new RepositoryTransactionManager<>(repositoryMock, sessionFactoryMock);
+        coreServiceMock = new CoreServiceMock(repositoryMock, sessionFactoryMock);
     }
 
     @Test
     public void transaction_ValidUnitOfWork_ShouldExecuteUnitOfWorkAndReturnResult() {
         Object object = new Object();
         when(unitOfWorkMock.execute(repositoryMock)).thenReturn(object);
-        Object objectFromUnitOfWork = repositoryTransactionManager.transaction(unitOfWorkMock);
+        Object objectFromUnitOfWork = coreServiceMock.transaction(unitOfWorkMock);
         assertEquals(object, objectFromUnitOfWork);
         verify(sessionFactoryMock, times(1)).getCurrentSession();
         verify(sessionMock, times(1)).beginTransaction();
@@ -56,13 +58,13 @@ public class RepositoryTransactionManagerTest {
         verify(sessionMock, times(1)).close();
     }
 
-    @Test(expected = TransactionException.class)
+    @Test(expected = ServiceException.class)
     public void transaction_ThrowsRepositoryException_ShouldRollbackTransactionAndThrowTransactionException() {
         RepositoryException repositoryException = new RepositoryException();
         when(unitOfWorkMock.execute(repositoryMock)).thenThrow(repositoryException);
         try {
-            repositoryTransactionManager.transaction(unitOfWorkMock);
-        } catch (TransactionException e) {
+            coreServiceMock.transaction(unitOfWorkMock);
+        } catch (ServiceException e) {
             verify(transactionMock, times(1)).rollback();
             throw e;
         }
@@ -70,19 +72,19 @@ public class RepositoryTransactionManagerTest {
 
     @Test
     public void transactionWithoutResult_ValidUnitOfWorkWithoutResult_ShouldExecuteUnitOfWorkWithoutResult() {
-        repositoryTransactionManager.transactionWithoutResult(unitOfWorkWithoutResultMock);
+        coreServiceMock.transactionWithoutResult(unitOfWorkWithoutResultMock);
         verify(sessionFactoryMock, times(1)).getCurrentSession();
         verify(sessionMock, times(1)).beginTransaction();
         verify(transactionMock, times(1)).commit();
         verify(sessionMock, times(1)).close();
     }
 
-    @Test(expected = TransactionException.class)
+    @Test(expected = ServiceException.class)
     public void transactionWithoutResult_ThrowsRepositoryException_ShouldRollbackTransactionAndThrowTransactionException() {
         doThrow(new RepositoryException()).when(unitOfWorkWithoutResultMock).execute(repositoryMock);
         try {
-            repositoryTransactionManager.transactionWithoutResult(unitOfWorkWithoutResultMock);
-        } catch (TransactionException e) {
+            coreServiceMock.transactionWithoutResult(unitOfWorkWithoutResultMock);
+        } catch (ServiceException e) {
             verify(transactionMock, times(1)).rollback();
             throw e;
         }
