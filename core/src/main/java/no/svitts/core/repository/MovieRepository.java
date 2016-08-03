@@ -5,6 +5,7 @@ import no.svitts.core.criteria.Criteria;
 import no.svitts.core.criteria.CriteriaKey;
 import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.movie.Movie;
+import no.svitts.core.util.Id;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -55,6 +56,9 @@ public class MovieRepository extends CoreRepository<Movie> {
 
     @Override
     public String saveSingle(Movie movie) {
+        if (movie.getId() == null) {
+            movie.setId(Id.get());
+        }
         LOGGER.info("Inserting movie [{}] into database.", movie.toString());
         try {
             return (String) getCurrentSession().save(movie);

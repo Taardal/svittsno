@@ -11,6 +11,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.net.URI;
 
 import static no.svitts.core.CoreTestKit.getITestApplication;
 import static no.svitts.core.util.StringUtil.getRandomString;
@@ -58,9 +59,9 @@ public class GetMovieIT extends JerseyTest {
     public void getMovie_MovieExistsAndValidId_ShouldReturnExpectedMovie() {
         client().register(gsonMessageBodyReader).register(gsonMessageBodyWriter);
         Movie movie = movieBuilder.build();
-        createMovie(movie);
+        URI savedMovieURI = saveMovie(movie);
 
-        Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path(movie.getId()).request().get();
+        Response response = client().target(savedMovieURI).request().get();
 
         assertEquals(200, response.getStatus());
         assertEquals(movie, response.readEntity(Movie.class));
@@ -78,11 +79,13 @@ public class GetMovieIT extends JerseyTest {
         response.close();
     }
 
-    private void createMovie(Movie movie) {
+    private URI saveMovie(Movie movie) {
         Entity<Movie> movieEntity = Entity.entity(movie, MediaType.APPLICATION_JSON);
         Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).request().post(movieEntity, Response.class);
         assertEquals(201, response.getStatus());
+        URI savedMovieURI = response.getLocation();
         response.close();
+        return savedMovieURI;
     }
 
 }

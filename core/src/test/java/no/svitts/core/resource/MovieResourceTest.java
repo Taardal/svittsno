@@ -5,7 +5,7 @@ import no.svitts.core.criteria.Criteria;
 import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.exception.mapper.ConstraintViolationExceptionMapper;
 import no.svitts.core.exception.mapper.WebApplicationExceptionMapper;
-import no.svitts.core.id.Id;
+import no.svitts.core.util.Id;
 import no.svitts.core.json.GsonMessageBodyReader;
 import no.svitts.core.json.GsonMessageBodyWriter;
 import no.svitts.core.movie.Movie;

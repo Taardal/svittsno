@@ -2,7 +2,7 @@ package no.svitts.core.movie;
 
 import no.svitts.core.builder.MovieBuilder;
 import no.svitts.core.genre.Genre;
-import no.svitts.core.id.Id;
+import no.svitts.core.util.Id;
 import no.svitts.core.json.GsonMessageBodyReader;
 import no.svitts.core.json.GsonMessageBodyWriter;
 import org.glassfish.jersey.test.JerseyTest;

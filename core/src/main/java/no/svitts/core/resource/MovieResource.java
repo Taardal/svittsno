@@ -89,11 +89,11 @@ public class MovieResource {
             value = "Create a single movie. ",
             notes = "Invalid JSON will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s). "
     )
-    public Response createMovie(@Valid Movie movie) {
+    public Response saveMovie(@Valid Movie movie) {
         LOGGER.info("Received request to POST movie [{}]", movie.toString());
         try {
-            String createdMovieId = movieService.saveSingle(movie);
-            return Response.created(getLocation(createdMovieId)).build();
+            String savedMovieId = movieService.saveSingle(movie);
+            return Response.created(getLocation(savedMovieId)).build();
         } catch (ServiceException e) {
             throw new InternalServerErrorException("Could not saveSingle movie [" + movie.toString() + "]. ", e);
         }

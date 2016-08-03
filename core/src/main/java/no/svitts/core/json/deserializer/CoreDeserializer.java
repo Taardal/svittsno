@@ -4,6 +4,15 @@ import com.google.gson.JsonElement;
 
 abstract class CoreDeserializer {
 
+    String getString(JsonElement jsonElement) {
+        return isNotNull(jsonElement) && !jsonElement.getAsString().equals("null") ? jsonElement.getAsString() : null;
+    }
+
+    int getInt(JsonElement jsonElement) {
+        return isNotNull(jsonElement) ? jsonElement.getAsInt() : 0;
+    }
+
+
     boolean isNotNull(JsonElement jsonElement) {
         return jsonElement != null && !jsonElement.isJsonNull();
     }

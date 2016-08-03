@@ -33,14 +33,6 @@ public class MovieDeserializer extends CoreDeserializer implements JsonDeseriali
         return new Movie(id, name, imdbId, tagline, overview, runtime, releaseDate, genres, videoFile, posterImageFile, backdropImageFile);
     }
 
-    private String getString(JsonElement jsonElement) {
-        return isNotNull(jsonElement) && !jsonElement.getAsString().equals("null") ? jsonElement.getAsString() : null;
-    }
-
-    private int getInt(JsonElement jsonElement) {
-        return isNotNull(jsonElement) ? jsonElement.getAsInt() : 0;
-    }
-
     private ReleaseDate getKeyDate(JsonElement jsonElement) {
         return isNotNull(jsonElement) ? ReleaseDate.fromString(getString(jsonElement)) : null;
     }

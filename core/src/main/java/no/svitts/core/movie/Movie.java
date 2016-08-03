@@ -89,7 +89,6 @@ public class Movie {
         }
     }
 
-    @NotNullOrEmpty
     @ValidCharacters
     @Length(length = ID_MAX_LENGTH)
     @Id
@@ -98,7 +97,7 @@ public class Movie {
         return id;
     }
 
-    private void setId(String id) {
+    public void setId(String id) {
         this.id = id;
     }
 
