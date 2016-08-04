@@ -43,6 +43,8 @@ public class CoreServiceTest {
         initMocks(this);
         when(sessionFactoryMock.getCurrentSession()).thenReturn(sessionMock);
         when(sessionMock.beginTransaction()).thenReturn(transactionMock);
+        doNothing().when(sessionMock).flush();
+        when(sessionMock.isOpen()).thenReturn(true);
         coreServiceMock = new CoreServiceMock(repositoryMock, sessionFactoryMock);
     }
 
