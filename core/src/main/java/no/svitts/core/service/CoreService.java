@@ -35,15 +35,19 @@ abstract class CoreService<T> implements Service<Movie> {
         try {
             LOGGER.info("Executing unit of work.");
             R result = unitOfWork.execute(repository);
+            LOGGER.info("Flushing current session.");
+            currentSession.flush();
+            LOGGER.info("Committing transaction.");
             transaction.commit();
-            LOGGER.info("Transaction committed.");
             return result;
         } catch (RepositoryException | IllegalStateException | RollbackException e) {
             transaction.rollback();
-            LOGGER.error("Could not do transcation.", e);
+            LOGGER.error("Could not make transcation.", e);
             throw new ServiceException(e);
         } finally {
-            currentSession.close();
+            if (currentSession.isOpen()) {
+                currentSession.close();
+            }
         }
     }
 
@@ -54,14 +58,18 @@ abstract class CoreService<T> implements Service<Movie> {
         try {
             LOGGER.info("Executing unit of work.");
             unitOfWorkWithoutResult.execute(repository);
+            LOGGER.info("Flushing current session.");
+            currentSession.flush();
+            LOGGER.info("Committing transaction.");
             transaction.commit();
-            LOGGER.info("Transaction committed.");
         } catch (RepositoryException | IllegalStateException | RollbackException e) {
             transaction.rollback();
-            LOGGER.error("Could not do transcation.", e);
+            LOGGER.error("Could not make transcation.", e);
             throw new ServiceException(e);
         } finally {
-            currentSession.close();
+            if (currentSession.isOpen()) {
+                currentSession.close();
+            }
         }
     }
 
