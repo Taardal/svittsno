@@ -131,11 +131,11 @@ public class GetMoviesIT extends JerseyTest {
         client().register(gsonMessageBodyReader).register(gsonMessageBodyWriter);
         List<Movie> movies = new ArrayList<>();
         movies.add(movieBuilder.id(Id.get()).genres(Arrays.stream(new Genre[]{Genre.WESTERN, Genre.WAR, Genre.THRILLER}).collect(Collectors.toSet())).build());
-        movies.add(movieBuilder.id(Id.get()).genres(Arrays.stream(new Genre[]{Genre.ACTION, Genre.ADVENTURE, Genre.ANIMATION}).collect(Collectors.toSet())).build());
+        movies.add(movieBuilder.id(Id.get()).genres(Arrays.stream(new Genre[]{Genre.WESTERN, Genre.ADVENTURE, Genre.ANIMATION}).collect(Collectors.toSet())).build());
         movies.add(movieBuilder.id(Id.get()).genres(Arrays.stream(new Genre[]{Genre.FAMILY, Genre.FANTASY, Genre.FILM_NOIR}).collect(Collectors.toSet())).build());
         createMovies(movies);
 
-        String genreQueryParam = "L";
+        String genreQueryParam = Genre.WESTERN.getValue();
         Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).queryParam("genre", genreQueryParam).request().get();
 
         assertEquals(200, response.getStatus());
