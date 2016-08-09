@@ -1,13 +1,14 @@
 # Encoding: utf-8
 
-# Script som deployer til test-server. Er avhengig av å ha ruby installert, samt net-ssh og net-scp rubygems. Eks.: 'gem install net-ssh' 
+# Script that deploys the application to a remote server. Depends on Ruby and net-ssh og net-scp rubygems. Ex: 'gem install net-ssh'
+# Run 'rake -T' for available tasks
 
-# Kjør 'rake deploy:test' for å utføre
-# - Bygg svittsno
-# - Stop test-server og fjern gammel versjon
-# - Kopier ny svittsno.war
-# - Start server med "test"-profil
-# - Sjekk at svittsno kjører via rest-kall
+# Running a task will execute the following:
+# - Build svittsno core module (.war)
+# - Stop tomcat on remote server and remove old version (folder and .war-file)
+# - Copy new svittsno.war (core) to remote server
+# - Start tomcat on remote server
+# - Ensure that SvittsNO webapp is running by pinging REST API self-test.
 
 
 require 'net/ssh'
