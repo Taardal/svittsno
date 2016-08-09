@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import no.svitts.core.criteria.Criteria;
 import no.svitts.core.criteria.CriteriaKey;
 import no.svitts.core.exception.RepositoryException;
+import no.svitts.core.genre.Genre;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.util.Id;
 import org.hibernate.HibernateException;
@@ -15,7 +16,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class MovieRepository extends CoreRepository<Movie> {
 
@@ -43,11 +43,7 @@ public class MovieRepository extends CoreRepository<Movie> {
         try {
             CriteriaBuilder criteriaBuilder = getCurrentSession().getCriteriaBuilder();
             CriteriaQuery<Movie> movieCriteriaQuery = getMultipleMoviesCriteriaQuery(criteria, criteriaBuilder);
-            List<Movie> movies = getCurrentSession().createQuery(movieCriteriaQuery).setMaxResults(criteria.getLimit()).setFirstResult(criteria.getOffset()).getResultList();
-            if (isNotNullOrEmpty(criteria.get(CriteriaKey.GENRE))) {
-                movies = filterByGenre(criteria.get(CriteriaKey.GENRE), movies);
-            }
-            return movies;
+            return getCurrentSession().createQuery(movieCriteriaQuery).setMaxResults(criteria.getLimit()).setFirstResult(criteria.getOffset()).getResultList();
         } catch (HibernateException | IllegalStateException e) {
             LOGGER.error("Could not get multiple movies from database by criteria [{}]", criteria.toString());
             throw new RepositoryException(e);
@@ -94,17 +90,15 @@ public class MovieRepository extends CoreRepository<Movie> {
         CriteriaQuery<Movie> movieCriteriaQuery = criteriaBuilder.createQuery(Movie.class);
         Root<Movie> movieRoot = movieCriteriaQuery.from(Movie.class);
         movieCriteriaQuery.select(movieRoot);
-        if (isNotNullOrEmpty(criteria.get(CriteriaKey.NAME))) {
-            movieCriteriaQuery.where(criteriaBuilder.like(movieRoot.get("name"), "%" + criteria.get(CriteriaKey.NAME) + "%"));
+        String name = criteria.get(CriteriaKey.NAME);
+        if (isNotNullOrEmpty(name)) {
+            movieCriteriaQuery.where(criteriaBuilder.like(movieRoot.get("name"), "%" + name + "%"));
+        }
+        String genre = criteria.get(CriteriaKey.GENRE);
+        if (isNotNullOrEmpty(genre)) {
+            movieCriteriaQuery.where(criteriaBuilder.isMember(Genre.valueOf(genre.toUpperCase()), movieRoot.get("genres")));
         }
         return movieCriteriaQuery;
-    }
-
-    private List<Movie> filterByGenre(String genreCriteria, List<Movie> movies) {
-        return movies.stream()
-                .filter(movie -> movie.getGenres().stream()
-                        .anyMatch(genre -> genre.toString().contains(genreCriteria.toUpperCase())))
-                .collect(Collectors.toList());
     }
 
     private boolean isNotNullOrEmpty(String criteria) {
