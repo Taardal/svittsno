@@ -2,7 +2,7 @@ package no.svitts.core.resource;
 
 import no.svitts.core.builder.MovieBuilder;
 import no.svitts.core.criteria.Criteria;
-import no.svitts.core.exception.RepositoryException;
+import no.svitts.core.exception.ServiceException;
 import no.svitts.core.exception.mapper.ConstraintViolationExceptionMapper;
 import no.svitts.core.exception.mapper.WebApplicationExceptionMapper;
 import no.svitts.core.util.Id;
@@ -87,9 +87,9 @@ public class MovieResourceTest extends JerseyTest {
     }
 
     @Test
-    public void getMovie_ThrowsRepositoryException_ShouldReturnInternalServerErrorResponse() {
+    public void getMovie_ThrowsServiceException_ShouldReturnInternalServerErrorResponse() {
         String id = Id.get();
-        when(movieServiceMock.getSingle(anyString())).thenThrow(new RepositoryException());
+        when(movieServiceMock.getSingle(anyString())).thenThrow(new ServiceException());
 
         Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path(id).request().get();
 
@@ -120,7 +120,7 @@ public class MovieResourceTest extends JerseyTest {
 
         assertEquals(200, response.getStatus());
         assertEquals(movies.size(), moviesFromResponse.size());
-        movies.stream().forEach(movie -> moviesFromResponse.stream().forEach(movieFromResponse -> assertEquals(movie, movieFromResponse)));
+        movies.forEach(movie -> moviesFromResponse.forEach(movieFromResponse -> assertEquals(movie, movieFromResponse)));
         response.close();
     }
 
@@ -147,7 +147,7 @@ public class MovieResourceTest extends JerseyTest {
     }
 
     @Test
-    public void createMovie_ValidMovie_ShouldReturnCreatedResponse() {
+    public void saveMovie_ValidMovie_ShouldReturnCreatedResponse() {
         Movie movie = movieBuilder.build();
         when(movieServiceMock.saveSingle(movie)).thenReturn(movie.getId());
         Entity<Movie> movieEntity = Entity.entity(movie, MediaType.APPLICATION_JSON);
@@ -160,9 +160,9 @@ public class MovieResourceTest extends JerseyTest {
     }
 
     @Test
-    public void createMovie_ThrowsRepositoryException_ShouldReturnInternalServerErrorResponse() {
+    public void saveMovie_ThrowsServiceException_ShouldReturnInternalServerErrorResponse() {
         Movie movie = movieBuilder.build();
-        when(movieServiceMock.saveSingle(movie)).thenThrow(new RepositoryException());
+        when(movieServiceMock.saveSingle(movie)).thenThrow(new ServiceException());
         Entity<Movie> movieEntity = Entity.entity(movie, MediaType.APPLICATION_JSON);
 
         Response response = client().register(gsonMessageBodyWriter).target(getBaseUri()).path(MOVIE_RESOURCE).request().post(movieEntity, Response.class);
@@ -184,9 +184,9 @@ public class MovieResourceTest extends JerseyTest {
     }
 
     @Test
-    public void deleteMovie_ThrowsRepositoryException_ShouldReturnInternalServerErrorResponse() {
+    public void deleteMovie_ThrowsServiceException_ShouldReturnInternalServerErrorResponse() {
         String id = Id.get();
-        doThrow(new RepositoryException()).when(movieServiceMock).deleteSingle(id);
+        doThrow(new ServiceException()).when(movieServiceMock).deleteSingle(id);
 
         Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path(id).request().delete();
 

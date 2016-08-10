@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class MovieRepository extends CoreRepository<Movie> {
     public List<Movie> getMultiple(Criteria criteria) {
         LOGGER.info("Getting multiple movies from database by criteria [{}].", criteria.toString());
         try {
-            CriteriaBuilder criteriaBuilder = getCurrentSession().getCriteriaBuilder();
+            CriteriaBuilder criteriaBuilder = getCriteriaBuilder();
             CriteriaQuery<Movie> movieCriteriaQuery = getMultipleMoviesCriteriaQuery(criteria, criteriaBuilder);
             return getCurrentSession().createQuery(movieCriteriaQuery).setMaxResults(criteria.getLimit()).setFirstResult(criteria.getOffset()).getResultList();
         } catch (HibernateException | IllegalStateException e) {
@@ -86,18 +87,45 @@ public class MovieRepository extends CoreRepository<Movie> {
         }
     }
 
+    public List<Movie> search(String query, int limit, int offset) {
+        CriteriaQuery<Movie> movieCriteriaQuery = getSelectMoviesBySimilarTitleCriteriaQuery(query);
+        return getCurrentSession().createQuery(movieCriteriaQuery).setMaxResults(limit).setFirstResult(offset).getResultList();
+    }
+
+    private CriteriaQuery<Movie> getSelectMoviesBySimilarTitleCriteriaQuery(String query) {
+        CriteriaQuery<Movie> movieCriteriaQuery = getCriteriaBuilder().createQuery(Movie.class);
+        Root<Movie> movieRoot = movieCriteriaQuery.from(Movie.class);
+        return movieCriteriaQuery.select(movieRoot).where(getCriteriaBuilder().like(movieRoot.get("title"), "%" + query + "%"));
+    }
+
+    private CriteriaQuery<Movie> getSelectMoviesByGenreCriteriaQuery(String genre) {
+        CriteriaQuery<Movie> movieCriteriaQuery = getCriteriaBuilder().createQuery(Movie.class);
+        Root<Movie> movieRoot = movieCriteriaQuery.from(Movie.class);
+        return movieCriteriaQuery.select(movieRoot).where(getCriteriaBuilder().isMember(Genre.valueOf(genre.toUpperCase()), movieRoot.get("genres")));
+    }
+
     private CriteriaQuery<Movie> getMultipleMoviesCriteriaQuery(Criteria criteria, CriteriaBuilder criteriaBuilder) {
-        CriteriaQuery<Movie> movieCriteriaQuery = criteriaBuilder.createQuery(Movie.class);
+        CriteriaQuery<Movie> movieCriteriaQuery = getCriteriaBuilder().createQuery(Movie.class);
         Root<Movie> movieRoot = movieCriteriaQuery.from(Movie.class);
         movieCriteriaQuery.select(movieRoot);
+
         String name = criteria.get(CriteriaKey.NAME);
-        if (isNotNullOrEmpty(name)) {
-            movieCriteriaQuery.where(criteriaBuilder.like(movieRoot.get("name"), "%" + name + "%"));
-        }
         String genre = criteria.get(CriteriaKey.GENRE);
-        if (isNotNullOrEmpty(genre)) {
-            movieCriteriaQuery.where(criteriaBuilder.isMember(Genre.valueOf(genre.toUpperCase()), movieRoot.get("genres")));
+        Predicate titleLikeTitle = null;
+        Predicate genreIsMemberOfGenres = null;
+
+        if (isNotNullOrEmpty(name) && isNotNullOrEmpty(genre)) {
+            titleLikeTitle = getCriteriaBuilder().like(movieRoot.get("title"), "%" + name + "%");
+            genreIsMemberOfGenres = getCriteriaBuilder().isMember(Genre.valueOf(genre.toUpperCase()), movieRoot.get("genres"));
+            movieCriteriaQuery.where(getCriteriaBuilder().and(titleLikeTitle, genreIsMemberOfGenres));
+        } else if (isNotNullOrEmpty(name)) {
+            titleLikeTitle = getCriteriaBuilder().like(movieRoot.get("title"), "%" + name + "%");
+            movieCriteriaQuery.where(titleLikeTitle);
+        } else if (isNotNullOrEmpty(genre)) {
+            genreIsMemberOfGenres = getCriteriaBuilder().isMember(Genre.valueOf(genre.toUpperCase()), movieRoot.get("genres"));
+            movieCriteriaQuery.where(genreIsMemberOfGenres);
         }
+
         return movieCriteriaQuery;
     }
 

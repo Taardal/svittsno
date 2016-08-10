@@ -68,7 +68,7 @@ public class MovieRepositoryTest {
     @Test
     public void getMultiple_ValidCriteria_ShouldReturnMovies() {
         List<Movie> movies = Arrays.stream(new Movie[]{
-                movieBuilder.name("movie1").genres(Arrays.stream(new Genre[]{Genre.BIOGRAPHY}).collect(Collectors.toSet())).build()
+                movieBuilder.title("movie1").genres(Arrays.stream(new Genre[]{Genre.BIOGRAPHY}).collect(Collectors.toSet())).build()
         }).collect(Collectors.toList());
 
         Criteria criteria = new Criteria();

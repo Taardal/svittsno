@@ -2,7 +2,7 @@ package no.svitts.core.json.serializer;
 
 import com.google.gson.*;
 import no.svitts.core.date.ReleaseDate;
-import no.svitts.core.file.MediaFile;
+import no.svitts.core.file.VideoFile;
 import no.svitts.core.genre.Genre;
 import no.svitts.core.movie.Movie;
 import org.slf4j.Logger;
@@ -20,16 +20,16 @@ public class MovieSerializer extends CoreSerializer implements JsonSerializer<Mo
         JsonObject jsonObject = new JsonObject();
         if (movie != null) {
             jsonObject.add("id", getJsonPrimitive(movie.getId()));
-            jsonObject.add("name", getJsonPrimitive(movie.getName()));
-            jsonObject.add("imdbId", getJsonPrimitive(movie.getImdbId()));
+            jsonObject.add("name", getJsonPrimitive(movie.getTitle()));
+            jsonObject.add("imdb_id", getJsonPrimitive(movie.getImdbId()));
             jsonObject.add("tagline", getJsonPrimitive(movie.getTagline()));
             jsonObject.add("overview", getJsonPrimitive(movie.getOverview()));
             jsonObject.add("runtime", getJsonPrimitive(movie.getRuntime()));
-            jsonObject.add("releaseDate", getReleaseDateJsonPrimitive(movie.getReleaseDate()));
+            jsonObject.add("release_date", getReleaseDateJsonPrimitive(movie.getReleaseDate()));
             jsonObject.add("genres", getGenresAsJsonArray(movie.getGenres()));
-            jsonObject.add("videoFile", getFileAsJsonObject(movie.getVideoFile()));
-            jsonObject.add("posterImageFile", getFileAsJsonObject(movie.getPosterImageFile()));
-            jsonObject.add("backdropImageFile", getFileAsJsonObject(movie.getBackdropImageFile()));
+            jsonObject.add("video_file", getFileAsJsonObject(movie.getVideoFile()));
+            jsonObject.add("poster_path", getJsonPrimitive(movie.getPosterPath()));
+            jsonObject.add("backdrop_path", getJsonPrimitive(movie.getBackdropPath()));
         }
         return jsonObject;
     }
@@ -43,12 +43,12 @@ public class MovieSerializer extends CoreSerializer implements JsonSerializer<Mo
         }
     }
 
-    private JsonElement getFileAsJsonObject(MediaFile mediaFile) {
-        if (mediaFile != null) {
+    private JsonElement getFileAsJsonObject(VideoFile videoFile) {
+        if (videoFile != null) {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.add("name", getJsonPrimitive(mediaFile.getName()));
-            jsonObject.add("path", getJsonPrimitive(mediaFile.getPath()));
-            jsonObject.add("size", getJsonPrimitive(mediaFile.getSize()));
+            jsonObject.add("name", getJsonPrimitive(videoFile.getName()));
+            jsonObject.add("path", getJsonPrimitive(videoFile.getPath()));
+            jsonObject.add("size", getJsonPrimitive(videoFile.getSize()));
             return jsonObject;
         } else {
             LOGGER.warn("Could not serialize media file because it was null.");

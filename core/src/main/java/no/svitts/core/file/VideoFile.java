@@ -9,7 +9,7 @@ import javax.persistence.Transient;
 import java.io.File;
 
 @Embeddable
-public class MediaFile {
+public class VideoFile {
 
     private static final int PATH_MAX_LENGTH = 255;
     private static final int NAME_MAX_LENGTH = 255;
@@ -17,16 +17,16 @@ public class MediaFile {
     @Transient
     private File file;
 
-    private MediaFile() {
+    private VideoFile() {
     }
 
-    public MediaFile(String path) {
+    public VideoFile(String path) {
         file = new File(path);
     }
 
     @Override
     public String toString() {
-        return "MediaFile{" +
+        return "VideoFile{" +
                 "path='" + getPath() + '\'' +
                 ", name='" + getName() + '\'' +
                 ", size='" + getSize() +
@@ -36,10 +36,10 @@ public class MediaFile {
     @Override
     public boolean equals(Object object) {
         if (object != null && getClass() == object.getClass()) {
-            MediaFile mediaFile = (MediaFile) object;
-            return getPath().equals(mediaFile.getPath())
-                    && getName().equals(mediaFile.getName())
-                    && getSize() == mediaFile.getSize();
+            VideoFile videoFile = (VideoFile) object;
+            return getPath().equals(videoFile.getPath())
+                    && getName().equals(videoFile.getName())
+                    && getSize() == videoFile.getSize();
         } else {
             return false;
         }

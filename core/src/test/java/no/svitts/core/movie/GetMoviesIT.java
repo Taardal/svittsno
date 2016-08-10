@@ -108,10 +108,10 @@ public class GetMoviesIT extends JerseyTest {
     public void getMovies_NameSpecified_ShouldReturnMoviesWithNameLikeSpecifiedName() throws IOException {
         client().register(gsonMessageBodyReader).register(gsonMessageBodyWriter);
         List<Movie> movies = new ArrayList<>();
-        movies.add(movieBuilder.id(Id.get()).name("Iron Man").build());
-        movies.add(movieBuilder.id(Id.get()).name("Iron Man 2").build());
-        movies.add(movieBuilder.id(Id.get()).name("Iron Sky").build());
-        movies.add(movieBuilder.id(Id.get()).name("Batman").build());
+        movies.add(movieBuilder.id(Id.get()).title("Iron Man").build());
+        movies.add(movieBuilder.id(Id.get()).title("Iron Man 2").build());
+        movies.add(movieBuilder.id(Id.get()).title("Iron Sky").build());
+        movies.add(movieBuilder.id(Id.get()).title("Batman").build());
         createMovies(movies);
 
         String nameQueryParam = "Iron";
@@ -121,7 +121,7 @@ public class GetMoviesIT extends JerseyTest {
         Movie[] moviesFromResource = response.readEntity(Movie[].class);
         assertEquals(3, moviesFromResource.length);
         for (Movie movie : moviesFromResource) {
-            assertTrue(movie.getName().contains(nameQueryParam));
+            assertTrue(movie.getTitle().contains(nameQueryParam));
         }
         response.close();
     }

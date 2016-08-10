@@ -63,24 +63,24 @@ public class MovieResource {
     @GET
     @ApiOperation(
             value = "Get multiple movies. ",
-            notes = "Results can be narrowed down with the \"name\" and \"genre\" parameters. If no name or genre is specified, the server returns all movies. " +
+            notes = "Results can be narrowed down with the \"title\" and \"genre\" parameters. If no title or genre is specified, the server returns all movies. " +
                     "Number of results can be limited with the \"limit\" parameter. " +
                     "Pagination can be achieved with the \"offset\" parameter. " +
                     "Invalid parameter(s) will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s). "
     )
     public Response getMovies(
-            @QueryParam("name") @DefaultValue("") @ValidCharacters @Length(length = Movie.NAME_MAX_LENGTH) String name,
+            @QueryParam("name") @DefaultValue("") @ValidCharacters @Length(length = Movie.TITLE_MAX_LENGTH) String name,
             @QueryParam("genre") @DefaultValue("") @ValidCharacters @Length(length = Genre.MAX_LENGTH) String genre,
             @QueryParam("limit") @DefaultValue("10") @NonNegative int limit,
             @QueryParam("offset") @DefaultValue("0") @NonNegative int offset
     ) {
-        LOGGER.info("Received request to GET movie(s) with name [{}] and genre [{}] with limit [{}] and offset [{}]", name, genre, limit, offset);
+        LOGGER.info("Received request to GET movie(s) with title [{}] and genre [{}] with limit [{}] and offset [{}]", name, genre, limit, offset);
         try {
             Criteria criteria = getCriteria(name, genre, limit, offset);
             List<Movie> movies = movieService.getMultiple(criteria);
             return Response.ok(movies.toArray(), MediaType.APPLICATION_JSON).build();
         } catch (RepositoryException e) {
-            throw new InternalServerErrorException("Could not get movies with name [" + name + "] and genre [" + genre + "] with limit [" + limit + "] and offset [" + offset + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
+            throw new InternalServerErrorException("Could not get movies with title [" + name + "] and genre [" + genre + "] with limit [" + limit + "] and offset [" + offset + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
         }
     }
 

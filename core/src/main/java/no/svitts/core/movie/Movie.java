@@ -5,7 +5,7 @@ import no.svitts.core.constraint.NonNegative;
 import no.svitts.core.constraint.NotNullOrEmpty;
 import no.svitts.core.constraint.ValidCharacters;
 import no.svitts.core.date.ReleaseDate;
-import no.svitts.core.file.MediaFile;
+import no.svitts.core.file.VideoFile;
 import no.svitts.core.genre.Genre;
 import org.hibernate.annotations.Type;
 
@@ -18,29 +18,31 @@ import java.util.Set;
 public class Movie {
 
     public static final int ID_MAX_LENGTH = 255;
-    public static final int NAME_MAX_LENGTH = 255;
+    public static final int TITLE_MAX_LENGTH = 255;
     public static final int IMDB_ID_MAX_LENGTH = 255;
     public static final int TAGLINE_MAX_LENGTH = 255;
     public static final int OVERVIEW_MAX_LENGTH = 510;
+    public static final int POSTER_PATH_MAX_LENGTH = 255;
+    public static final int BACKDROP_PATH_MAX_LENGTH = 255;
 
     private String id;
-    private String name;
+    private String title;
     private String imdbId;
     private String tagline;
     private String overview;
     private int runtime;
     private ReleaseDate releaseDate;
     private Set<Genre> genres;
-    private MediaFile videoFile;
-    private MediaFile posterImageFile;
-    private MediaFile backdropImageFile;
+    private VideoFile videoFile;
+    private String posterPath;
+    private String backdropPath;
 
     private Movie() {
     }
 
-    public Movie(String id, String name, String imdbId, String tagline, String overview, int runtime, ReleaseDate releaseDate, Set<Genre> genres, MediaFile videoFile, MediaFile posterImageFile, MediaFile backdropImageFile) {
+    public Movie(String id, String title, String imdbId, String tagline, String overview, int runtime, ReleaseDate releaseDate, Set<Genre> genres, VideoFile videoFile, String posterPath, String backdropPath) {
         this.id = id;
-        this.name = name;
+        this.title = title;
         this.imdbId = imdbId;
         this.tagline = tagline;
         this.overview = overview;
@@ -48,15 +50,15 @@ public class Movie {
         this.releaseDate = releaseDate;
         this.genres = genres;
         this.videoFile = videoFile;
-        this.posterImageFile = posterImageFile;
-        this.backdropImageFile = backdropImageFile;
+        this.posterPath = posterPath;
+        this.backdropPath = backdropPath;
     }
 
     @Override
     public String toString() {
         return "Movie{" +
                 "id='" + id + '\'' +
-                ", name='" + name + '\'' +
+                ", title='" + title + '\'' +
                 ", imdbId='" + imdbId + '\'' +
                 ", tagline='" + tagline + '\'' +
                 ", overview='" + overview + '\'' +
@@ -64,8 +66,8 @@ public class Movie {
                 ", releaseDate=" + releaseDate +
                 ", genres=" + genres +
                 ", videoFile=" + videoFile +
-                ", posterImageFile=" + posterImageFile +
-                ", backdropImageFile=" + backdropImageFile +
+                ", posterPath=" + posterPath +
+                ", backdropPath=" + backdropPath +
                 '}';
     }
 
@@ -74,7 +76,7 @@ public class Movie {
         if (object != null && getClass() == object.getClass()) {
             Movie movie = (Movie) object;
             return (id == null && movie.getId() == null) || id.equals(movie.getId())
-                    && (name == null && movie.getName() == null) || name.equals(movie.getName())
+                    && (title == null && movie.getTitle() == null) || title.equals(movie.getTitle())
                     && (imdbId == null && movie.getImdbId() == null) || imdbId.equals(movie.getImdbId())
                     && (tagline == null && movie.getTagline() == null) || tagline.equals(movie.getTagline())
                     && (overview == null && movie.getOverview() == null) || overview.equals(movie.getOverview())
@@ -82,8 +84,8 @@ public class Movie {
                     && (releaseDate == null && movie.getReleaseDate() == null) || releaseDate.equals(movie.getReleaseDate())
                     && (genres == null && movie.getGenres() == null) || genres.equals(movie.genres)
                     && (videoFile == null && movie.getVideoFile() == null) || videoFile.equals(movie.getVideoFile())
-                    && (posterImageFile == null && movie.getPosterImageFile() == null) || posterImageFile.equals(movie.getPosterImageFile())
-                    && (backdropImageFile == null && movie.getBackdropImageFile() == null) || backdropImageFile.equals(movie.getBackdropImageFile());
+                    && (posterPath == null && movie.getPosterPath() == null) || posterPath.equals(movie.getPosterPath())
+                    && (backdropPath == null && movie.getBackdropPath() == null) || backdropPath.equals(movie.getBackdropPath());
         } else {
             return false;
         }
@@ -103,14 +105,14 @@ public class Movie {
 
     @NotNullOrEmpty
     @ValidCharacters
-    @Length(length = NAME_MAX_LENGTH)
-    @Column(name = "name", nullable = false, length = NAME_MAX_LENGTH)
-    public String getName() {
-        return name;
+    @Length(length = TITLE_MAX_LENGTH)
+    @Column(name = "title", nullable = false, length = TITLE_MAX_LENGTH)
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     @ValidCharacters
@@ -184,39 +186,33 @@ public class Movie {
     @AttributeOverrides({
             @AttributeOverride(name = "path", column = @Column(name = "video_file_path"))
     })
-    public MediaFile getVideoFile() {
+    public VideoFile getVideoFile() {
         return videoFile;
     }
 
-    public void setVideoFile(MediaFile videoFile) {
+    public void setVideoFile(VideoFile videoFile) {
         this.videoFile = videoFile;
     }
 
-    @Valid
-    @Embedded
+    @ValidCharacters
+    @Length(length = POSTER_PATH_MAX_LENGTH)
     @Column(name = "poster_image_file")
-    @AttributeOverrides({
-            @AttributeOverride(name = "path", column = @Column(name = "poster_image_file_path"))
-    })
-    public MediaFile getPosterImageFile() {
-        return posterImageFile;
+    public String getPosterPath() {
+        return posterPath;
     }
 
-    public void setPosterImageFile(MediaFile posterImageFile) {
-        this.posterImageFile = posterImageFile;
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
     }
 
-    @Valid
-    @Embedded
-    @Column(name = "backdrop_image_file")
-    @AttributeOverrides({
-            @AttributeOverride(name = "path", column = @Column(name = "backdrop_image_file_path"))
-    })
-    public MediaFile getBackdropImageFile() {
-        return backdropImageFile;
+    @ValidCharacters
+    @Length(length = BACKDROP_PATH_MAX_LENGTH)
+    @Column(name = "backdrop_path")
+    public String getBackdropPath() {
+        return backdropPath;
     }
 
-    public void setBackdropImageFile(MediaFile backdropImageFile) {
-        this.backdropImageFile = backdropImageFile;
+    public void setBackdropPath(String backdropPath) {
+        this.backdropPath = backdropPath;
     }
 }

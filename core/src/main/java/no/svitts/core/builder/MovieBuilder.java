@@ -1,7 +1,7 @@
 package no.svitts.core.builder;
 
 import no.svitts.core.date.ReleaseDate;
-import no.svitts.core.file.MediaFile;
+import no.svitts.core.file.VideoFile;
 import no.svitts.core.genre.Genre;
 import no.svitts.core.util.Id;
 import no.svitts.core.movie.Movie;
@@ -12,34 +12,34 @@ import java.util.Set;
 public class MovieBuilder implements Builder<Movie> {
 
     private String id;
-    private String name;
+    private String title;
     private String imdbId;
     private String tagline;
     private String overview;
     private int runtime;
     private ReleaseDate releaseDate;
     private Set<Genre> genres;
-    private MediaFile videoFile;
-    private MediaFile posterImageFile;
-    private MediaFile backdropImageFile;
+    private VideoFile videoFile;
+    private String posterImageFile;
+    private String backdropImageFile;
 
     public MovieBuilder() {
         id = Id.get();
-        name = "name";
+        title = "name";
         imdbId = "imdbId";
         tagline = "tagline";
         overview = "overview";
         runtime = 0;
         releaseDate = new ReleaseDate(2016, 1, 1);
         genres = getDefaultGenres();
-        videoFile = new MediaFile("videoFilePath");
-        posterImageFile = new MediaFile("posterImageFilePath");
-        backdropImageFile = new MediaFile("backdropImageFilePath");
+        videoFile = new VideoFile("videoFilePath");
+        posterImageFile = "posterImageFilePath";
+        backdropImageFile = "backdropImageFilePath";
     }
 
     @Override
     public Movie build() {
-        return new Movie(id, name, imdbId, tagline, overview, runtime, releaseDate, genres, videoFile, posterImageFile, backdropImageFile);
+        return new Movie(id, title, imdbId, tagline, overview, runtime, releaseDate, genres, videoFile, posterImageFile, backdropImageFile);
     }
 
     public MovieBuilder id(String id) {
@@ -47,8 +47,8 @@ public class MovieBuilder implements Builder<Movie> {
         return this;
     }
 
-    public MovieBuilder name(String name) {
-        this.name = name;
+    public MovieBuilder title(String name) {
+        this.title = name;
         return this;
     }
 
@@ -82,17 +82,17 @@ public class MovieBuilder implements Builder<Movie> {
         return this;
     }
 
-    public MovieBuilder videoFile(MediaFile videoFile) {
+    public MovieBuilder videoFile(VideoFile videoFile) {
         this.videoFile = videoFile;
         return this;
     }
 
-    public MovieBuilder posterImageFile(MediaFile posterImageFile) {
+    public MovieBuilder posterImageFile(String posterImageFile) {
         this.posterImageFile = posterImageFile;
         return this;
     }
 
-    public MovieBuilder backdropImageFile(MediaFile backdropImageFile) {
+    public MovieBuilder backdropImageFile(String backdropImageFile) {
         this.backdropImageFile = backdropImageFile;
         return this;
     }

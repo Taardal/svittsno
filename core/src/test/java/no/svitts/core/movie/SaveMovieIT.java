@@ -1,7 +1,7 @@
 package no.svitts.core.movie;
 
 import no.svitts.core.builder.MovieBuilder;
-import no.svitts.core.file.MediaFile;
+import no.svitts.core.file.VideoFile;
 import no.svitts.core.json.GsonMessageBodyWriter;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Before;
@@ -75,7 +75,7 @@ public class SaveMovieIT extends JerseyTest {
     @Test
     public void saveMovie_MovieNameIsNull_ShouldReturnBadRequestResponse() {
         client().register(gsonMessageBodyWriter);
-        Movie movie = movieBuilder.name(null).build();
+        Movie movie = movieBuilder.title(null).build();
         Entity<Movie> movieEntity = Entity.entity(movie, MediaType.APPLICATION_JSON);
 
         Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).request().post(movieEntity, Response.class);
@@ -87,7 +87,7 @@ public class SaveMovieIT extends JerseyTest {
     @Test
     public void saveMovie_MovieNameIsEmpty_ShouldReturnBadRequestResponse() {
         client().register(gsonMessageBodyWriter);
-        Movie movie = movieBuilder.name("").build();
+        Movie movie = movieBuilder.title("").build();
         Entity<Movie> movieEntity = Entity.entity(movie, MediaType.APPLICATION_JSON);
 
         Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).request().post(movieEntity, Response.class);
@@ -99,7 +99,7 @@ public class SaveMovieIT extends JerseyTest {
     @Test
     public void saveMovie_MovieNameContainsIllegalCharacters_ShouldReturnBadRequestResponse() {
         client().register(gsonMessageBodyWriter);
-        Movie movie = movieBuilder.name("#").build();
+        Movie movie = movieBuilder.title("#").build();
         Entity<Movie> movieEntity = Entity.entity(movie, MediaType.APPLICATION_JSON);
 
         Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).request().post(movieEntity, Response.class);
@@ -111,7 +111,7 @@ public class SaveMovieIT extends JerseyTest {
     @Test
     public void saveMovie_MovieNameIsTooLong_ShouldReturnBadRequestResponse() {
         client().register(gsonMessageBodyWriter);
-        Movie movie = movieBuilder.name(getRandomString(Movie.NAME_MAX_LENGTH + 1)).build();
+        Movie movie = movieBuilder.title(getRandomString(Movie.TITLE_MAX_LENGTH + 1)).build();
         Entity<Movie> movieEntity = Entity.entity(movie, MediaType.APPLICATION_JSON);
 
         Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).request().post(movieEntity, Response.class);
@@ -207,31 +207,7 @@ public class SaveMovieIT extends JerseyTest {
     @Test
     public void saveMovie_MovieVideoFilePathIsEmpty_ShouldReturnBadRequestResponse() {
         client().register(gsonMessageBodyWriter);
-        Movie movie = movieBuilder.videoFile(new MediaFile("")).build();
-        Entity<Movie> movieEntity = Entity.entity(movie, MediaType.APPLICATION_JSON);
-
-        Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).request().post(movieEntity, Response.class);
-
-        assertEquals(400, response.getStatus());
-        response.close();
-    }
-
-    @Test
-    public void saveMovie_MoviePosterImageFilePathIsEmpty_ShouldReturnBadRequestResponse() {
-        client().register(gsonMessageBodyWriter);
-        Movie movie = movieBuilder.posterImageFile(new MediaFile("")).build();
-        Entity<Movie> movieEntity = Entity.entity(movie, MediaType.APPLICATION_JSON);
-
-        Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).request().post(movieEntity, Response.class);
-
-        assertEquals(400, response.getStatus());
-        response.close();
-    }
-
-    @Test
-    public void saveMovie_MovieBackdropFilePathIsEmpty_ShouldReturnBadRequestResponse() {
-        client().register(gsonMessageBodyWriter);
-        Movie movie = movieBuilder.backdropImageFile(new MediaFile("")).build();
+        Movie movie = movieBuilder.videoFile(new VideoFile("")).build();
         Entity<Movie> movieEntity = Entity.entity(movie, MediaType.APPLICATION_JSON);
 
         Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).request().post(movieEntity, Response.class);

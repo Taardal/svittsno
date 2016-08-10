@@ -2,7 +2,7 @@ package no.svitts.core.json.deserializer;
 
 import com.google.gson.*;
 import no.svitts.core.date.ReleaseDate;
-import no.svitts.core.file.MediaFile;
+import no.svitts.core.file.VideoFile;
 import no.svitts.core.genre.Genre;
 import no.svitts.core.movie.Movie;
 import org.slf4j.Logger;
@@ -21,19 +21,19 @@ public class MovieDeserializer extends CoreDeserializer implements JsonDeseriali
         JsonObject jsonObject = jsonElement.getAsJsonObject();
         String id = getString(jsonObject.get("id"));
         String name = getString(jsonObject.get("name"));
-        String imdbId = getString(jsonObject.get("imdbId"));
+        String imdbId = getString(jsonObject.get("imdb_id"));
         String tagline = getString(jsonObject.get("tagline"));
         String overview = getString(jsonObject.get("overview"));
         int runtime = getInt(jsonObject.get("runtime"));
-        ReleaseDate releaseDate = getKeyDate(jsonObject.get("releaseDate"));
+        ReleaseDate releaseDate = getReleaseDate(jsonObject.get("release_date"));
         Set<Genre> genres = getGenres(jsonObject.get("genres"));
-        MediaFile videoFile = getMediaFile(jsonObject.get("videoFile"));
-        MediaFile posterImageFile = getMediaFile(jsonObject.get("posterImageFile"));
-        MediaFile backdropImageFile = getMediaFile(jsonObject.get("backdropImageFile"));
-        return new Movie(id, name, imdbId, tagline, overview, runtime, releaseDate, genres, videoFile, posterImageFile, backdropImageFile);
+        VideoFile videoFile = getVideoFile(jsonObject.get("video_file"));
+        String posterPath = getString(jsonObject.get("poster_path"));
+        String backdropPath = getString(jsonObject.get("backdrop_path"));
+        return new Movie(id, name, imdbId, tagline, overview, runtime, releaseDate, genres, videoFile, posterPath, backdropPath);
     }
 
-    private ReleaseDate getKeyDate(JsonElement jsonElement) {
+    private ReleaseDate getReleaseDate(JsonElement jsonElement) {
         return isNotNull(jsonElement) ? ReleaseDate.fromString(getString(jsonElement)) : null;
     }
 
@@ -43,19 +43,29 @@ public class MovieDeserializer extends CoreDeserializer implements JsonDeseriali
 
     private Set<Genre> getGenres(JsonArray jsonArray) {
         Set<Genre> genres = new HashSet<>();
-        for (JsonElement jsonElement : jsonArray) {
-            String genreString = jsonElement.getAsString().toUpperCase().replaceAll("-", "_");
-            genres.add(Genre.valueOf(genreString));
+        if (jsonArray.size() > 0) {
+            for (JsonElement jsonElement : jsonArray) {
+                String genre = getGenre(jsonElement).toUpperCase().replaceAll("-", "_").replaceAll(" ", "_");
+                genres.add(Genre.valueOf(genre));
+            }
         }
         return genres;
     }
 
-    private MediaFile getMediaFile(JsonElement jsonElement) {
-        return isNotNull(jsonElement) ? getMediaFile(jsonElement.getAsJsonObject()) : null;
+    private String getGenre(JsonElement jsonElement) {
+        if (jsonElement.isJsonObject()) {
+            return jsonElement.getAsJsonObject().get("name").getAsString();
+        } else {
+            return jsonElement.getAsString();
+        }
     }
 
-    private MediaFile getMediaFile(JsonObject jsonObject) {
-        return isNotNull(jsonObject.get("path")) ? new MediaFile(jsonObject.get("path").getAsString()) : null;
+    private VideoFile getVideoFile(JsonElement jsonElement) {
+        return isNotNull(jsonElement) ? getVideoFile(jsonElement.getAsJsonObject()) : null;
+    }
+
+    private VideoFile getVideoFile(JsonObject jsonObject) {
+        return isNotNull(jsonObject.get("path")) ? new VideoFile(jsonObject.get("path").getAsString()) : null;
     }
 
 }
