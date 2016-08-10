@@ -3,7 +3,7 @@ Webapp for displaying information about your movies with a small java applicatio
 
 ## Modules
 There are two modules in the project: ```core``` and ```player```. 
-The ```core```-module is the heart of the application, i.e the entire backend (REST API, database etc...). 
+The ```core```-module is the web application itself.
 The ```player```-module is a very lightweight standalone java-app that runs on the client machine. This app runs a servlet that accepts a path to a video file. When the servlet receives a path to a video file it will open it in a media player of choice and play it.
 
 ## Requirements
