@@ -14,11 +14,11 @@ The ```player```-module is a very lightweight standalone java-app that runs on t
 Recommend using ```apt-get``` (Linux) or ```Chocolatey``` (Windows) for installation by command-line.
 
 ## Getting started (Core)
-1) Check out sources from GitHub: ```git clone https://github.com/Taardal/svittsno.git```
-2) Change folder to ```svittsno/core```
-3) Run ```mvn clean verify``` to build the module and run unit and integration tests.
-4) Run the application with ```mvn clean jetty:run```.
-5) The application runs on ```localhost:8080```. API-docs (Swagger) can be found at ```localhost:8080/swagger```
+1. Check out sources from GitHub: ```git clone https://github.com/Taardal/svittsno.git```
+2. Change folder to ```svittsno/core```
+3. Run ```mvn clean verify``` to build the module and run unit and integration tests.
+4. Run the application with ```mvn clean jetty:run```.
+5. The application runs on ```localhost:8080```. API-docs (Swagger) can be found at ```localhost:8080/swagger```
 
 ## Getting started (Player)
 * Soon tm...
