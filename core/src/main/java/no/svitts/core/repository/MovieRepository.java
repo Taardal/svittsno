@@ -42,7 +42,7 @@ public class MovieRepository extends CoreRepository<Movie> {
     public List<Movie> getMultiple(Criteria criteria) {
         LOGGER.info("Getting multiple movies from database by criteria [{}].", criteria.toString());
         try {
-            CriteriaBuilder criteriaBuilder = getCriteriaBuilder();
+            CriteriaBuilder criteriaBuilder = getCurrentSession().getCriteriaBuilder();
             CriteriaQuery<Movie> movieCriteriaQuery = getMultipleMoviesCriteriaQuery(criteria, criteriaBuilder);
             return getCurrentSession().createQuery(movieCriteriaQuery).setMaxResults(criteria.getLimit()).setFirstResult(criteria.getOffset()).getResultList();
         } catch (HibernateException | IllegalStateException e) {
@@ -93,19 +93,21 @@ public class MovieRepository extends CoreRepository<Movie> {
     }
 
     private CriteriaQuery<Movie> getSelectMoviesBySimilarTitleCriteriaQuery(String query) {
-        CriteriaQuery<Movie> movieCriteriaQuery = getCriteriaBuilder().createQuery(Movie.class);
+        CriteriaBuilder criteriaBuilder = getCurrentSession().getCriteriaBuilder();
+        CriteriaQuery<Movie> movieCriteriaQuery = criteriaBuilder.createQuery(Movie.class);
         Root<Movie> movieRoot = movieCriteriaQuery.from(Movie.class);
-        return movieCriteriaQuery.select(movieRoot).where(getCriteriaBuilder().like(movieRoot.get("title"), "%" + query + "%"));
+        return movieCriteriaQuery.select(movieRoot).where(criteriaBuilder.like(movieRoot.get("title"), "%" + query + "%"));
     }
 
     private CriteriaQuery<Movie> getSelectMoviesByGenreCriteriaQuery(String genre) {
-        CriteriaQuery<Movie> movieCriteriaQuery = getCriteriaBuilder().createQuery(Movie.class);
+        CriteriaBuilder criteriaBuilder = getCurrentSession().getCriteriaBuilder();
+        CriteriaQuery<Movie> movieCriteriaQuery = criteriaBuilder.createQuery(Movie.class);
         Root<Movie> movieRoot = movieCriteriaQuery.from(Movie.class);
-        return movieCriteriaQuery.select(movieRoot).where(getCriteriaBuilder().isMember(Genre.valueOf(genre.toUpperCase()), movieRoot.get("genres")));
+        return movieCriteriaQuery.select(movieRoot).where(criteriaBuilder.isMember(Genre.valueOf(genre.toUpperCase()), movieRoot.get("genres")));
     }
 
     private CriteriaQuery<Movie> getMultipleMoviesCriteriaQuery(Criteria criteria, CriteriaBuilder criteriaBuilder) {
-        CriteriaQuery<Movie> movieCriteriaQuery = getCriteriaBuilder().createQuery(Movie.class);
+        CriteriaQuery<Movie> movieCriteriaQuery = criteriaBuilder.createQuery(Movie.class);
         Root<Movie> movieRoot = movieCriteriaQuery.from(Movie.class);
         movieCriteriaQuery.select(movieRoot);
 
@@ -115,14 +117,14 @@ public class MovieRepository extends CoreRepository<Movie> {
         Predicate genreIsMemberOfGenres = null;
 
         if (isNotNullOrEmpty(name) && isNotNullOrEmpty(genre)) {
-            titleLikeTitle = getCriteriaBuilder().like(movieRoot.get("title"), "%" + name + "%");
-            genreIsMemberOfGenres = getCriteriaBuilder().isMember(Genre.valueOf(genre.toUpperCase()), movieRoot.get("genres"));
-            movieCriteriaQuery.where(getCriteriaBuilder().and(titleLikeTitle, genreIsMemberOfGenres));
+            titleLikeTitle = criteriaBuilder.like(movieRoot.get("title"), "%" + name + "%");
+            genreIsMemberOfGenres = criteriaBuilder.isMember(Genre.valueOf(genre.toUpperCase()), movieRoot.get("genres"));
+            movieCriteriaQuery.where(criteriaBuilder.and(titleLikeTitle, genreIsMemberOfGenres));
         } else if (isNotNullOrEmpty(name)) {
-            titleLikeTitle = getCriteriaBuilder().like(movieRoot.get("title"), "%" + name + "%");
+            titleLikeTitle = criteriaBuilder.like(movieRoot.get("title"), "%" + name + "%");
             movieCriteriaQuery.where(titleLikeTitle);
         } else if (isNotNullOrEmpty(genre)) {
-            genreIsMemberOfGenres = getCriteriaBuilder().isMember(Genre.valueOf(genre.toUpperCase()), movieRoot.get("genres"));
+            genreIsMemberOfGenres = criteriaBuilder.isMember(Genre.valueOf(genre.toUpperCase()), movieRoot.get("genres"));
             movieCriteriaQuery.where(genreIsMemberOfGenres);
         }
 

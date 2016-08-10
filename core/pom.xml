@@ -129,6 +129,7 @@
     </dependencies>
 
     <build>
+        <finalName>svitts</finalName>
         <resources>
             <resource>
                 <filtering>true</filtering>
@@ -227,9 +228,6 @@
             <properties>
                 <profile.id>test</profile.id>
             </properties>
-            <build>
-                <finalName>svittsno</finalName>
-            </build>
         </profile>
     </profiles>
 

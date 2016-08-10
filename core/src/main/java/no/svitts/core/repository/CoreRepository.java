@@ -7,8 +7,6 @@ import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.criteria.CriteriaBuilder;
-
 abstract class CoreRepository<T> implements Repository<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CoreRepository.class);
@@ -28,7 +26,4 @@ abstract class CoreRepository<T> implements Repository<T> {
         }
     }
 
-    CriteriaBuilder getCriteriaBuilder() {
-        return getCurrentSession().getCriteriaBuilder();
-    }
 }
