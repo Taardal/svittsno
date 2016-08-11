@@ -6,7 +6,6 @@ import no.svitts.core.exception.ServiceException;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.repository.Repository;
 import no.svitts.core.transaction.UnitOfWork;
-import no.svitts.core.transaction.UnitOfWorkWithoutResult;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -40,28 +39,6 @@ abstract class CoreService<T> implements Service<Movie> {
             LOGGER.info("Committing transaction.");
             transaction.commit();
             return result;
-        } catch (RepositoryException | IllegalStateException | RollbackException e) {
-            transaction.rollback();
-            LOGGER.error("Could not make transcation.", e);
-            throw new ServiceException(e);
-        } finally {
-            if (currentSession.isOpen()) {
-                currentSession.close();
-            }
-        }
-    }
-
-    void transactionWithoutResult(UnitOfWorkWithoutResult<T> unitOfWorkWithoutResult) {
-        LOGGER.info("Making transaction without result.");
-        Session currentSession = sessionFactory.getCurrentSession();
-        Transaction transaction = currentSession.beginTransaction();
-        try {
-            LOGGER.info("Executing unit of work.");
-            unitOfWorkWithoutResult.execute(repository);
-            LOGGER.info("Flushing current session.");
-            currentSession.flush();
-            LOGGER.info("Committing transaction.");
-            transaction.commit();
         } catch (RepositoryException | IllegalStateException | RollbackException e) {
             transaction.rollback();
             LOGGER.error("Could not make transcation.", e);

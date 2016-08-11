@@ -40,16 +40,13 @@ public class MovieService extends CoreService<Movie> {
     @Override
     public void updateSingle(Movie movie) {
         LOGGER.info("Updating single movie [{}]", movie.toString());
-        transactionWithoutResult(repository -> repository.updateSingle(movie));
+        transaction(repository -> repository.updateSingle(movie));
     }
 
     @Override
     public void deleteSingle(String id) {
         LOGGER.info("Deleting single movie with id [{}]", id);
-        transactionWithoutResult(repository -> {
-            Movie movie = repository.getSingle(id);
-            repository.deleteSingle(movie);
-        });
+        transaction(repository -> repository.deleteSingle(repository.getSingle(id)));
     }
 
 }

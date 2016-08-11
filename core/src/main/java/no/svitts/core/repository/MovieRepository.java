@@ -66,10 +66,11 @@ public class MovieRepository extends CoreRepository<Movie> {
     }
 
     @Override
-    public void updateSingle(Movie movie) {
+    public Void updateSingle(Movie movie) {
         LOGGER.info("Updating movie [{}] in database.", movie.toString());
         try {
             getCurrentSession().update(movie);
+            return null;
         } catch (HibernateException e) {
             LOGGER.error("Could not update movie [{}] in database.", movie.toString(), e);
             throw new RepositoryException(e);
@@ -77,10 +78,11 @@ public class MovieRepository extends CoreRepository<Movie> {
     }
 
     @Override
-    public void deleteSingle(Movie movie) {
+    public Void deleteSingle(Movie movie) {
         LOGGER.info("Deleting movie [{}] from database.", movie.toString());
         try {
             getCurrentSession().delete(movie);
+            return null;
         } catch (HibernateException e) {
             LOGGER.error("Could not delete movie [{}] from database.", movie.toString(), e);
             throw new RepositoryException(e);

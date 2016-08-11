@@ -4,7 +4,6 @@ import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.exception.ServiceException;
 import no.svitts.core.repository.Repository;
 import no.svitts.core.transaction.UnitOfWork;
-import no.svitts.core.transaction.UnitOfWorkWithoutResult;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -36,7 +35,7 @@ public class CoreServiceTest {
     private UnitOfWork<Object, Object> unitOfWorkMock;
 
     @Mock
-    private UnitOfWorkWithoutResult<Object> unitOfWorkWithoutResultMock;
+    private UnitOfWork<Object, Void> unitOfWorkWithoutResultMock;
 
     @Before
     public void setUp() {
@@ -61,9 +60,8 @@ public class CoreServiceTest {
     }
 
     @Test(expected = ServiceException.class)
-    public void transaction_ThrowsRepositoryException_ShouldRollbackTransactionAndThrowTransactionException() {
-        RepositoryException repositoryException = new RepositoryException();
-        when(unitOfWorkMock.execute(repositoryMock)).thenThrow(repositoryException);
+    public void transaction_ThrowsRepositoryException_ShouldRollbackTransactionAndThrowServiceException() {
+        when(unitOfWorkMock.execute(repositoryMock)).thenThrow(new RepositoryException());
         try {
             coreServiceMock.transaction(unitOfWorkMock);
         } catch (ServiceException e) {
@@ -73,8 +71,8 @@ public class CoreServiceTest {
     }
 
     @Test
-    public void transactionWithoutResult_ValidUnitOfWorkWithoutResult_ShouldExecuteUnitOfWorkWithoutResult() {
-        coreServiceMock.transactionWithoutResult(unitOfWorkWithoutResultMock);
+    public void transactionWithoutResult_ValidUnitOfWorkWithoutResult_ShouldExecuteUnitOfWork() {
+        coreServiceMock.transaction(unitOfWorkWithoutResultMock);
         verify(sessionFactoryMock, times(1)).getCurrentSession();
         verify(sessionMock, times(1)).beginTransaction();
         verify(transactionMock, times(1)).commit();
@@ -82,10 +80,10 @@ public class CoreServiceTest {
     }
 
     @Test(expected = ServiceException.class)
-    public void transactionWithoutResult_ThrowsRepositoryException_ShouldRollbackTransactionAndThrowTransactionException() {
-        doThrow(new RepositoryException()).when(unitOfWorkWithoutResultMock).execute(repositoryMock);
+    public void transactionWithoutResult_ThrowsRepositoryException_ShouldRollbackTransactionAndThrowServiceException() {
+        when(unitOfWorkWithoutResultMock.execute(repositoryMock)).thenThrow(new RepositoryException());
         try {
-            coreServiceMock.transactionWithoutResult(unitOfWorkWithoutResultMock);
+            coreServiceMock.transaction(unitOfWorkWithoutResultMock);
         } catch (ServiceException e) {
             verify(transactionMock, times(1)).rollback();
             throw e;
