@@ -34,6 +34,10 @@ public class ReleaseDate {
         dateTime = new DateTime(date);
     }
 
+    public ReleaseDate(long time) {
+        dateTime = new DateTime(time);
+    }
+
     private ReleaseDate(DateTime dateTime) {
         this.dateTime = dateTime;
     }

@@ -20,21 +20,27 @@ public class MovieDeserializer extends Deserializer implements JsonDeserializer<
     public Movie deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject jsonObject = jsonElement.getAsJsonObject();
         String id = getString(jsonObject.get("id"));
-        String name = getString(jsonObject.get("name"));
-        String imdbId = getString(jsonObject.get("imdb_id"));
+        String name = getString(jsonObject.get("title"));
+        String imdbId = getString(jsonObject.get("imdbId"));
         String tagline = getString(jsonObject.get("tagline"));
         String overview = getString(jsonObject.get("overview"));
         int runtime = getInt(jsonObject.get("runtime"));
-        ReleaseDate releaseDate = getReleaseDate(jsonObject.get("release_date"));
+        ReleaseDate releaseDate = getReleaseDate(jsonObject.get("releaseDate"));
         Set<Genre> genres = getGenres(jsonObject.get("genres"));
-        VideoFile videoFile = getVideoFile(jsonObject.get("video_file"));
-        String posterPath = getString(jsonObject.get("poster_path"));
-        String backdropPath = getString(jsonObject.get("backdrop_path"));
+        VideoFile videoFile = getVideoFile(jsonObject.get("videoFile"));
+        String posterPath = getString(jsonObject.get("posterPath"));
+        String backdropPath = getString(jsonObject.get("backdropPath"));
         return new Movie(id, name, imdbId, tagline, overview, runtime, releaseDate, genres, videoFile, posterPath, backdropPath);
     }
 
     private ReleaseDate getReleaseDate(JsonElement jsonElement) {
-        return isNotNull(jsonElement) ? ReleaseDate.fromString(getString(jsonElement)) : null;
+        if (isNotNull(jsonElement)) {
+            JsonElement timeJsonElement = jsonElement.getAsJsonObject().get("time");
+            if (isNotNull(timeJsonElement)) {
+                return new ReleaseDate(getLong(timeJsonElement));
+            }
+        }
+        return null;
     }
 
     private Set<Genre> getGenres(JsonElement jsonElement) {

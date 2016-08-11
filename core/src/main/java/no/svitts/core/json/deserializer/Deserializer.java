@@ -12,6 +12,9 @@ abstract class Deserializer {
         return isNotNull(jsonElement) ? jsonElement.getAsInt() : 0;
     }
 
+    long getLong(JsonElement jsonElement) {
+        return isNotNull(jsonElement) ? jsonElement.getAsLong() : 0;
+    }
 
     boolean isNotNull(JsonElement jsonElement) {
         return jsonElement != null && !jsonElement.isJsonNull();

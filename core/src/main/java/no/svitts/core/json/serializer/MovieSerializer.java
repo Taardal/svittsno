@@ -20,30 +20,32 @@ public class MovieSerializer extends Serializer implements JsonSerializer<Movie>
         JsonObject jsonObject = new JsonObject();
         if (movie != null) {
             jsonObject.add("id", getJsonPrimitive(movie.getId()));
-            jsonObject.add("name", getJsonPrimitive(movie.getTitle()));
-            jsonObject.add("imdb_id", getJsonPrimitive(movie.getImdbId()));
+            jsonObject.add("title", getJsonPrimitive(movie.getTitle()));
+            jsonObject.add("imdbId", getJsonPrimitive(movie.getImdbId()));
             jsonObject.add("tagline", getJsonPrimitive(movie.getTagline()));
             jsonObject.add("overview", getJsonPrimitive(movie.getOverview()));
             jsonObject.add("runtime", getJsonPrimitive(movie.getRuntime()));
-            jsonObject.add("release_date", getReleaseDateJsonPrimitive(movie.getReleaseDate()));
+            jsonObject.add("releaseDate", getReleaseDateAsJsonPrimitive(movie.getReleaseDate()));
             jsonObject.add("genres", getGenresAsJsonArray(movie.getGenres()));
-            jsonObject.add("video_file", getFileAsJsonObject(movie.getVideoFile()));
-            jsonObject.add("poster_path", getJsonPrimitive(movie.getPosterPath()));
-            jsonObject.add("backdrop_path", getJsonPrimitive(movie.getBackdropPath()));
+            jsonObject.add("videoFile", getVideoFileAsJsonObject(movie.getVideoFile()));
+            jsonObject.add("posterPath", getJsonPrimitive(movie.getPosterPath()));
+            jsonObject.add("backdropPath", getJsonPrimitive(movie.getBackdropPath()));
         }
         return jsonObject;
     }
 
-    private JsonPrimitive getReleaseDateJsonPrimitive(ReleaseDate releaseDate) {
+    private JsonObject getReleaseDateAsJsonPrimitive(ReleaseDate releaseDate) {
         if (releaseDate != null) {
-            return new JsonPrimitive(releaseDate.toString());
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.add("time", getJsonPrimitive(releaseDate.getTime()));
+            return jsonObject;
         } else {
             LOGGER.warn("Could not serialize release date because it was null");
             return null;
         }
     }
 
-    private JsonElement getFileAsJsonObject(VideoFile videoFile) {
+    private JsonElement getVideoFileAsJsonObject(VideoFile videoFile) {
         if (videoFile != null) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.add("name", getJsonPrimitive(videoFile.getName()));
