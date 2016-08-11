@@ -209,7 +209,7 @@
                             <scanIntervalSeconds>0</scanIntervalSeconds>
                             <webAppSourceDirectory>${web-app.directory}</webAppSourceDirectory>
                             <webAppConfig>
-                                <contextPath>/</contextPath>
+                                <contextPath>/svitts</contextPath>
                                 <defaultsDescriptor>${resources.directory}/webdefault.xml</defaultsDescriptor>
                                 <webInfIncludeJarPattern>.*/core-[^/]*\.jar$</webInfIncludeJarPattern>
                             </webAppConfig>

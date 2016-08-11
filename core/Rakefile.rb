@@ -16,8 +16,14 @@ require 'net/scp'
 require 'date'
 
 namespace :default do
-  puts "rake deploy:test"
-  puts "rake deploy:svitts"
+  puts ''
+  puts '-------------------------------------------------------'
+  puts ' AVAILABLE RAKE TASKS'
+  puts '-------------------------------------------------------'
+  puts ' - rake deploy:test'
+  puts ' - rake deploy:svitts'
+  puts '-------------------------------------------------------'
+  puts ''
 end
 
 today = Date.today
@@ -29,6 +35,9 @@ server_address = ''
 server_user = ''
 server_tomcat_service = ''
 server_tomcat_port = ''
+server_tomcat_catalina_base = ''
+server_tomcat_catalina_home = ''
+server_tomcat_catalina_script = ''
 server_tomcat_webapps_path = ''
 server_database_host = ''
 server_database_user = ''
@@ -39,19 +48,33 @@ test_server_user = 'taardal'
 test_server_address = '172.16.42.19'
 test_tomcat_service = 'tomcat8'
 test_tomcat_port = '8080'
-test_tomcat_webapps_path = '/var/lib/tomcat8/webapps'
+test_tomcat_catalina_base = '/var/lib/tomcat8'
+test_tomcat_catalina_home = '/usr/share/tomcat8'
+test_tomcat_webapps_path = '/usr/share/tomcat8'
 test_database_host = ''
 test_database_user = ''
 test_database_password = ''
 
+svitts_build_profile = ''
+svitts_server_user = ''
+svitts_server_address = ''
+svitts_tomcat_service = ''
+svitts_tomcat_port = ''
+svitts_tomcat_catalina_base = ''
+svitts_tomcat_catalina_home = ''
+svitts_tomcat_webapps_path = ''
+svitts_database_host = ''
+svitts_database_user = ''
+svitts_database_password = ''
+
 namespace :deploy do
   # task :test => [:set_test_as_server, :build, :cleanup_server, :deploy, :start_server, :ping] do
   task :test => [:set_test_as_server, :build, :cleanup_server, :deploy, :start_server] do
-    puts "Done"
+    puts 'Done'
   end
   # task :svitts => [:set_svitts_as_server, :build, :cleanup_server, :deploy, :start_server, :ping] do
   task :svitts => [:set_svitts_as_server, :build] do
-    puts "Done"
+    puts 'Done'
   end
 end
 
@@ -59,8 +82,12 @@ task :set_test_as_server do
   build_profile = test_build_profile
   server_address = test_server_address
   server_user = test_server_user
-  server_tomcat_webapps_path = test_tomcat_webapps_path
+  server_tomcat_webapps_path = test_tomcat_catalina_base
   server_tomcat_service = test_tomcat_service
+  server_tomcat_catalina_base = test_tomcat_catalina_base
+  server_tomcat_catalina_home = test_tomcat_catalina_home
+  server_tomcat_catalina_script = test_tomcat_catalina_home + '/bin/catalina.sh'
+  server_tomcat_webapps_path = test_tomcat_catalina_base + '/webapps'
   server_tomcat_port = test_tomcat_port
   server_database_host = test_database_host
   server_database_user = test_database_user
@@ -71,7 +98,7 @@ task :set_svitts_as_server do
   build_profile = test_build_profile
   server_address = test_server_address
   server_user = test_server_user
-  server_tomcat_webapps_path = test_tomcat_webapps_path
+  server_tomcat_webapps_path = test_tomcat_catalina_base
   server_tomcat_service = test_tomcat_service
   server_tomcat_port = test_tomcat_port
   server_database_host = test_database_host
@@ -81,8 +108,10 @@ end
 
 task :build do
   puts "Building SvittsNO (core) with profile #{build_profile} using Maven..."
+  puts ''
   puts %x{mvn clean package -P test}
-  raise "SvittsNO (core) build failed!" if $?.exitstatus != 0
+  puts ''
+  raise 'SvittsNO (core) build failed!' if $?.exitstatus != 0
 end
 
 task :cleanup_server do
@@ -92,9 +121,9 @@ task :cleanup_server do
       "#{server_user}",
       :auth_methods => ['publickey']
   ) do |ssh|
-    ssh.exec!("#{server_tomcat_service} stop")
+    ssh.exec!("#{server_tomcat_catalina_script} stop")
     ssh.exec!("rm -rf #{server_tomcat_webapps_path}/svitts.war")
-    ssh.exec!("rm -rf #{server_tomcat_webapps_path}/svitts/")
+    ssh.exec!("rm -rf #{server_tomcat_webapps_path}/svitts")
   end
 end
 
@@ -123,7 +152,7 @@ task :start_server do
       "#{server_user}",
       :auth_methods => ['publickey']
   ) do |ssh|
-    ssh.exec!("#{server_tomcat_service} start")
+    ssh.exec!("#{server_tomcat_catalina_script} start")
   end
 end
 

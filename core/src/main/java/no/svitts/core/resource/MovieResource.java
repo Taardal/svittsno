@@ -46,7 +46,7 @@ public class MovieResource {
     @GET
     @Path("{id}")
     @ApiOperation(
-            value = "Get a single movie by its ID. ",
+            value = "Get a single movie by its ID",
             notes = "Requesting a movie that does not exist will generate a \"not found\" response. " +
                     "An invalid ID will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s). "
     )
@@ -63,7 +63,7 @@ public class MovieResource {
     @GET
     @Path("genres/{genre}")
     @ApiOperation(
-            value = "Get movies by genre. ",
+            value = "Get movies by genre",
             notes = "If no movies are found in the database, an empty list will be returned. " +
                     "An invalid genre will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s). "
     )
@@ -85,7 +85,7 @@ public class MovieResource {
     @GET
     @Path("search")
     @ApiOperation(
-            value = "Search movies by name. ",
+            value = "Search movies by name",
             notes = "Searches the database for movie(s) with similar name to the query. " +
                     "If no movies are found in the database, an empty list will be returned. " +
                     "A query that is empty or contains illegal characters will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s). "
@@ -107,7 +107,7 @@ public class MovieResource {
 
     @POST
     @ApiOperation(
-            value = "Create a single movie. ",
+            value = "Create a single movie",
             notes = "Invalid JSON will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s). "
     )
     public Response saveMovie(@Valid Movie movie) {
@@ -123,7 +123,7 @@ public class MovieResource {
     @PUT
     @Path("{id}")
     @ApiOperation(
-            value = "Update a single movie. ",
+            value = "Update a single movie",
             notes = "Invalid JSON will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s). "
     )
     public Response updateMovie(@PathParam("id") @ValidCharacters @Length(length = Movie.ID_MAX_LENGTH) String id, @Valid Movie movie) {
@@ -139,7 +139,7 @@ public class MovieResource {
     @DELETE
     @Path("{id}")
     @ApiOperation(
-            value = "Delete a single movie by its ID. ",
+            value = "Delete a single movie by its ID",
             notes = "Invalid ID will generate a \"bad request\"-response with a list of error messages to provide more details about the problem(s). "
     )
     public Response deleteMovie(@PathParam("id") @ValidCharacters @Length(length = Movie.ID_MAX_LENGTH) String id) {
