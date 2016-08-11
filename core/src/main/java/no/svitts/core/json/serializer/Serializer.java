@@ -2,7 +2,7 @@ package no.svitts.core.json.serializer;
 
 import com.google.gson.JsonPrimitive;
 
-abstract class CoreSerializer {
+abstract class Serializer {
 
     JsonPrimitive getJsonPrimitive(String string) {
         return string != null ? new JsonPrimitive(string) : null;

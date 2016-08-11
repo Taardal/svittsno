@@ -12,7 +12,7 @@ import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
-public class MovieDeserializer extends CoreDeserializer implements JsonDeserializer<Movie> {
+public class MovieDeserializer extends Deserializer implements JsonDeserializer<Movie> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieDeserializer.class);
 
@@ -45,19 +45,11 @@ public class MovieDeserializer extends CoreDeserializer implements JsonDeseriali
         Set<Genre> genres = new HashSet<>();
         if (jsonArray.size() > 0) {
             for (JsonElement jsonElement : jsonArray) {
-                String genre = getGenre(jsonElement).toUpperCase().replaceAll("-", "_").replaceAll(" ", "_");
+                String genre = jsonElement.getAsString().toUpperCase().replaceAll("-", "_").replaceAll(" ", "_");
                 genres.add(Genre.valueOf(genre));
             }
         }
         return genres;
-    }
-
-    private String getGenre(JsonElement jsonElement) {
-        if (jsonElement.isJsonObject()) {
-            return jsonElement.getAsJsonObject().get("name").getAsString();
-        } else {
-            return jsonElement.getAsString();
-        }
     }
 
     private VideoFile getVideoFile(JsonElement jsonElement) {

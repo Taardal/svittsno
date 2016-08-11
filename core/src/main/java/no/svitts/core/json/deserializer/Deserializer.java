@@ -2,7 +2,7 @@ package no.svitts.core.json.deserializer;
 
 import com.google.gson.JsonElement;
 
-abstract class CoreDeserializer {
+abstract class Deserializer {
 
     String getString(JsonElement jsonElement) {
         return isNotNull(jsonElement) && !jsonElement.getAsString().equals("null") ? jsonElement.getAsString() : null;

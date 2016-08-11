@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-public class MovieSerializer extends CoreSerializer implements JsonSerializer<Movie> {
+public class MovieSerializer extends Serializer implements JsonSerializer<Movie> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieSerializer.class);
 

@@ -8,7 +8,7 @@ import no.svitts.core.movie.Movie;
 
 import java.lang.reflect.Type;
 
-public class MoviesSerializer implements JsonSerializer<Movie[]> {
+public class MoviesSerializer extends Serializer implements JsonSerializer<Movie[]> {
 
     @Override
     public JsonElement serialize(Movie[] movies, Type typeOfSrc, JsonSerializationContext jsonSerializationContext) {
