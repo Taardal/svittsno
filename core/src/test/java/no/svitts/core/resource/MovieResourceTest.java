@@ -61,20 +61,20 @@ public class MovieResourceTest extends JerseyTest {
     @Test
     public void getMovie_ValidRequest_ShouldReturnMovie() {
         Movie movie = movieBuilder.build();
-        when(movieServiceMock.getSingle(movie.getId())).thenReturn(movie);
+        when(movieServiceMock.get(movie.getId())).thenReturn(movie);
 
         Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE).path(movie.getId()).request().get();
 
         assertEquals(200, response.getStatus());
         assertEquals(movie, response.readEntity(Movie.class));
-        verify(movieServiceMock, times(1)).getSingle(movie.getId());
+        verify(movieServiceMock, times(1)).get(movie.getId());
         response.close();
     }
 
     @Test
     public void getMovie_MovieNotFound_ShouldReturnOkResponseWithNullEntity() {
         String id = Id.get();
-        when(movieServiceMock.getSingle(id)).thenReturn(null);
+        when(movieServiceMock.get(id)).thenReturn(null);
         client().register(gsonMessageBodyReader);
 
         Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path(id).request().get();
@@ -82,19 +82,19 @@ public class MovieResourceTest extends JerseyTest {
 
         assertEquals(200, response.getStatus());
         assertNull(movie);
-        verify(movieServiceMock, times(1)).getSingle(id);
+        verify(movieServiceMock, times(1)).get(id);
         response.close();
     }
 
     @Test
     public void getMovie_ThrowsServiceException_ShouldReturnInternalServerErrorResponse() {
         String id = Id.get();
-        when(movieServiceMock.getSingle(anyString())).thenThrow(new ServiceException());
+        when(movieServiceMock.get(anyString())).thenThrow(new ServiceException());
 
         Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path(id).request().get();
 
         assertEquals(500, response.getStatus());
-        verify(movieServiceMock, times(1)).getSingle(id);
+        verify(movieServiceMock, times(1)).get(id);
         response.close();
     }
 
@@ -103,7 +103,7 @@ public class MovieResourceTest extends JerseyTest {
         List<Movie> movies = new ArrayList<>();
         movies.add(movieBuilder.build());
         movies.add(movieBuilder.build());
-        when(movieServiceMock.getMultiple(any(MovieSearch.class))).thenReturn(movies);
+        when(movieServiceMock.search(any(MovieSearch.class))).thenReturn(movies);
 
         Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE).path("genres").path(Genre.FILM_NOIR.toString()).request().get();
         Movie[] moviesFromResponse = response.readEntity(Movie[].class);
@@ -111,18 +111,18 @@ public class MovieResourceTest extends JerseyTest {
         assertEquals(200, response.getStatus());
         assertEquals(movies.size(), moviesFromResponse.length);
         assertArrayEquals(movies.toArray(), moviesFromResponse);
-        verify(movieServiceMock, times(1)).getMultiple(any(MovieSearch.class));
+        verify(movieServiceMock, times(1)).search(any(MovieSearch.class));
         response.close();
     }
 
     @Test
     public void getMoviesByGenre_ThrowsServiceException_ShouldReturnInternalServerErrorResponse() {
-        when(movieServiceMock.getMultiple(any(MovieSearch.class))).thenThrow(new ServiceException());
+        when(movieServiceMock.search(any(MovieSearch.class))).thenThrow(new ServiceException());
 
         Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE).path("genres").path(Genre.FILM_NOIR.toString()).request().get();
 
         assertEquals(500, response.getStatus());
-        verify(movieServiceMock, times(1)).getMultiple(any(MovieSearch.class));
+        verify(movieServiceMock, times(1)).search(any(MovieSearch.class));
         response.close();
     }
 
@@ -131,7 +131,7 @@ public class MovieResourceTest extends JerseyTest {
         List<Movie> movies = new ArrayList<>();
         movies.add(movieBuilder.build());
         movies.add(movieBuilder.build());
-        when(movieServiceMock.getMultiple(any(MovieSearch.class))).thenReturn(movies);
+        when(movieServiceMock.search(any(MovieSearch.class))).thenReturn(movies);
 
         Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE).path("search").queryParam("q", "query").request().get();
         Movie[] moviesFromResponse = response.readEntity(Movie[].class);
@@ -139,44 +139,44 @@ public class MovieResourceTest extends JerseyTest {
         assertEquals(200, response.getStatus());
         assertEquals(movies.size(), moviesFromResponse.length);
         assertArrayEquals(movies.toArray(), moviesFromResponse);
-        verify(movieServiceMock, times(1)).getMultiple(any(Search.class));
+        verify(movieServiceMock, times(1)).search(any(Search.class));
         response.close();
     }
 
     @Test
     public void search_ThrowsServiceException_ShouldReturnInternalServerErrorResponse() {
-        when(movieServiceMock.getMultiple(any(MovieSearch.class))).thenThrow(new ServiceException());
+        when(movieServiceMock.search(any(MovieSearch.class))).thenThrow(new ServiceException());
 
         Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE).path("search").queryParam("q", "query").request().get();
 
         assertEquals(500, response.getStatus());
-        verify(movieServiceMock, times(1)).getMultiple(any(MovieSearch.class));
+        verify(movieServiceMock, times(1)).search(any(MovieSearch.class));
         response.close();
     }
 
     @Test
     public void saveMovie_ValidMovie_ShouldReturnCreatedResponse() {
         Movie movie = movieBuilder.build();
-        when(movieServiceMock.saveSingle(movie)).thenReturn(movie.getId());
+        when(movieServiceMock.save(movie)).thenReturn(movie.getId());
         Entity<Movie> movieEntity = Entity.entity(movie, MediaType.APPLICATION_JSON);
 
         Response response = client().register(gsonMessageBodyWriter).target(getBaseUri()).path(MOVIE_RESOURCE).request().post(movieEntity, Response.class);
 
         assertEquals(201, response.getStatus());
-        verify(movieServiceMock, times(1)).saveSingle(any(Movie.class));
+        verify(movieServiceMock, times(1)).save(any(Movie.class));
         response.close();
     }
 
     @Test
     public void saveMovie_ThrowsServiceException_ShouldReturnInternalServerErrorResponse() {
         Movie movie = movieBuilder.build();
-        when(movieServiceMock.saveSingle(movie)).thenThrow(new ServiceException());
+        when(movieServiceMock.save(movie)).thenThrow(new ServiceException());
         Entity<Movie> movieEntity = Entity.entity(movie, MediaType.APPLICATION_JSON);
 
         Response response = client().register(gsonMessageBodyWriter).target(getBaseUri()).path(MOVIE_RESOURCE).request().post(movieEntity, Response.class);
 
         assertEquals(500, response.getStatus());
-        verify(movieServiceMock, times(1)).saveSingle(movie);
+        verify(movieServiceMock, times(1)).save(movie);
         response.close();
     }
 
@@ -187,19 +187,19 @@ public class MovieResourceTest extends JerseyTest {
         Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path(movie.getId()).request().delete();
 
         assertEquals(200, response.getStatus());
-        verify(movieServiceMock, times(1)).deleteSingle(movie.getId());
+        verify(movieServiceMock, times(1)).delete(movie.getId());
         response.close();
     }
 
     @Test
     public void deleteMovie_ThrowsServiceException_ShouldReturnInternalServerErrorResponse() {
         String id = Id.get();
-        doThrow(new ServiceException()).when(movieServiceMock).deleteSingle(id);
+        doThrow(new ServiceException()).when(movieServiceMock).delete(id);
 
         Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path(id).request().delete();
 
         assertEquals(500, response.getStatus());
-        verify(movieServiceMock, times(1)).deleteSingle(id);
+        verify(movieServiceMock, times(1)).delete(id);
         response.close();
     }
 

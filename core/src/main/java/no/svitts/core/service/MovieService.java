@@ -20,33 +20,33 @@ public class MovieService extends CoreService<Movie> {
     }
 
     @Override
-    public Movie getSingle(String id) {
-        LOGGER.info("Getting single movie with id [{}]", id);
-        return transaction(repository -> repository.getSingle(id));
+    public Movie get(String id) {
+        LOGGER.info("Getting movie with ID [{}]", id);
+        return transaction(repository -> repository.get(id));
     }
 
     @Override
-    public List<Movie> getMultiple(Search search) {
-        LOGGER.info("Getting multiple movies with search [{}]", search.toString());
-        return transaction(repository -> repository.getMultiple(search));
+    public List<Movie> search(Search search) {
+        LOGGER.info("Searching movies with search [{}]", search.toString());
+        return transaction(repository -> repository.search(search));
     }
 
     @Override
-    public String saveSingle(Movie movie) {
-        LOGGER.info("Saving single movie [{}]", movie.toString());
-        return transaction(repository -> repository.saveSingle(movie));
+    public String save(Movie movie) {
+        LOGGER.info("Saving movie [{}]", movie.toString());
+        return transaction(repository -> repository.save(movie));
     }
 
     @Override
-    public void updateSingle(Movie movie) {
-        LOGGER.info("Updating single movie [{}]", movie.toString());
-        transaction(repository -> repository.updateSingle(movie));
+    public void update(Movie movie) {
+        LOGGER.info("Updating movie [{}]", movie.toString());
+        transaction(repository -> repository.update(movie));
     }
 
     @Override
-    public void deleteSingle(String id) {
-        LOGGER.info("Deleting single movie with id [{}]", id);
-        transaction(repository -> repository.deleteSingle(repository.getSingle(id)));
+    public void delete(String id) {
+        LOGGER.info("Deleting movie with ID [{}]", id);
+        transaction(repository -> repository.delete(repository.get(id)));
     }
 
 }

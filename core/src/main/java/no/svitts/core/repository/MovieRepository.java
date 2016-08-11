@@ -28,7 +28,7 @@ public class MovieRepository extends CoreRepository<Movie> {
     }
 
     @Override
-    public Movie getSingle(String id) {
+    public Movie get(String id) {
         LOGGER.info("Getting movie with ID [{}] from database.", id);
         try {
             return getCurrentSession().get(Movie.class, id);
@@ -39,7 +39,7 @@ public class MovieRepository extends CoreRepository<Movie> {
     }
 
     @Override
-    public List<Movie> getMultiple(Search search) {
+    public List<Movie> search(Search search) {
         MovieSearch movieSearch = (MovieSearch) search;
         LOGGER.info("Getting multiple movies from database by search [{}].", movieSearch.toString());
         try {
@@ -51,7 +51,7 @@ public class MovieRepository extends CoreRepository<Movie> {
     }
 
     @Override
-    public String saveSingle(Movie movie) {
+    public String save(Movie movie) {
         if (movie.getId() == null) {
             movie.setId(Id.get());
         }
@@ -65,7 +65,7 @@ public class MovieRepository extends CoreRepository<Movie> {
     }
 
     @Override
-    public Void updateSingle(Movie movie) {
+    public Void update(Movie movie) {
         LOGGER.info("Updating movie [{}] in database.", movie.toString());
         try {
             getCurrentSession().update(movie);
@@ -77,7 +77,7 @@ public class MovieRepository extends CoreRepository<Movie> {
     }
 
     @Override
-    public Void deleteSingle(Movie movie) {
+    public Void delete(Movie movie) {
         LOGGER.info("Deleting movie [{}] from database.", movie.toString());
         try {
             getCurrentSession().delete(movie);

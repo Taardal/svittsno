@@ -6,13 +6,13 @@ import java.util.List;
 
 public interface Repository<T> {
 
-    T getSingle(String id);
+    T get(String id);
 
-    List<T> getMultiple(Search search);
+    List<T> search(Search search);
 
-    String saveSingle(T entity);
+    String save(T entity);
 
-    Void updateSingle(T entity);
+    Void update(T entity);
 
-    Void deleteSingle(T entity);
+    Void delete(T entity);
 }

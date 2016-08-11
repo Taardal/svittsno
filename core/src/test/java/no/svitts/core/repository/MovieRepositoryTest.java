@@ -47,11 +47,11 @@ public class MovieRepositoryTest {
     }
 
     @Test
-    public void getSingle_ValidId_ShouldReturnMovie() {
+    public void get_ValidId_ShouldReturnMovie() {
         Movie movie = movieBuilder.build();
         when(sessionMock.get(Movie.class, movie.getId())).thenReturn(movie);
 
-        Movie movieFromRepository = movieRepository.getSingle(movie.getId());
+        Movie movieFromRepository = movieRepository.get(movie.getId());
 
         assertEquals(movie, movieFromRepository);
         verify(sessionFactoryMock, times(1)).getCurrentSession();
@@ -59,14 +59,14 @@ public class MovieRepositoryTest {
     }
 
     @Test(expected = RepositoryException.class)
-    public void getSingle_ThrowsHibernateException_ShouldCatchHibernateExceptionAndThrowRepositoryException() {
+    public void get_ThrowsHibernateException_ShouldCatchHibernateExceptionAndThrowRepositoryException() {
         Movie movie = movieBuilder.build();
         when(sessionMock.get(Movie.class, movie.getId())).thenThrow(new HibernateException("Exception"));
-        movieRepository.getSingle(movie.getId());
+        movieRepository.get(movie.getId());
     }
 
     @Test
-    public void getMultiple_ValidCriteria_ShouldReturnMovies() {
+    public void search_ValidCriteria_ShouldReturnMovies() {
         List<Movie> movies = Arrays.stream(new Movie[]{movieBuilder.build()}).collect(Collectors.toList());
         MovieSearch movieSearch = new MovieSearch("movie", MovieSearchType.TITLE);
 
@@ -87,7 +87,7 @@ public class MovieRepositoryTest {
         when(queryMock.setFirstResult(movieSearch.getOffset())).thenReturn(queryMock);
         when(queryMock.getResultList()).thenReturn(movies);
 
-        List<Movie> moviesFromRepository = movieRepository.getMultiple(movieSearch);
+        List<Movie> moviesFromRepository = movieRepository.search(movieSearch);
 
         assertArrayEquals(movies.toArray(), moviesFromRepository.toArray());
         verify(sessionFactoryMock, times(2)).getCurrentSession();
@@ -99,17 +99,17 @@ public class MovieRepositoryTest {
     }
 
     @Test(expected = RepositoryException.class)
-    public void getMultiple_ThrowsHibernateException_ShouldCatchHibernateExceptionAndThrowRepositoryException() {
+    public void search_ThrowsHibernateException_ShouldCatchHibernateExceptionAndThrowRepositoryException() {
         when(sessionMock.getCriteriaBuilder()).thenThrow(new HibernateException("Exception"));
-        movieRepository.getMultiple(new MovieSearch("query", MovieSearchType.TITLE));
+        movieRepository.search(new MovieSearch("query", MovieSearchType.TITLE));
     }
 
     @Test
-    public void saveSingle_ValidMovie_ShouldReturnIdOfSavedMovie() {
+    public void save_ValidMovie_ShouldReturnIdOfSavedMovie() {
         Movie movie = movieBuilder.build();
         when(sessionMock.save(movie)).thenReturn(movie.getId());
 
-        String savedMovieId = movieRepository.saveSingle(movie);
+        String savedMovieId = movieRepository.save(movie);
 
         assertEquals(movie.getId(), savedMovieId);
         verify(sessionFactoryMock, times(1)).getCurrentSession();
@@ -117,46 +117,46 @@ public class MovieRepositoryTest {
     }
 
     @Test(expected = RepositoryException.class)
-    public void saveSingle_ThrowsHibernateException_ShouldCatchHibernateExceptionAndThrowRepositoryException() {
+    public void save_ThrowsHibernateException_ShouldCatchHibernateExceptionAndThrowRepositoryException() {
         Movie movie = movieBuilder.build();
         when(sessionMock.save(movie)).thenThrow(new HibernateException("Exception"));
-        movieRepository.saveSingle(movie);
+        movieRepository.save(movie);
     }
 
     @Test
-    public void updateSingle_ValidMovie_ShouldUpdateMovie() {
+    public void update_ValidMovie_ShouldUpdateMovie() {
         Movie movie = movieBuilder.build();
         doNothing().when(sessionMock).update(movie);
 
-        movieRepository.updateSingle(movie);
+        movieRepository.update(movie);
 
         verify(sessionFactoryMock, times(1)).getCurrentSession();
         verify(sessionMock, times(1)).update(movie);
     }
 
     @Test(expected = RepositoryException.class)
-    public void updateSingle_ThrowsHibernateException_ShouldCatchHibernateExceptionAndThrowRepositoryException() {
+    public void update_ThrowsHibernateException_ShouldCatchHibernateExceptionAndThrowRepositoryException() {
         Movie movie = movieBuilder.build();
         doThrow(new HibernateException("Exception")).when(sessionMock).update(movie);
-        movieRepository.updateSingle(movie);
+        movieRepository.update(movie);
     }
 
     @Test
-    public void deleteSingle_ValidMovie_ShouldDeleteMovie() {
+    public void delete_ValidMovie_ShouldDeleteMovie() {
         Movie movie = movieBuilder.build();
         doNothing().when(sessionMock).delete(movie);
 
-        movieRepository.deleteSingle(movie);
+        movieRepository.delete(movie);
 
         verify(sessionFactoryMock, times(1)).getCurrentSession();
         verify(sessionMock, times(1)).delete(movie);
     }
 
     @Test(expected = RepositoryException.class)
-    public void deleteSingle_ThrowsHibernateException_ShouldCatchHibernateExceptionAndThrowRepositoryException() {
+    public void delete_ThrowsHibernateException_ShouldCatchHibernateExceptionAndThrowRepositoryException() {
         Movie movie = movieBuilder.build();
         doThrow(new HibernateException("Exception")).when(sessionMock).delete(movie);
-        movieRepository.deleteSingle(movie);
+        movieRepository.delete(movie);
     }
 
 }

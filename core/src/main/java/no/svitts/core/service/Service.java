@@ -6,14 +6,14 @@ import java.util.List;
 
 public interface Service<T> {
 
-    T getSingle(String id);
+    T get(String id);
 
-    List<T> getMultiple(Search search);
+    List<T> search(Search search);
 
-    String saveSingle(T t);
+    String save(T t);
 
-    void updateSingle(T entity);
+    void update(T entity);
 
-    void deleteSingle(String id);
+    void delete(String id);
 
 }

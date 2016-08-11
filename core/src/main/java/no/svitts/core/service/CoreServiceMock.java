@@ -14,27 +14,27 @@ public class CoreServiceMock extends CoreService<Object> {
     }
 
     @Override
-    public Movie getSingle(String id) {
+    public Movie get(String id) {
         return null;
     }
 
     @Override
-    public List<Movie> getMultiple(Search search) {
+    public List<Movie> search(Search search) {
         return null;
     }
 
     @Override
-    public String saveSingle(Movie movie) {
+    public String save(Movie movie) {
         return null;
     }
 
     @Override
-    public void updateSingle(Movie entity) {
+    public void update(Movie entity) {
 
     }
 
     @Override
-    public void deleteSingle(String id) {
+    public void delete(String id) {
 
     }
 }

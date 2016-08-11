@@ -53,7 +53,7 @@ public class MovieResource {
     public Response getMovie(@PathParam("id") @ValidCharacters @Length(length = Movie.ID_MAX_LENGTH) String id) {
         LOGGER.info("Received request to GET movie with ID [{}]", id);
         try {
-            Movie movie = movieService.getSingle(id);
+            Movie movie = movieService.get(id);
             return Response.ok(movie).build();
         } catch (ServiceException e) {
             throw new InternalServerErrorException("Could not get movie with ID [" + id + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
@@ -75,7 +75,7 @@ public class MovieResource {
         LOGGER.info("Received request to GET movie(s) with genre [{}] with limit [{}] and offset [{}]", genre, limit, offset);
         try {
             MovieSearch movieSearch = getMovieSearch(genre.toString(), MovieSearchType.GENRE, limit, offset);
-            List<Movie> movies = movieService.getMultiple(movieSearch);
+            List<Movie> movies = movieService.search(movieSearch);
             return Response.ok(movies.toArray()).build();
         } catch (ServiceException e) {
             throw new InternalServerErrorException("Could not get movies with genre [" + genre + "], limit [" + limit + "] and offset [" + offset + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
@@ -98,7 +98,7 @@ public class MovieResource {
         LOGGER.info("Received request to GET movie(s) by search query [{}] with limit [{}] and offset [{}]", query, limit, offset);
         try {
             MovieSearch movieSearch = getMovieSearch(query, MovieSearchType.TITLE, limit, offset);
-            List<Movie> movies = movieService.getMultiple(movieSearch);
+            List<Movie> movies = movieService.search(movieSearch);
             return Response.ok(movies.toArray()).build();
         } catch (ServiceException e) {
             throw new InternalServerErrorException("Could not get movies by search query [" + query + "] with limit [" + limit + "] and offset [" + offset + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
@@ -113,10 +113,10 @@ public class MovieResource {
     public Response saveMovie(@Valid Movie movie) {
         LOGGER.info("Received request to POST movie [{}]", movie.toString());
         try {
-            String savedMovieId = movieService.saveSingle(movie);
+            String savedMovieId = movieService.save(movie);
             return Response.created(getLocation(savedMovieId)).build();
         } catch (ServiceException e) {
-            throw new InternalServerErrorException("Could not saveSingle movie [" + movie.toString() + "]. ", e);
+            throw new InternalServerErrorException("Could not save movie [" + movie.toString() + "]. ", e);
         }
     }
 
@@ -129,7 +129,7 @@ public class MovieResource {
     public Response updateMovie(@PathParam("id") @ValidCharacters @Length(length = Movie.ID_MAX_LENGTH) String id, @Valid Movie movie) {
         LOGGER.info("Received request to PUT movie [{}]", movie);
         try {
-            movieService.updateSingle(movie);
+            movieService.update(movie);
             return Response.ok().build();
         } catch (ServiceException e) {
             throw new InternalServerErrorException("Could not update movie with ID [" + id + "] with values [" + movie.toString() + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
@@ -145,7 +145,7 @@ public class MovieResource {
     public Response deleteMovie(@PathParam("id") @ValidCharacters @Length(length = Movie.ID_MAX_LENGTH) String id) {
         LOGGER.info("Received request to DELETE movie with ID [{}]", id);
         try {
-            movieService.deleteSingle(id);
+            movieService.delete(id);
             return Response.ok().build();
         } catch (ServiceException e) {
             throw new InternalServerErrorException("Could not delete movie with ID [" + id + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
