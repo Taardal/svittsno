@@ -1,9 +1,9 @@
 package no.svitts.core.service;
 
 import com.google.inject.Inject;
-import no.svitts.core.criteria.Criteria;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.repository.Repository;
+import no.svitts.core.search.Search;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +26,9 @@ public class MovieService extends CoreService<Movie> {
     }
 
     @Override
-    public List<Movie> getMultiple(Criteria criteria) {
-        LOGGER.info("Getting multiple movies with criteria [{}]", criteria.toString());
-        return transaction(repository -> repository.getMultiple(criteria));
+    public List<Movie> getMultiple(Search search) {
+        LOGGER.info("Getting multiple movies with search [{}]", search.toString());
+        return transaction(repository -> repository.getMultiple(search));
     }
 
     @Override

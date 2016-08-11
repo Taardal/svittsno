@@ -1,11 +1,12 @@
 package no.svitts.core.repository;
 
 import com.google.inject.Inject;
-import no.svitts.core.criteria.Criteria;
-import no.svitts.core.criteria.CriteriaKey;
 import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.genre.Genre;
 import no.svitts.core.movie.Movie;
+import no.svitts.core.search.MovieSearch;
+import no.svitts.core.search.MovieSearchType;
+import no.svitts.core.search.Search;
 import no.svitts.core.util.Id;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
@@ -14,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.List;
 
@@ -39,14 +39,13 @@ public class MovieRepository extends CoreRepository<Movie> {
     }
 
     @Override
-    public List<Movie> getMultiple(Criteria criteria) {
-        LOGGER.info("Getting multiple movies from database by criteria [{}].", criteria.toString());
+    public List<Movie> getMultiple(Search search) {
+        MovieSearch movieSearch = (MovieSearch) search;
+        LOGGER.info("Getting multiple movies from database by search [{}].", movieSearch.toString());
         try {
-            CriteriaBuilder criteriaBuilder = getCurrentSession().getCriteriaBuilder();
-            CriteriaQuery<Movie> movieCriteriaQuery = getMultipleMoviesCriteriaQuery(criteria, criteriaBuilder);
-            return getCurrentSession().createQuery(movieCriteriaQuery).setMaxResults(criteria.getLimit()).setFirstResult(criteria.getOffset()).getResultList();
+            return getCurrentSession().createQuery(getSearchCriteriaQuery(movieSearch)).setMaxResults(movieSearch.getLimit()).setFirstResult(movieSearch.getOffset()).getResultList();
         } catch (HibernateException | IllegalStateException e) {
-            LOGGER.error("Could not get multiple movies from database by criteria [{}]", criteria.toString());
+            LOGGER.error("Could not get multiple movies from database by search [{}]", movieSearch.toString());
             throw new RepositoryException(e);
         }
     }
@@ -89,52 +88,19 @@ public class MovieRepository extends CoreRepository<Movie> {
         }
     }
 
-    public List<Movie> search(String query, int limit, int offset) {
-        CriteriaQuery<Movie> movieCriteriaQuery = getSelectMoviesBySimilarTitleCriteriaQuery(query);
-        return getCurrentSession().createQuery(movieCriteriaQuery).setMaxResults(limit).setFirstResult(offset).getResultList();
-    }
-
-    private CriteriaQuery<Movie> getSelectMoviesBySimilarTitleCriteriaQuery(String query) {
+    private CriteriaQuery<Movie> getSearchCriteriaQuery(MovieSearch movieSearch) {
         CriteriaBuilder criteriaBuilder = getCurrentSession().getCriteriaBuilder();
-        CriteriaQuery<Movie> movieCriteriaQuery = criteriaBuilder.createQuery(Movie.class);
-        Root<Movie> movieRoot = movieCriteriaQuery.from(Movie.class);
-        return movieCriteriaQuery.select(movieRoot).where(criteriaBuilder.like(movieRoot.get("title"), "%" + query + "%"));
-    }
-
-    private CriteriaQuery<Movie> getSelectMoviesByGenreCriteriaQuery(String genre) {
-        CriteriaBuilder criteriaBuilder = getCurrentSession().getCriteriaBuilder();
-        CriteriaQuery<Movie> movieCriteriaQuery = criteriaBuilder.createQuery(Movie.class);
-        Root<Movie> movieRoot = movieCriteriaQuery.from(Movie.class);
-        return movieCriteriaQuery.select(movieRoot).where(criteriaBuilder.isMember(Genre.valueOf(genre.toUpperCase()), movieRoot.get("genres")));
-    }
-
-    private CriteriaQuery<Movie> getMultipleMoviesCriteriaQuery(Criteria criteria, CriteriaBuilder criteriaBuilder) {
         CriteriaQuery<Movie> movieCriteriaQuery = criteriaBuilder.createQuery(Movie.class);
         Root<Movie> movieRoot = movieCriteriaQuery.from(Movie.class);
         movieCriteriaQuery.select(movieRoot);
-
-        String name = criteria.get(CriteriaKey.NAME);
-        String genre = criteria.get(CriteriaKey.GENRE);
-        Predicate titleLikeTitle = null;
-        Predicate genreIsMemberOfGenres = null;
-
-        if (isNotNullOrEmpty(name) && isNotNullOrEmpty(genre)) {
-            titleLikeTitle = criteriaBuilder.like(movieRoot.get("title"), "%" + name + "%");
-            genreIsMemberOfGenres = criteriaBuilder.isMember(Genre.valueOf(genre.toUpperCase()), movieRoot.get("genres"));
-            movieCriteriaQuery.where(criteriaBuilder.and(titleLikeTitle, genreIsMemberOfGenres));
-        } else if (isNotNullOrEmpty(name)) {
-            titleLikeTitle = criteriaBuilder.like(movieRoot.get("title"), "%" + name + "%");
-            movieCriteriaQuery.where(titleLikeTitle);
-        } else if (isNotNullOrEmpty(genre)) {
-            genreIsMemberOfGenres = criteriaBuilder.isMember(Genre.valueOf(genre.toUpperCase()), movieRoot.get("genres"));
-            movieCriteriaQuery.where(genreIsMemberOfGenres);
+        if (movieSearch.getMovieSearchType() == MovieSearchType.TITLE) {
+            return movieCriteriaQuery.where(criteriaBuilder.like(movieRoot.get("title"), "%" + movieSearch.getQuery() + "%"));
+        } else if (movieSearch.getMovieSearchType() == MovieSearchType.GENRE) {
+            Genre genre = Genre.valueOf(movieSearch.getQuery());
+            return movieCriteriaQuery.where(criteriaBuilder.isMember(genre, movieRoot.get("genres")));
+        } else {
+            return movieCriteriaQuery;
         }
-
-        return movieCriteriaQuery;
-    }
-
-    private boolean isNotNullOrEmpty(String criteria) {
-        return criteria != null && !criteria.equals("");
     }
 
 }

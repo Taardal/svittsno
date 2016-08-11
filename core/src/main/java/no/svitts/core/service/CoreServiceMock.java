@@ -1,6 +1,6 @@
 package no.svitts.core.service;
 
-import no.svitts.core.criteria.Criteria;
+import no.svitts.core.search.Search;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.repository.Repository;
 import org.hibernate.SessionFactory;
@@ -19,7 +19,7 @@ public class CoreServiceMock extends CoreService<Object> {
     }
 
     @Override
-    public List<Movie> getMultiple(Criteria criteria) {
+    public List<Movie> getMultiple(Search search) {
         return null;
     }
 
