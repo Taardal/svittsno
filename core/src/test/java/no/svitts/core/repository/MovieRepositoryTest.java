@@ -1,11 +1,10 @@
 package no.svitts.core.repository;
 
 import no.svitts.core.builder.MovieBuilder;
-import no.svitts.core.criteria.Criteria;
-import no.svitts.core.criteria.CriteriaKey;
 import no.svitts.core.exception.RepositoryException;
-import no.svitts.core.genre.Genre;
 import no.svitts.core.movie.Movie;
+import no.svitts.core.search.MovieSearch;
+import no.svitts.core.search.MovieSearchType;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -16,6 +15,7 @@ import org.mockito.Mock;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.Arrays;
 import java.util.List;
@@ -67,15 +67,8 @@ public class MovieRepositoryTest {
 
     @Test
     public void getMultiple_ValidCriteria_ShouldReturnMovies() {
-        List<Movie> movies = Arrays.stream(new Movie[]{
-                movieBuilder.title("movie1").genres(Arrays.stream(new Genre[]{Genre.BIOGRAPHY}).collect(Collectors.toSet())).build()
-        }).collect(Collectors.toList());
-
-        Criteria criteria = new Criteria();
-        criteria.add(CriteriaKey.NAME, "movie");
-        criteria.add(CriteriaKey.GENRE, "biography");
-        criteria.setLimit(10);
-        criteria.setOffset(0);
+        List<Movie> movies = Arrays.stream(new Movie[]{movieBuilder.build()}).collect(Collectors.toList());
+        MovieSearch movieSearch = new MovieSearch("movie", MovieSearchType.TITLE);
 
         CriteriaBuilder criteriaBuilderMock = mock(CriteriaBuilder.class);
         when(sessionMock.getCriteriaBuilder()).thenReturn(criteriaBuilderMock);
@@ -85,22 +78,30 @@ public class MovieRepositoryTest {
 
         Root rootMock = mock(Root.class);
         when(criteriaQueryMock.from(Movie.class)).thenReturn(rootMock);
+        when(criteriaQueryMock.select(rootMock)).thenReturn(criteriaQueryMock);
+        when(criteriaQueryMock.where(any(Predicate.class))).thenReturn(criteriaQueryMock);
 
         Query queryMock = mock(Query.class);
         when(sessionMock.createQuery(criteriaQueryMock)).thenReturn(queryMock);
-        when(queryMock.setMaxResults(criteria.getLimit())).thenReturn(queryMock);
-        when(queryMock.setFirstResult(criteria.getOffset())).thenReturn(queryMock);
+        when(queryMock.setMaxResults(movieSearch.getLimit())).thenReturn(queryMock);
+        when(queryMock.setFirstResult(movieSearch.getOffset())).thenReturn(queryMock);
         when(queryMock.getResultList()).thenReturn(movies);
 
-        List<Movie> moviesFromRepository = movieRepository.getMultiple(criteria);
+        List<Movie> moviesFromRepository = movieRepository.getMultiple(movieSearch);
 
         assertArrayEquals(movies.toArray(), moviesFromRepository.toArray());
         verify(sessionFactoryMock, times(2)).getCurrentSession();
         verify(sessionMock, times(1)).getCriteriaBuilder();
         verify(sessionMock, times(1)).createQuery(criteriaQueryMock);
-        verify(queryMock, times(1)).setMaxResults(criteria.getLimit());
-        verify(queryMock, times(1)).setFirstResult(criteria.getOffset());
+        verify(queryMock, times(1)).setMaxResults(movieSearch.getLimit());
+        verify(queryMock, times(1)).setFirstResult(movieSearch.getOffset());
         verify(queryMock, times(1)).getResultList();
+    }
+
+    @Test(expected = RepositoryException.class)
+    public void getMultiple_ThrowsHibernateException_ShouldCatchHibernateExceptionAndThrowRepositoryException() {
+        when(sessionMock.getCriteriaBuilder()).thenThrow(new HibernateException("Exception"));
+        movieRepository.getMultiple(new MovieSearch("query", MovieSearchType.TITLE));
     }
 
     @Test

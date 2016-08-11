@@ -2,9 +2,9 @@ package no.svitts.core.movie;
 
 import no.svitts.core.builder.MovieBuilder;
 import no.svitts.core.genre.Genre;
-import no.svitts.core.util.Id;
 import no.svitts.core.json.GsonMessageBodyReader;
 import no.svitts.core.json.GsonMessageBodyWriter;
+import no.svitts.core.util.Id;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +14,6 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,10 +45,10 @@ public class GetMoviesIT extends JerseyTest {
     }
 
     @Test
-    public void getMovies_NoMoviesExist_ShouldReturnOkResponseWithEmptyArray() {
+    public void getMoviesByGenre_NoMoviesWithGenreExist_ShouldReturnOkResponseWithEmptyArray() {
         client().register(gsonMessageBodyReader);
 
-        Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).request().get();
+        Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path("genres").path(Genre.BIOGRAPHY.toString()).request().get();
 
         assertEquals(200, response.getStatus());
         assertEquals(0, response.readEntity(Movie[].class).length);
@@ -57,29 +56,33 @@ public class GetMoviesIT extends JerseyTest {
     }
 
     @Test
-    public void getMovies_NoQueryParams_ShouldReturnAllMovies() throws IOException {
+    public void getMoviesByGenre_ValidGenre_ShouldReturnAllMoviesWithGenre() throws IOException {
         client().register(gsonMessageBodyReader).register(gsonMessageBodyWriter);
-        List<Movie> movies = new ArrayList<>();
-        movies.add(movieBuilder.id(Id.get()).build());
-        movies.add(movieBuilder.id(Id.get()).build());
+        List<Movie> movies = Arrays.stream(new Movie[]{
+                movieBuilder.id(Id.get()).genres(Arrays.stream(new Genre[]{Genre.COMEDY}).collect(Collectors.toSet())).build(),
+                movieBuilder.id(Id.get()).genres(Arrays.stream(new Genre[]{Genre.WAR}).collect(Collectors.toSet())).build()
+        }).collect(Collectors.toList());
+
         createMovies(movies);
 
-        Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).request().get();
+        Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path("genres").path(Genre.COMEDY.toString()).request().get();
+        Movie[] moviesFromResponse = response.readEntity(Movie[].class);
 
         assertEquals(200, response.getStatus());
-        assertEquals(2, response.readEntity(Movie[].class).length);
+        assertEquals(1, moviesFromResponse.length);
+        assertTrue(movies.contains(moviesFromResponse[0]));
         response.close();
     }
 
     @Test
-    public void getMovies_LimitSmallerThanNumberOfMoviesInDatabase_ShouldReturnNumberOfMoviesEqualToLimit() throws IOException {
+    public void getMoviesByGenre_LimitSmallerThanNumberOfMoviesInDatabase_ShouldReturnNumberOfMoviesEqualToLimit() throws IOException {
         client().register(gsonMessageBodyReader).register(gsonMessageBodyWriter);
-        List<Movie> movies = new ArrayList<>();
-        movies.add(movieBuilder.id(Id.get()).build());
-        movies.add(movieBuilder.id(Id.get()).build());
-        createMovies(movies);
+        createMovies(Arrays.stream(new Movie[]{
+                movieBuilder.id(Id.get()).genres(Arrays.stream(new Genre[]{Genre.COMEDY}).collect(Collectors.toSet())).build(),
+                movieBuilder.id(Id.get()).genres(Arrays.stream(new Genre[]{Genre.COMEDY}).collect(Collectors.toSet())).build()
+        }).collect(Collectors.toList()));
 
-        Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).queryParam("limit", 1).request().get();
+        Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path("genres").path(Genre.COMEDY.toString()).queryParam("limit", 1).request().get();
 
         assertEquals(200, response.getStatus());
         assertEquals(1, response.readEntity(Movie[].class).length);
@@ -90,12 +93,13 @@ public class GetMoviesIT extends JerseyTest {
     @Test
     public void getMovies_OffsetGreaterThanZero_ShouldReturnArrayWhereFirstMovieInArrayIsMovieInsertedAtOffsetIndex() throws IOException {
         client().register(gsonMessageBodyReader).register(gsonMessageBodyWriter);
-        List<Movie> movies = new ArrayList<>();
-        movies.add(movieBuilder.id(Id.get()).build());
-        movies.add(movieBuilder.id(Id.get()).build());
+        List<Movie> movies = Arrays.stream(new Movie[]{
+                movieBuilder.id(Id.get()).genres(Arrays.stream(new Genre[]{Genre.COMEDY}).collect(Collectors.toSet())).build(),
+                movieBuilder.id(Id.get()).genres(Arrays.stream(new Genre[]{Genre.COMEDY}).collect(Collectors.toSet())).build()
+        }).collect(Collectors.toList());
         createMovies(movies);
 
-        Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).queryParam("offset", 1).request().get();
+        Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path("genres").path(Genre.COMEDY.toString()).queryParam("offset", 1).request().get();
 
         assertEquals(200, response.getStatus());
         Movie[] moviesFromResource = response.readEntity(Movie[].class);
@@ -105,45 +109,62 @@ public class GetMoviesIT extends JerseyTest {
     }
 
     @Test
-    public void getMovies_NameSpecified_ShouldReturnMoviesWithNameLikeSpecifiedName() throws IOException {
+    public void search_ValidQuery_ShouldReturnMoviesWithTitleLikeQuery() throws IOException {
         client().register(gsonMessageBodyReader).register(gsonMessageBodyWriter);
-        List<Movie> movies = new ArrayList<>();
-        movies.add(movieBuilder.id(Id.get()).title("Iron Man").build());
-        movies.add(movieBuilder.id(Id.get()).title("Iron Man 2").build());
-        movies.add(movieBuilder.id(Id.get()).title("Iron Sky").build());
-        movies.add(movieBuilder.id(Id.get()).title("Batman").build());
-        createMovies(movies);
+        createMovies(Arrays.stream(new Movie[]{
+                movieBuilder.id(Id.get()).title("Iron Man").build(),
+                movieBuilder.id(Id.get()).title("Iron Man 2").build(),
+                movieBuilder.id(Id.get()).title("Iron Sky").build(),
+                movieBuilder.id(Id.get()).title("Gladiator").build()
+        }).collect(Collectors.toList()));
 
-        String nameQueryParam = "Iron";
-        Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).queryParam("name", nameQueryParam).request().get();
+        String query = "Iron";
+        Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path("search").queryParam("q", query).request().get();
 
         assertEquals(200, response.getStatus());
         Movie[] moviesFromResource = response.readEntity(Movie[].class);
         assertEquals(3, moviesFromResource.length);
-        for (Movie movie : moviesFromResource) {
-            assertTrue(movie.getTitle().contains(nameQueryParam));
-        }
+        Arrays.stream(moviesFromResource).forEach(movie -> assertTrue(movie.getTitle().contains(query)));
         response.close();
     }
 
     @Test
-    public void getMovies_GenreSpecified_ShouldReturnMoviesWithGenreLikeSpecifiedGenre() throws IOException {
+    public void search_LimitSmallerThanNumberOfMoviesInDatabase_ShouldReturnNumberOfMoviesEqualToLimit() throws IOException {
         client().register(gsonMessageBodyReader).register(gsonMessageBodyWriter);
-        List<Movie> movies = new ArrayList<>();
-        movies.add(movieBuilder.id(Id.get()).genres(Arrays.stream(new Genre[]{Genre.WESTERN, Genre.WAR, Genre.THRILLER}).collect(Collectors.toSet())).build());
-        movies.add(movieBuilder.id(Id.get()).genres(Arrays.stream(new Genre[]{Genre.WESTERN, Genre.ADVENTURE, Genre.ANIMATION}).collect(Collectors.toSet())).build());
-        movies.add(movieBuilder.id(Id.get()).genres(Arrays.stream(new Genre[]{Genre.FAMILY, Genre.FANTASY, Genre.FILM_NOIR}).collect(Collectors.toSet())).build());
+        createMovies(Arrays.stream(new Movie[]{
+                movieBuilder.id(Id.get()).title("Iron Man").build(),
+                movieBuilder.id(Id.get()).title("Iron Man 2").build(),
+                movieBuilder.id(Id.get()).title("Iron Sky").build(),
+                movieBuilder.id(Id.get()).title("Gladiator").build()
+        }).collect(Collectors.toList()));
+
+        String query = "Iron";
+        Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path("search").queryParam("q", query).queryParam("limit", 1).request().get();
+
+        assertEquals(200, response.getStatus());
+        assertEquals(1, response.readEntity(Movie[].class).length);
+        response.close();
+    }
+
+
+    @Test
+    public void search_OffsetGreaterThanZero_ShouldReturnArrayWhereFirstMovieInArrayIsMovieInsertedAtOffsetIndex() throws IOException {
+        client().register(gsonMessageBodyReader).register(gsonMessageBodyWriter);
+        List<Movie> movies = Arrays.stream(new Movie[]{
+                movieBuilder.id(Id.get()).title("Iron Man").build(),
+                movieBuilder.id(Id.get()).title("Iron Man 2").build(),
+                movieBuilder.id(Id.get()).title("Iron Sky").build(),
+                movieBuilder.id(Id.get()).title("Gladiator").build()
+        }).collect(Collectors.toList());
         createMovies(movies);
 
-        String genreQueryParam = Genre.WESTERN.getValue();
-        Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).queryParam("genre", genreQueryParam).request().get();
+        String query = "Iron";
+        Response response = client().target(getBaseUri()).path(MOVIE_RESOURCE).path("search").queryParam("q", query).queryParam("offset", 1).request().get();
 
         assertEquals(200, response.getStatus());
         Movie[] moviesFromResource = response.readEntity(Movie[].class);
         assertEquals(2, moviesFromResource.length);
-        Arrays.stream(moviesFromResource)
-                .forEach(movie -> assertTrue(movie.getGenres().stream()
-                        .anyMatch(genre -> genre.toString().contains(genreQueryParam.toUpperCase()))));
+        assertEquals(movies.get(1), moviesFromResource[0]);
         response.close();
     }
 

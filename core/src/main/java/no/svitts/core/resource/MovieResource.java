@@ -5,13 +5,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import no.svitts.core.constraint.Length;
 import no.svitts.core.constraint.NonNegative;
+import no.svitts.core.constraint.NotNullOrEmpty;
 import no.svitts.core.constraint.ValidCharacters;
-import no.svitts.core.criteria.Criteria;
-import no.svitts.core.criteria.CriteriaKey;
-import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.exception.ServiceException;
 import no.svitts.core.genre.Genre;
 import no.svitts.core.movie.Movie;
+import no.svitts.core.search.MovieSearch;
+import no.svitts.core.search.MovieSearchType;
 import no.svitts.core.service.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,33 +54,54 @@ public class MovieResource {
         LOGGER.info("Received request to GET movie with ID [{}]", id);
         try {
             Movie movie = movieService.getSingle(id);
-            return Response.ok(movie, MediaType.APPLICATION_JSON).build();
+            return Response.ok(movie).build();
         } catch (ServiceException e) {
             throw new InternalServerErrorException("Could not get movie with ID [" + id + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
         }
     }
 
     @GET
+    @Path("genres/{genre}")
     @ApiOperation(
-            value = "Get multiple movies. ",
-            notes = "Results can be narrowed down with the \"title\" and \"genre\" parameters. If no title or genre is specified, the server returns all movies. " +
-                    "Number of results can be limited with the \"limit\" parameter. " +
-                    "Pagination can be achieved with the \"offset\" parameter. " +
-                    "Invalid parameter(s) will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s). "
+            value = "Get movies by genre. ",
+            notes = "If no movies are found in the database, an empty list will be returned. " +
+                    "An invalid genre will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s). "
     )
-    public Response getMovies(
-            @QueryParam("name") @DefaultValue("") @ValidCharacters @Length(length = Movie.TITLE_MAX_LENGTH) String name,
-            @QueryParam("genre") @DefaultValue("") @ValidCharacters @Length(length = Genre.MAX_LENGTH) String genre,
+    public Response getMoviesByGenre(
+            @PathParam("genre") @Valid Genre genre,
             @QueryParam("limit") @DefaultValue("10") @NonNegative int limit,
             @QueryParam("offset") @DefaultValue("0") @NonNegative int offset
     ) {
-        LOGGER.info("Received request to GET movie(s) with title [{}] and genre [{}] with limit [{}] and offset [{}]", name, genre, limit, offset);
+        LOGGER.info("Received request to GET movie(s) with genre [{}] with limit [{}] and offset [{}]", genre, limit, offset);
         try {
-            Criteria criteria = getCriteria(name, genre, limit, offset);
-            List<Movie> movies = movieService.getMultiple(criteria);
-            return Response.ok(movies.toArray(), MediaType.APPLICATION_JSON).build();
-        } catch (RepositoryException e) {
-            throw new InternalServerErrorException("Could not get movies with title [" + name + "] and genre [" + genre + "] with limit [" + limit + "] and offset [" + offset + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
+            MovieSearch movieSearch = getMovieSearch(genre.toString(), MovieSearchType.GENRE, limit, offset);
+            List<Movie> movies = movieService.getMultiple(movieSearch);
+            return Response.ok(movies.toArray()).build();
+        } catch (ServiceException e) {
+            throw new InternalServerErrorException("Could not get movies with genre [" + genre + "], limit [" + limit + "] and offset [" + offset + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
+        }
+    }
+
+    @GET
+    @Path("search")
+    @ApiOperation(
+            value = "Search movies by name. ",
+            notes = "Searches the database for movie(s) with similar name to the query. " +
+                    "If no movies are found in the database, an empty list will be returned. " +
+                    "A query that is empty or contains illegal characters will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s). "
+    )
+    public Response search(
+            @QueryParam("q") @NotNullOrEmpty @ValidCharacters String query,
+            @QueryParam("limit") @DefaultValue("10") @NonNegative int limit,
+            @QueryParam("offset") @DefaultValue("0") @NonNegative int offset
+    ) {
+        LOGGER.info("Received request to GET movie(s) by search query [{}] with limit [{}] and offset [{}]", query, limit, offset);
+        try {
+            MovieSearch movieSearch = getMovieSearch(query, MovieSearchType.TITLE, limit, offset);
+            List<Movie> movies = movieService.getMultiple(movieSearch);
+            return Response.ok(movies.toArray()).build();
+        } catch (ServiceException e) {
+            throw new InternalServerErrorException("Could not get movies by search query [" + query + "] with limit [" + limit + "] and offset [" + offset + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
         }
     }
 
@@ -131,13 +152,11 @@ public class MovieResource {
         }
     }
 
-    private Criteria getCriteria(String name, String genre, int limit, int offset) {
-        Criteria criteria = new Criteria();
-        criteria.add(CriteriaKey.NAME, name);
-        criteria.add(CriteriaKey.GENRE, genre);
-        criteria.setLimit(limit);
-        criteria.setOffset(offset);
-        return criteria;
+    private MovieSearch getMovieSearch(String query, MovieSearchType movieSearchType, int limit, int offset) {
+        MovieSearch movieSearch = new MovieSearch(query, movieSearchType);
+        movieSearch.setLimit(limit);
+        movieSearch.setOffset(offset);
+        return movieSearch;
     }
 
     private URI getLocation(String id) {
