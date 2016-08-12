@@ -52,7 +52,7 @@ public class MovieRepository extends CoreRepository<Movie> {
 
     @Override
     public String save(Movie movie) {
-        if (movie.getId() == null) {
+        if (movie.getId() == null || movie.getId().equals("")) {
             movie.setId(Id.get());
         }
         LOGGER.info("Inserting movie [{}] into database.", movie.toString());
