@@ -22,13 +22,15 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        jettyServer.start();
-        prepareStage(primaryStage, new UserInterface(jettyServer)).show();
+        UserInterface userInterface = new UserInterface(jettyServer, primaryStage);
+        prepareStage(primaryStage, userInterface).show();
     }
 
     @Override
     public void stop() {
-        jettyServer.stop();
+        if (jettyServer.isRunning()) {
+            jettyServer.stop();
+        }
     }
 
     private Stage prepareStage(Stage stage, UserInterface userInterface) {

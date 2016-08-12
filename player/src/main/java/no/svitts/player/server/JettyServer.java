@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 
 public class JettyServer {
 
+    private static final String RUNNING = "RUNNING";
+    private static final String OFF = "OFF";
     private static final Logger LOGGER = LoggerFactory.getLogger(JettyServer.class);
 
     private final Server server;
@@ -30,6 +32,10 @@ public class JettyServer {
 
     public boolean isRunning() {
         return server.isRunning();
+    }
+
+    public String getStatus() {
+        return isRunning() ? RUNNING : OFF;
     }
 
     public void addServlet(Class<? extends HttpServlet> servlet, String mapping) {

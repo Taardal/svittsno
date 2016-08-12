@@ -23,28 +23,32 @@ public class JettyStartStopEventHandler implements EventHandler<ActionEvent> {
         }
     }
 
-    private void startJettyServer() {
-        userInterface.addEvent("Starting...");
-        jettyServer.start();
-        if (jettyServer.isRunning()) {
-            userInterface.setStatus("RUNNING");
-            userInterface.addEvent("Started successfully.");
-            userInterface.setStartStopButtonText("Stop");
-        } else {
-            userInterface.addEvent("Could not start.");
-        }
-    }
-
     private void stopJettyServer() {
         userInterface.addEvent("Stopping...");
         jettyServer.stop();
         if (jettyServer.isRunning()) {
             userInterface.addEvent("Could not stop.");
         } else {
-            userInterface.setStatus("OFF");
             userInterface.addEvent("Stopped successfully.");
-            userInterface.setStartStopButtonText("Start");
         }
+        userInterface.setStatus(jettyServer.getStatus());
+        userInterface.setStartStopButtonText(getStartStopButtonText());
+    }
+
+    private void startJettyServer() {
+        userInterface.addEvent("Starting...");
+        jettyServer.start();
+        if (jettyServer.isRunning()) {
+            userInterface.addEvent("Started successfully.");
+        } else {
+            userInterface.addEvent("Could not start.");
+        }
+        userInterface.setStatus(jettyServer.getStatus());
+        userInterface.setStartStopButtonText(getStartStopButtonText());
+    }
+
+    private String getStartStopButtonText() {
+        return jettyServer.isRunning() ? "Stop" : "Start";
     }
 
 }
