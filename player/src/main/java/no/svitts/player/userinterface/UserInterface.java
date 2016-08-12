@@ -20,12 +20,12 @@ public class UserInterface extends BorderPane {
 
     public static final String TITLE = "Svitts Player";
 
-    private String host;
-    private int port;
-    private EventHandler<ActionEvent> jettyStartStopEventHandler;
-    private Text statusText;
-    private TextArea eventTextArea;
-    private Button startStopButton;
+    private final String host;
+    private final int port;
+    private final EventHandler<ActionEvent> jettyStartStopEventHandler;
+    private final Text statusText;
+    private final TextArea eventTextArea;
+    private final Button startStopButton;
 
     public UserInterface(JettyServer jettyServer) {
         host = jettyServer.getHost();

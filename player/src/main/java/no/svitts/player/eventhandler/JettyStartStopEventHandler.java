@@ -7,8 +7,8 @@ import no.svitts.player.userinterface.UserInterface;
 
 public class JettyStartStopEventHandler implements EventHandler<ActionEvent> {
 
-    private JettyServer jettyServer;
-    private UserInterface userInterface;
+    private final JettyServer jettyServer;
+    private final UserInterface userInterface;
 
     public JettyStartStopEventHandler(JettyServer jettyServer, UserInterface userInterface) {
         this.jettyServer = jettyServer;
