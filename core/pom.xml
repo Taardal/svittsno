@@ -229,6 +229,12 @@
                 <profile.id>test</profile.id>
             </properties>
         </profile>
+        <profile>
+            <id>svitts</id>
+            <properties>
+                <profile.id>svitts</profile.id>
+            </properties>
+        </profile>
     </profiles>
 
 </project>
