@@ -230,9 +230,9 @@
             </properties>
         </profile>
         <profile>
-            <id>svitts</id>
+            <id>prod</id>
             <properties>
-                <profile.id>svitts</profile.id>
+                <profile.id>prod</profile.id>
             </properties>
         </profile>
     </profiles>

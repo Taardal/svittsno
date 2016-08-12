@@ -31,79 +31,53 @@ today = Date.today
 api_version = 'v1'
 
 build_profile = ''
-server_address = ''
 server_user = ''
-server_tomcat_service = ''
+server_address = ''
 server_tomcat_port = ''
-server_tomcat_catalina_base = ''
-server_tomcat_catalina_home = ''
 server_tomcat_catalina_script = ''
 server_tomcat_webapps_path = ''
-server_database_host = ''
-server_database_user = ''
-server_database_password = ''
 
 test_build_profile = 'test'
 test_server_user = 'taardal'
 test_server_address = '172.16.42.19'
-test_tomcat_service = 'tomcat8'
 test_tomcat_port = '8080'
 test_tomcat_catalina_base = '/var/lib/tomcat8'
 test_tomcat_catalina_home = '/usr/share/tomcat8'
-test_tomcat_webapps_path = '/usr/share/tomcat8'
-test_database_host = ''
-test_database_user = ''
-test_database_password = ''
 
-svitts_build_profile = ''
-svitts_server_user = ''
-svitts_server_address = ''
-svitts_tomcat_service = ''
-svitts_tomcat_port = ''
-svitts_tomcat_catalina_base = ''
-svitts_tomcat_catalina_home = ''
-svitts_tomcat_webapps_path = ''
-svitts_database_host = ''
-svitts_database_user = ''
-svitts_database_password = ''
+prod_build_profile = 'prod'
+prod_server_user = ''
+prod_server_address = ''
+prod_tomcat_port = ''
+prod_tomcat_catalina_base = ''
+prod_tomcat_catalina_home = ''
 
 namespace :deploy do
   # task :test => [:set_test_as_server, :build, :cleanup_server, :deploy, :start_server, :ping] do
   task :test => [:set_test_as_server, :build, :cleanup_server, :deploy, :start_server] do
     puts 'Done'
   end
-  # task :svitts => [:set_svitts_as_server, :build, :cleanup_server, :deploy, :start_server, :ping] do
-  task :svitts => [:set_svitts_as_server, :build] do
+  # task :prod => [:set_prod_as_server, :build, :cleanup_server, :deploy, :start_server, :ping] do
+  task :prod => [:set_prod_as_server, :build] do
     puts 'Done'
   end
 end
 
 task :set_test_as_server do
   build_profile = test_build_profile
-  server_address = test_server_address
   server_user = test_server_user
-  server_tomcat_webapps_path = test_tomcat_catalina_base
-  server_tomcat_service = test_tomcat_service
-  server_tomcat_catalina_base = test_tomcat_catalina_base
-  server_tomcat_catalina_home = test_tomcat_catalina_home
-  server_tomcat_catalina_script = test_tomcat_catalina_home + '/bin/catalina.sh'
-  server_tomcat_webapps_path = test_tomcat_catalina_base + '/webapps'
+  server_address = test_server_address
   server_tomcat_port = test_tomcat_port
-  server_database_host = test_database_host
-  server_database_user = test_database_user
-  server_database_password = test_database_password
+  server_tomcat_webapps_path = test_tomcat_catalina_base + '/webapps'
+  server_tomcat_catalina_script = test_tomcat_catalina_home + '/bin/catalina.sh'
 end
 
-task :set_svitts_as_server do
-  build_profile = test_build_profile
-  server_address = test_server_address
-  server_user = test_server_user
-  server_tomcat_webapps_path = test_tomcat_catalina_base
-  server_tomcat_service = test_tomcat_service
-  server_tomcat_port = test_tomcat_port
-  server_database_host = test_database_host
-  server_database_user = test_database_user
-  server_database_password = test_database_password
+task :set_prod_as_server do
+  build_profile = prod_build_profile
+  server_user = prod_server_user
+  server_address = prod_server_address
+  server_tomcat_port = prod_tomcat_port
+  server_tomcat_webapps_path = prod_tomcat_catalina_base
+  server_tomcat_catalina_script = prod_tomcat_catalina_home + '/bin/catalina.sh'
 end
 
 task :build do
