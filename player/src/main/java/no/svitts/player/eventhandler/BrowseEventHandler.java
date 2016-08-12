@@ -22,12 +22,12 @@ public class BrowseEventHandler implements EventHandler<ActionEvent> {
 
     public void handle(ActionEvent event) {
         File selectedFile = fileChooser.showOpenDialog(stage);
-        userInterface.setPathText(selectedFile.getPath());
+        userInterface.setPath(selectedFile.getPath());
     }
 
     private FileChooser getFileChooser() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select Media Player executable");
+        fileChooser.setTitle("Select file");
         return fileChooser;
     }
 

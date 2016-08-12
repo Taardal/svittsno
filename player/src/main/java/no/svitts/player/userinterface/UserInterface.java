@@ -42,8 +42,8 @@ public class UserInterface extends BorderPane {
         eventWidget.setStartStopButtonText(text);
     }
 
-    public void setPathText(String text) {
-        browseWidget.setPath(text);
+    public void setPath(String path) {
+        browseWidget.setPath(path);
     }
 
     private void buildLayout(StatusWidget statusWidget, BrowseWidget browseWidget, EventWidget eventWidget) {
