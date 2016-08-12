@@ -21,13 +21,13 @@ public class JettyStartStopEventHandler implements EventHandler<ActionEvent> {
         } else {
             startJettyServer();
         }
-        userInterface.setStatus(jettyServer.getStatus());
     }
 
     private void startJettyServer() {
         userInterface.addEvent("Starting...");
         jettyServer.start();
         if (jettyServer.isRunning()) {
+            userInterface.setStatus("RUNNING");
             userInterface.addEvent("Started successfully.");
             userInterface.setStartStopButtonText("Stop");
         } else {
@@ -38,11 +38,12 @@ public class JettyStartStopEventHandler implements EventHandler<ActionEvent> {
     private void stopJettyServer() {
         userInterface.addEvent("Stopping...");
         jettyServer.stop();
-        if (!jettyServer.isRunning()) {
+        if (jettyServer.isRunning()) {
+            userInterface.addEvent("Could not stop.");
+        } else {
+            userInterface.setStatus("OFF");
             userInterface.addEvent("Stopped successfully.");
             userInterface.setStartStopButtonText("Start");
-        } else {
-            userInterface.addEvent("Could not stop service");
         }
     }
 
