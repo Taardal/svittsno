@@ -21,7 +21,7 @@ namespace :default do
   puts ' AVAILABLE RAKE TASKS'
   puts '-------------------------------------------------------'
   puts ' - rake deploy:test'
-  puts ' - rake deploy:svitts'
+  puts ' - rake deploy:prod'
   puts '-------------------------------------------------------'
   puts ''
 end
