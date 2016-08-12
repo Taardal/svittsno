@@ -42,6 +42,10 @@ public class UserInterface extends BorderPane {
         eventWidget.setStartStopButtonText(text);
     }
 
+    public String getExecutablePath() {
+        return browseWidget.getPath();
+    }
+
     public void setPath(String path) {
         browseWidget.setPath(path);
     }

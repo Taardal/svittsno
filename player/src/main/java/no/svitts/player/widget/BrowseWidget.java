@@ -20,4 +20,8 @@ public class BrowseWidget extends HBox {
     public void setPath(String path) {
         pathText.setText(path);
     }
+
+    public String getPath() {
+        return pathText.getText();
+    }
 }

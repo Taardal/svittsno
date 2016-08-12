@@ -2,6 +2,7 @@ package no.svitts.player.server;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,21 +39,24 @@ public class JettyServer {
         return isRunning() ? RUNNING : OFF;
     }
 
-    public void addServlet(Class<? extends HttpServlet> servlet, String mapping) {
-        servletHandler.addServletWithMapping(servlet, mapping);
+    public void addServlet(HttpServlet servlet, String mapping) {
+        ServletHolder servletHolder = new ServletHolder();
+        servletHolder.setServlet(servlet);
+        servletHandler.addServletWithMapping(servletHolder, mapping);
     }
 
     public void start() {
         startServer();
-        joinServer();
+        join();
     }
 
     public void stop() {
         stopServer();
-        joinServer();
+        join();
     }
 
     private void startServer() {
+        LOGGER.info("Starting jetty server.");
         try {
             server.start();
         } catch (Exception e) {
@@ -62,6 +66,7 @@ public class JettyServer {
     }
 
     private void stopServer() {
+        LOGGER.info("Stopping jetty server.");
         try {
             server.stop();
         } catch (Exception e) {
@@ -70,11 +75,12 @@ public class JettyServer {
         }
     }
 
-    private void joinServer() {
+    private void join() {
+        LOGGER.info("Executing join on jetty server.");
         try {
             server.join();
         } catch (InterruptedException e) {
-            LOGGER.error("Could not join jetty server.", e);
+            LOGGER.error("Could not execute join on jetty server.", e);
             throw new RuntimeException(e);
         }
     }

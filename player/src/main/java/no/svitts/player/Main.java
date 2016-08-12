@@ -13,7 +13,6 @@ public class Main extends Application {
 
     public Main() {
         jettyServer = new JettyServer(8585);
-        jettyServer.addServlet(PlayerServlet.class, "/");
     }
 
     public static void main(String[] args) {
@@ -23,6 +22,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         UserInterface userInterface = new UserInterface(jettyServer, primaryStage);
+        jettyServer.addServlet(new PlayerServlet(userInterface), "/");
         prepareStage(primaryStage, userInterface).show();
     }
 
