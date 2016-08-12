@@ -27,7 +27,6 @@ namespace :default do
 end
 
 today = Date.today
-
 api_version = 'v1'
 
 build_profile = ''
@@ -45,19 +44,17 @@ test_tomcat_catalina_base = '/var/lib/tomcat8'
 test_tomcat_catalina_home = '/usr/share/tomcat8'
 
 prod_build_profile = 'prod'
-prod_server_user = ''
-prod_server_address = ''
-prod_tomcat_port = ''
-prod_tomcat_catalina_base = ''
-prod_tomcat_catalina_home = ''
+prod_server_user = 'taardal'
+prod_server_address = 'ssh.svitts.no'
+prod_tomcat_port = '8080'
+prod_tomcat_catalina_base = '/var/lib/tomcat8'
+prod_tomcat_catalina_home = '/usr/share/tomcat8'
 
 namespace :deploy do
-  # task :test => [:set_test_as_server, :build, :cleanup_server, :deploy, :start_server, :ping] do
   task :test => [:set_test_as_server, :build, :cleanup_server, :deploy, :start_server] do
     puts 'Done'
   end
-  # task :prod => [:set_prod_as_server, :build, :cleanup_server, :deploy, :start_server, :ping] do
-  task :prod => [:set_prod_as_server, :build] do
+  task :prod => [:set_prod_as_server, :build, :cleanup_server, :deploy, :start_server] do
     puts 'Done'
   end
 end
@@ -76,7 +73,7 @@ task :set_prod_as_server do
   server_user = prod_server_user
   server_address = prod_server_address
   server_tomcat_port = prod_tomcat_port
-  server_tomcat_webapps_path = prod_tomcat_catalina_base
+  server_tomcat_webapps_path = prod_tomcat_catalina_base + '/webapps'
   server_tomcat_catalina_script = prod_tomcat_catalina_home + '/bin/catalina.sh'
 end
 
@@ -89,7 +86,7 @@ task :build do
 end
 
 task :cleanup_server do
-  puts "Shutting down and cleaning up #{build_profile} server (#{server_address})..."
+  puts "Shutting down and cleaning up #{build_profile}-server (#{server_address})..."
   Net::SSH.start(
       "#{server_address}",
       "#{server_user}",
@@ -102,7 +99,7 @@ task :cleanup_server do
 end
 
 task :deploy do
-  puts "Deploying SvittsNO (core) to #{build_profile} server (#{server_address})..."
+  puts "Deploying SvittsNO (core) to #{build_profile}-server (#{server_address})..."
   Net::SCP.start(
       "#{server_address}",
       "#{server_user}",
@@ -120,7 +117,7 @@ task :deploy do
 end
 
 task :start_server do
-  puts "Starting #{build_profile} server (#{server_address})..."
+  puts "Starting #{build_profile}-server (#{server_address})..."
   Net::SSH.start(
       "#{server_address}",
       "#{server_user}",
@@ -131,7 +128,7 @@ task :start_server do
 end
 
 task :ping do
-  puts "Is SvittsNO up on #{build_profile} server (#{server_address})?"
+  puts "Is SvittsNO up on #{build_profile}-server (#{server_address})?"
   time_spent = 0
   response = 0
   while time_spent < 30
