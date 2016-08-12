@@ -4,16 +4,16 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import no.svitts.player.server.JettyServer;
+import no.svitts.player.servlet.PlayerServlet;
 import no.svitts.player.userinterface.UserInterface;
 
-public class PlayerMain extends Application {
+public class Main extends Application {
 
-    private static final String PLAYER_SERVLET = "no.svitts.player.servlet.PlayerServlet";
-    private JettyServer jettyServer;
+    private final JettyServer jettyServer;
 
-    public PlayerMain() {
+    public Main() {
         jettyServer = new JettyServer(8585);
-        jettyServer.addServlet(PLAYER_SERVLET, "/");
+        jettyServer.addServlet(PlayerServlet.class, "/");
     }
 
     public static void main(String[] args) {
@@ -21,14 +21,13 @@ public class PlayerMain extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         jettyServer.start();
-        UserInterface userInterface = new UserInterface(jettyServer);
-        prepareStage(primaryStage, userInterface).show();
+        prepareStage(primaryStage, new UserInterface(jettyServer)).show();
     }
 
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         jettyServer.stop();
     }
 

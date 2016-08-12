@@ -1,5 +1,7 @@
 package no.svitts.player.userinterface;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -16,46 +18,38 @@ import no.svitts.player.server.JettyServer;
 
 public class UserInterface extends BorderPane {
 
-    public static final String TITLE = "SvittsPlayerService";
-    private final JettyServer jettyServer;
+    public static final String TITLE = "Svitts Player";
+
+    private String host;
+    private int port;
+    private EventHandler<ActionEvent> jettyStartStopEventHandler;
+    private Text statusText;
+    private TextArea eventTextArea;
+    private Button startStopButton;
 
     public UserInterface(JettyServer jettyServer) {
-        this.jettyServer = jettyServer;
-        setTop(getText(TITLE, "Tahoma", 20));
-        setCenter(getLayout());
-        setPadding(new Insets(25, 25, 25, 25));
+        host = jettyServer.getHost();
+        port = jettyServer.getPort();
+        jettyStartStopEventHandler = new JettyStartStopEventHandler(jettyServer, this);
+        statusText = new Text();
+        eventTextArea = getEventTextArea();
+        startStopButton = getStartStopButton(eventTextArea);
+        buildLayout();
     }
 
-    private Text getText(String string, String font, int fontSize) {
-        Text text = new Text(string);
-        text.setFont(Font.font(font, FontWeight.NORMAL, fontSize));
-        return text;
+    public void setStatus(String status) {
+        statusText.setText(status);
     }
 
-    private VBox getLayout() {
-        VBox layout = new VBox();
-        Text statusText = new Text(jettyServer.getStatus());
-        layout.getChildren().addAll(getStatusLayout(statusText), getEventLayout(statusText));
-        return layout;
+    public void addEvent(String event) {
+        eventTextArea.setText(eventTextArea.getText() + "\n" + event);
     }
 
-    private GridPane getStatusLayout(Text statusText) {
-        GridPane statusLayout = new GridPane();
-        statusLayout.setPadding(new Insets(15, 0, 15, 0));
-        statusLayout.addRow(1, new Label("Status: "), statusText);
-        statusLayout.addRow(2, new Label("Address: "), new Text(jettyServer.getAddress() + ":" + jettyServer.getPort()));
-        return statusLayout;
+    public void setStartStopButtonText(String startStopButtonText) {
+        startStopButton.setText(startStopButtonText);
     }
 
-    private HBox getEventLayout(Text statusText) {
-        HBox eventLayout = new HBox(10);
-        TextArea eventLog = getEventLog();
-        Button startStopButton = getStartStopButton(statusText, eventLog);
-        eventLayout.getChildren().addAll(eventLog, startStopButton);
-        return eventLayout;
-    }
-
-    private TextArea getEventLog() {
+    private TextArea getEventTextArea() {
         TextArea eventLog = new TextArea();
         eventLog.setPrefWidth(200);
         eventLog.setPrefHeight(50);
@@ -64,16 +58,43 @@ public class UserInterface extends BorderPane {
         return eventLog;
     }
 
-    private Button getStartStopButton(Text statusText, TextArea eventLog) {
-        Button startStopButton = new Button(getStartStopButtonText());
+    private Button getStartStopButton(TextArea eventLog) {
+        Button startStopButton = new Button("Start");
         startStopButton.setPrefHeight(eventLog.getPrefHeight());
         startStopButton.setPrefWidth(50);
-        startStopButton.setOnAction(new JettyStartStopEventHandler(jettyServer, startStopButton, eventLog, statusText));
+        startStopButton.setOnAction(jettyStartStopEventHandler);
         return startStopButton;
     }
 
-    private String getStartStopButtonText() {
-        return jettyServer.isRunning() ? "Stop" : "Start";
+    private void buildLayout() {
+        setCenter(getCenterLayout());
+        setTop(getText(TITLE, "Tahoma", 20));
+        setPadding(new Insets(25, 25, 25, 25));
     }
 
+    private VBox getCenterLayout() {
+        VBox layout = new VBox();
+        layout.getChildren().addAll(getStatusLayout(statusText), getEventLayout());
+        return layout;
+    }
+
+    private GridPane getStatusLayout(Text statusText) {
+        GridPane statusLayout = new GridPane();
+        statusLayout.setPadding(new Insets(15, 0, 15, 0));
+        statusLayout.addRow(1, new Label("Status: "), statusText);
+        statusLayout.addRow(2, new Label("Address: "), new Text(host + ":" + port));
+        return statusLayout;
+    }
+
+    private HBox getEventLayout() {
+        HBox eventLayout = new HBox(10);
+        eventLayout.getChildren().addAll(eventTextArea, startStopButton);
+        return eventLayout;
+    }
+
+    private Text getText(String string, String font, int fontSize) {
+        Text text = new Text(string);
+        text.setFont(Font.font(font, FontWeight.NORMAL, fontSize));
+        return text;
+    }
 }
