@@ -80,7 +80,7 @@ end
 task :build do
   puts "Building SvittsNO (core) with profile #{build_profile} using Maven..."
   puts ''
-  puts %x{mvn clean package -P test}
+  puts %x{mvn clean package -P #{build_profile}}
   puts ''
   raise 'SvittsNO (core) build failed!' if $?.exitstatus != 0
 end
