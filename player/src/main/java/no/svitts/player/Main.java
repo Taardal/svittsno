@@ -12,7 +12,7 @@ public class Main extends Application {
     private final JettyServer jettyServer;
 
     public Main() {
-        jettyServer = new JettyServer(8585);
+        jettyServer = new JettyServer(8181);
     }
 
     public static void main(String[] args) {
