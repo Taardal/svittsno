@@ -63,10 +63,15 @@ public class UserInterface extends BorderPane implements EventListener {
         browseButton = getButton("Browse", new BrowseEventHandler(primaryStage, this));
         saveButton = getButton("Save", new SaveEventHandler(this));
         clearButton = getButton("Clear", new ClearEventLogEventHandler(this));
-        String startStopButtonText = getStartStopString(jettyServer.isRunning());
-        startStopButton = getButton(startStopButtonText, new JettyStartStopEventHandler(jettyServer, this));
-        startStopButton.setPrefHeight(130);
+        startStopButton = getStartStopButton(jettyServer);
         buildLayout();
+    }
+
+    private Button getStartStopButton(JettyServer jettyServer) {
+        String startStopButtonText = getStartStopString(jettyServer.isRunning());
+        Button button = getButton(startStopButtonText, new JettyStartStopEventHandler(jettyServer, this));
+        button.setPrefHeight(EVENT_LOG_HEIGHT - (2 * BUTTON_HEIGHT));
+        return button;
     }
 
 
