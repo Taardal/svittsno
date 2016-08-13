@@ -8,7 +8,7 @@
 # - Stop tomcat on remote server and remove old version (folder and .war-file)
 # - Copy new svitts.war (core) to remote server
 # - Start tomcat on remote server
-# - Ensure that SvittsNO webapp is running by pinging REST API self-test.
+# - Ensure that SvittsNO webapp is running by pinging REST API.
 
 
 require 'net/ssh'
@@ -132,12 +132,12 @@ task :ping do
   time_spent = 0
   response = 0
   while time_spent < 30
-    response = %x{curl -s -o /dev/null -w "%{http_code}" 'http://#{server_address}:#{server_tomcat_port}/svitts/api/#{api_version}/selftest'}
+    response = %x{curl -s -o /dev/null -w "%{http_code}" 'http://#{server_address}:#{server_tomcat_port}/svitts/api/#{api_version}/genres/'}
     if response == '200'
       break
     end
     sleep(1)
-    print "."
+    print '.'
     $stdout.flush
     time_spent += 1
   end
@@ -146,6 +146,6 @@ task :ping do
     fail "SvittsNO is not up (#{response})"
   end
 
-  puts ""
+  puts ''
   puts "HTTP response from SvittsNO: #{response}"
 end
