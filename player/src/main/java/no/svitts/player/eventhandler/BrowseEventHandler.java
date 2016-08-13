@@ -4,25 +4,27 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import no.svitts.player.userinterface.UserInterface;
+import no.svitts.player.listener.EventListener;
 
 import java.io.File;
 
 public class BrowseEventHandler implements EventHandler<ActionEvent> {
 
-    private final Stage stage;
-    private final UserInterface userInterface;
-    private final FileChooser fileChooser;
+    private Stage stage;
+    private EventListener eventListener;
+    private FileChooser fileChooser;
 
-    public BrowseEventHandler(Stage stage, UserInterface userInterface) {
+    public BrowseEventHandler(Stage stage, EventListener eventListener) {
         this.stage = stage;
-        this.userInterface = userInterface;
+        this.eventListener = eventListener;
         fileChooser = getFileChooser();
     }
 
     public void handle(ActionEvent event) {
         File selectedFile = fileChooser.showOpenDialog(stage);
-        userInterface.setPath(selectedFile.getPath());
+        if (selectedFile != null) {
+            eventListener.onSetPath(selectedFile.getPath());
+        }
     }
 
     private FileChooser getFileChooser() {

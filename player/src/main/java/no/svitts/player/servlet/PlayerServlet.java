@@ -1,6 +1,6 @@
 package no.svitts.player.servlet;
 
-import no.svitts.player.userinterface.UserInterface;
+import no.svitts.player.listener.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,15 +13,16 @@ public class PlayerServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlayerServlet.class);
 
-    private final UserInterface userInterface;
+    private EventListener eventListener;
 
-    public PlayerServlet(UserInterface userInterface) {
-        this.userInterface = userInterface;
+    public PlayerServlet(EventListener eventListener) {
+        this.eventListener = eventListener;
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
-        String videoFilePath = request.getParameter("path");
-        String mediaPlayerExecutablePath = userInterface.getExecutablePath();
+        String videoFilePath = request.getHeader("path");
+        String mediaPlayerExecutablePath = eventListener.onGetPath();
+        eventListener.onAddEvent("Received request to play video file [" + videoFilePath +"]");
         executeCommand("\"" + mediaPlayerExecutablePath + "\" \"" + videoFilePath + "\"");
     }
 

@@ -2,19 +2,20 @@ package no.svitts.player.eventhandler;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import no.svitts.player.listener.EventListener;
 import no.svitts.player.server.JettyServer;
-import no.svitts.player.userinterface.UserInterface;
 
 public class JettyStartStopEventHandler implements EventHandler<ActionEvent> {
 
     private final JettyServer jettyServer;
-    private final UserInterface userInterface;
+    private EventListener eventListener;
 
-    public JettyStartStopEventHandler(JettyServer jettyServer, UserInterface userInterface) {
+    public JettyStartStopEventHandler(JettyServer jettyServer, EventListener eventListener) {
         this.jettyServer = jettyServer;
-        this.userInterface = userInterface;
+        this.eventListener = eventListener;
     }
 
+    @Override
     public void handle(ActionEvent event) {
         if (jettyServer.isRunning()) {
             stopJettyServer();
@@ -24,31 +25,25 @@ public class JettyStartStopEventHandler implements EventHandler<ActionEvent> {
     }
 
     private void stopJettyServer() {
-        userInterface.addEvent("Stopping...");
+        eventListener.onAddEvent("Stopping...");
         jettyServer.stop();
         if (jettyServer.isRunning()) {
-            userInterface.addEvent("Could not stop.");
+            eventListener.onAddEvent("Could not stop.");
         } else {
-            userInterface.addEvent("Stopped successfully.");
+            eventListener.onAddEvent("Stopped successfully.");
         }
-        userInterface.setStatus(jettyServer.getStatus());
-        userInterface.setStartStopButtonText(getStartStopButtonText());
+        eventListener.onStatusChanged(jettyServer.isRunning());
     }
 
     private void startJettyServer() {
-        userInterface.addEvent("Starting...");
+        eventListener.onAddEvent("Starting...");
         jettyServer.start();
         if (jettyServer.isRunning()) {
-            userInterface.addEvent("Started successfully.");
+            eventListener.onAddEvent("Started successfully.");
         } else {
-            userInterface.addEvent("Could not start.");
+            eventListener.onAddEvent("Could not start.");
         }
-        userInterface.setStatus(jettyServer.getStatus());
-        userInterface.setStartStopButtonText(getStartStopButtonText());
-    }
-
-    private String getStartStopButtonText() {
-        return jettyServer.isRunning() ? "Stop" : "Start";
+        eventListener.onStatusChanged(jettyServer.isRunning());
     }
 
 }

@@ -10,33 +10,31 @@ import javax.servlet.http.HttpServlet;
 
 public class JettyServer {
 
-    private static final String RUNNING = "RUNNING";
-    private static final String OFF = "OFF";
     private static final Logger LOGGER = LoggerFactory.getLogger(JettyServer.class);
 
     private final Server server;
     private final ServletHandler servletHandler;
+    private String host;
+    private int port;
 
     public JettyServer(int port) {
         server = new Server(port);
         servletHandler = new ServletHandler();
         server.setHandler(servletHandler);
+        this.host = server.getURI().getHost();
+        this.port = port;
     }
 
     public String getHost() {
-        return server.getURI().getHost();
+        return host;
     }
 
     public int getPort() {
-        return server.getURI().getPort();
+        return port;
     }
 
     public boolean isRunning() {
         return server.isRunning();
-    }
-
-    public String getStatus() {
-        return isRunning() ? RUNNING : OFF;
     }
 
     public void addServlet(HttpServlet servlet, String mapping) {
@@ -47,7 +45,6 @@ public class JettyServer {
 
     public void start() {
         startServer();
-        join();
     }
 
     public void stop() {
