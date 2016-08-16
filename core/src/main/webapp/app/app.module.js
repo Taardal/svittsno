@@ -1,3 +1,8 @@
 'use strict';
 
-angular.module('svittsApp', ['navbar', 'movieList']);
+angular.module('svittsApp', [
+    'ui.bootstrap',
+    'navbar',
+    'movieList',
+    'movieRegistration'
+]);
