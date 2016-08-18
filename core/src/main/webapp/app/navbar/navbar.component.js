@@ -2,7 +2,7 @@
 
 angular.module('navbar').component('navbar', {
     templateUrl: 'app/navbar/navbar.template.html',
-    controller: function ($http) {
+    controller: function ($http, modalService) {
 
         var self = this;
         self.genres = [];
@@ -12,6 +12,11 @@ angular.module('navbar').component('navbar', {
                 self.genres[i] = getPrettyGenre(genre);
             });
         });
+
+        self.open = function () {
+            console.log("navbar open");
+            modalService.open();
+        }
 
     }
 });

@@ -4,5 +4,5 @@ angular.module('svittsApp', [
     'ui.bootstrap',
     'navbar',
     'movieList',
-    'movieRegistration'
+    'movieRegistrationForm'
 ]);
