@@ -8,12 +8,6 @@
     height: 322px;
 }
 
-.card-inverse .card-img-overlay .overlay .overlay-content {
-    display: table-cell;
-    text-align: center;
-    vertical-align: middle;
-}
-
 .card-inverse .card-img-overlay {
     box-shadow: 4px 4px 3px 0 rgba(0, 0, 0, 0.3);
 }
@@ -37,6 +31,12 @@
 
 .card-inverse .card-img-overlay .overlay:hover {
     opacity: 1;
+}
+
+.card-inverse .card-img-overlay .overlay .overlay-content {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
 }
 
 
