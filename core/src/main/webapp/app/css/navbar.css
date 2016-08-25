@@ -75,3 +75,13 @@
         background-color: #f9f9f9;
     }
 }
+
+.checkbox-grid li {
+    display: inline-block;
+    float: left;
+    width: 25%;
+}
+
+hr {
+    width: 100%;
+}
