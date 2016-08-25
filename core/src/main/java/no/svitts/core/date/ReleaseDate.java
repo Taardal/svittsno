@@ -13,10 +13,7 @@ import javax.persistence.Transient;
 @Embeddable
 public class ReleaseDate {
 
-    private static final String RELEASE_DATE_REGEX = "((19|20)(\\d)(\\d))(0?[1-9]|1[012])(0?[1-9]|[12][0-9]|3[01])";
-    private static final String SQL_DATE_REGEX = "((19|20)(\\d)(\\d))(-)(0?[1-9]|1[012])(-)(0?[1-9]|[12][0-9]|3[01])";
     private static final DateTimeFormatter RELEASE_DATE_PATTERN = DateTimeFormat.forPattern("yyyyMMdd");
-    private static final DateTimeFormatter SQL_DATE_PATTERN = DateTimeFormat.forPattern("yyyy-MM-dd");
     private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseDate.class);
 
     @Transient
@@ -30,16 +27,21 @@ public class ReleaseDate {
         dateTime = new DateTime(year, monthOfYear, dayOfMonth, 0, 0);
     }
 
-    public ReleaseDate(java.sql.Date date) {
-        dateTime = new DateTime(date);
-    }
-
     public ReleaseDate(long time) {
         dateTime = new DateTime(time);
     }
 
     private ReleaseDate(DateTime dateTime) {
         this.dateTime = dateTime;
+    }
+
+    public static ReleaseDate fromString(String string) {
+        if (string != null && !string.equals("")) {
+            return new ReleaseDate(DateTime.parse(string));
+        } else {
+            LOGGER.warn("Could not parse string [" + string + "] to release date because it was null or empty.");
+            return null;
+        }
     }
 
     @Override
@@ -57,20 +59,6 @@ public class ReleaseDate {
         }
     }
 
-    public static ReleaseDate fromString(String dateString) {
-        if (dateString != null && !dateString.equals("")) {
-            DateTime dateTime = parseDateTime(dateString);
-            if (dateTime != null) {
-                return new ReleaseDate(dateTime);
-            } else {
-                LOGGER.warn("Could not parse date string [" + dateString + "] to release date because it did not match any supported regex.");
-            }
-        } else {
-            LOGGER.warn("Could not parse date string [" + dateString + "] to release date because it was null or empty.");
-        }
-        return null;
-    }
-
     @Column(name = "datetime")
     public long getTime() {
         return dateTime.toInstant().getMillis();
@@ -78,20 +66,6 @@ public class ReleaseDate {
 
     public void setTime(long millis) {
         dateTime = new DateTime(millis);
-    }
-
-    public java.sql.Date toSqlDate() {
-        return new java.sql.Date(getTime());
-    }
-
-    private static DateTime parseDateTime(String date) {
-        if (date.matches(RELEASE_DATE_REGEX)) {
-            return RELEASE_DATE_PATTERN.parseDateTime(date);
-        } else if (date.matches(SQL_DATE_REGEX)) {
-            return SQL_DATE_PATTERN.parseDateTime(date);
-        } else {
-            return null;
-        }
     }
 
 }

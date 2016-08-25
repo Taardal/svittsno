@@ -35,9 +35,13 @@ public class MovieDeserializer extends Deserializer implements JsonDeserializer<
 
     private ReleaseDate getReleaseDate(JsonElement jsonElement) {
         if (isNotNull(jsonElement)) {
-            JsonElement timeJsonElement = jsonElement.getAsJsonObject().get("time");
-            if (isNotNull(timeJsonElement)) {
-                return new ReleaseDate(getLong(timeJsonElement));
+            if (jsonElement.isJsonObject()) {
+                JsonElement timeJsonElement = jsonElement.getAsJsonObject().get("time");
+                if (isNotNull(timeJsonElement)) {
+                    return new ReleaseDate(getLong(timeJsonElement));
+                }
+            } else {
+                return ReleaseDate.fromString(jsonElement.getAsString());
             }
         }
         return null;

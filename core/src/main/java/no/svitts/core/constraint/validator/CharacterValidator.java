@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 public class CharacterValidator extends CoreValidator implements ConstraintValidator<ValidCharacters, String> {
 
-    private static final Pattern INVALID_CHARACTERS_PATTERN = Pattern.compile("[~#@*+%{}<>\\[\\]|\"_^£\\$€´]");
+    private static final Pattern INVALID_CHARACTERS_PATTERN = Pattern.compile("[~#@*+%{}<>\\[\\]|\"_^£$€´]");
 
     @Override
     public void initialize(ValidCharacters validCharacters) {
