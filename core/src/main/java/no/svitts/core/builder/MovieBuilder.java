@@ -1,10 +1,11 @@
 package no.svitts.core.builder;
 
 import no.svitts.core.date.ReleaseDate;
+import no.svitts.core.file.SubtitleFile;
 import no.svitts.core.file.VideoFile;
 import no.svitts.core.genre.Genre;
-import no.svitts.core.util.Id;
 import no.svitts.core.movie.Movie;
+import no.svitts.core.util.Id;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,10 +17,13 @@ public class MovieBuilder implements Builder<Movie> {
     private String imdbId;
     private String tagline;
     private String overview;
+    private String language;
+    private String edition;
     private int runtime;
     private ReleaseDate releaseDate;
     private Set<Genre> genres;
     private VideoFile videoFile;
+    private Set<SubtitleFile> subtitleFiles;
     private String posterImageFile;
     private String backdropImageFile;
 
@@ -32,14 +36,15 @@ public class MovieBuilder implements Builder<Movie> {
         runtime = 0;
         releaseDate = new ReleaseDate(2016, 1, 1);
         genres = getDefaultGenres();
-        videoFile = new VideoFile("videoFilePath");
-        posterImageFile = "posterImageFilePath";
-        backdropImageFile = "backdropImageFilePath";
+        videoFile = new VideoFile("path/to/video/file", "1080p", "DTS-HD 5.1");
+        subtitleFiles = getDefaultSubtitleFiles();
+        posterImageFile = "path/to/poster/file";
+        backdropImageFile = "path/to/backdrop/file";
     }
 
     @Override
     public Movie build() {
-        return new Movie(id, title, imdbId, tagline, overview, runtime, releaseDate, genres, videoFile, posterImageFile, backdropImageFile);
+        return new Movie(id, title, imdbId, tagline, overview, language, edition, runtime, releaseDate, genres, videoFile, subtitleFiles, posterImageFile, backdropImageFile);
     }
 
     public MovieBuilder id(String id) {
@@ -67,6 +72,16 @@ public class MovieBuilder implements Builder<Movie> {
         return this;
     }
 
+    public MovieBuilder language(String language) {
+        this.language = language;
+        return this;
+    }
+
+    public MovieBuilder edition(String edition) {
+        this.edition = edition;
+        return this;
+    }
+
     public MovieBuilder runtime(int runtime) {
         this.runtime = runtime;
         return this;
@@ -87,12 +102,17 @@ public class MovieBuilder implements Builder<Movie> {
         return this;
     }
 
-    public MovieBuilder posterImageFile(String posterImageFile) {
+    public MovieBuilder subtitleFiles(Set<SubtitleFile> subtitleFiles) {
+        this.subtitleFiles = subtitleFiles;
+        return this;
+    }
+
+    public MovieBuilder posterPath(String posterImageFile) {
         this.posterImageFile = posterImageFile;
         return this;
     }
 
-    public MovieBuilder backdropImageFile(String backdropImageFile) {
+    public MovieBuilder backdropPath(String backdropImageFile) {
         this.backdropImageFile = backdropImageFile;
         return this;
     }
@@ -104,4 +124,10 @@ public class MovieBuilder implements Builder<Movie> {
         return genres;
     }
 
+    private Set<SubtitleFile> getDefaultSubtitleFiles() {
+        Set<SubtitleFile> subtitleFiles = new HashSet<>();
+        subtitleFiles.add(new SubtitleFile("path/to/subtitle/file", "English"));
+        subtitleFiles.add(new SubtitleFile("path/to/subtitle/file", "Norwegian"));
+        return subtitleFiles;
+    }
 }
