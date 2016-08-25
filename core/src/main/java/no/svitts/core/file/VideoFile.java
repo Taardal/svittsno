@@ -11,17 +11,24 @@ import java.io.File;
 @Embeddable
 public class VideoFile {
 
-    private static final int PATH_MAX_LENGTH = 255;
-    private static final int NAME_MAX_LENGTH = 255;
+    public static final int PATH_MAX_LENGTH = 255;
+    public static final int NAME_MAX_LENGTH = 255;
+    public static final int VIDEO_FORMAT_MAX_LENGTH = 255;
+    public static final int AUDIO_FORMAT_MAX_LENGTH = 255;
 
     @Transient
     private File file;
 
+    private String videoFormat;
+    private String audioFormat;
+
     private VideoFile() {
     }
 
-    public VideoFile(String path) {
+    public VideoFile(String path, String videoFormat, String audioFormat) {
         file = new File(path);
+        this.videoFormat = videoFormat;
+        this.audioFormat = audioFormat;
     }
 
     @Override
@@ -29,7 +36,9 @@ public class VideoFile {
         return "VideoFile{" +
                 "path='" + getPath() + '\'' +
                 ", name='" + getName() + '\'' +
-                ", size='" + getSize() +
+                ", size='" + getSize() + '\'' +
+                ", videoFormat='" + getVideoFormat() + '\'' +
+                ", audioFormat='" + getAudioFormat() +
                 '}';
     }
 
@@ -39,7 +48,9 @@ public class VideoFile {
             VideoFile videoFile = (VideoFile) object;
             return getPath().equals(videoFile.getPath())
                     && getName().equals(videoFile.getName())
-                    && getSize() == videoFile.getSize();
+                    && getSize() == videoFile.getSize()
+                    && (getVideoFormat() == null && videoFile.getVideoFormat() == null) || getVideoFormat().equals(videoFile.getVideoFormat())
+                    && (getAudioFormat() == null && videoFile.getAudioFormat() == null) || getAudioFormat().equals(videoFile.getAudioFormat());
         } else {
             return false;
         }
@@ -68,4 +79,21 @@ public class VideoFile {
         return file.length();
     }
 
+    @Length(length = VIDEO_FORMAT_MAX_LENGTH)
+    public String getVideoFormat() {
+        return videoFormat;
+    }
+
+    public void setVideoFormat(String videoFormat) {
+        this.videoFormat = videoFormat;
+    }
+
+    @Length(length = AUDIO_FORMAT_MAX_LENGTH)
+    public String getAudioFormat() {
+        return audioFormat;
+    }
+
+    public void setAudioFormat(String audioFormat) {
+        this.audioFormat = audioFormat;
+    }
 }

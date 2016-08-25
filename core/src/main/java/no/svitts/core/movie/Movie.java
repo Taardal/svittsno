@@ -5,6 +5,7 @@ import no.svitts.core.constraint.NonNegative;
 import no.svitts.core.constraint.NotNullOrEmpty;
 import no.svitts.core.constraint.ValidCharacters;
 import no.svitts.core.date.ReleaseDate;
+import no.svitts.core.file.SubtitleFile;
 import no.svitts.core.file.VideoFile;
 import no.svitts.core.genre.Genre;
 import org.hibernate.annotations.Type;
@@ -22,6 +23,8 @@ public class Movie {
     public static final int IMDB_ID_MAX_LENGTH = 255;
     public static final int TAGLINE_MAX_LENGTH = 255;
     public static final int OVERVIEW_MAX_LENGTH = 510;
+    public static final int LANGUAGE_MAX_LENGTH = 255;
+    public static final int EDITION_MAX_LENGTH = 255;
     public static final int POSTER_PATH_MAX_LENGTH = 255;
     public static final int BACKDROP_PATH_MAX_LENGTH = 255;
 
@@ -30,26 +33,32 @@ public class Movie {
     private String imdbId;
     private String tagline;
     private String overview;
+    private String language;
+    private String edition;
     private int runtime;
     private ReleaseDate releaseDate;
     private Set<Genre> genres;
     private VideoFile videoFile;
+    private Set<SubtitleFile> subtitleFiles;
     private String posterPath;
     private String backdropPath;
 
     private Movie() {
     }
 
-    public Movie(String id, String title, String imdbId, String tagline, String overview, int runtime, ReleaseDate releaseDate, Set<Genre> genres, VideoFile videoFile, String posterPath, String backdropPath) {
+    public Movie(String id, String title, String imdbId, String tagline, String overview, String language, String edition, int runtime, ReleaseDate releaseDate, Set<Genre> genres, VideoFile videoFile, Set<SubtitleFile> subtitleFiles, String posterPath, String backdropPath) {
         this.id = id;
         this.title = title;
         this.imdbId = imdbId;
         this.tagline = tagline;
         this.overview = overview;
+        this.language = language;
+        this.edition = edition;
         this.runtime = runtime;
         this.releaseDate = releaseDate;
         this.genres = genres;
         this.videoFile = videoFile;
+        this.subtitleFiles = subtitleFiles;
         this.posterPath = posterPath;
         this.backdropPath = backdropPath;
     }
@@ -62,12 +71,15 @@ public class Movie {
                 ", imdbId='" + imdbId + '\'' +
                 ", tagline='" + tagline + '\'' +
                 ", overview='" + overview + '\'' +
+                ", language='" + language + '\'' +
+                ", edition='" + edition + '\'' +
                 ", runtime=" + runtime +
                 ", releaseDate=" + releaseDate +
                 ", genres=" + genres +
                 ", videoFile=" + videoFile +
-                ", posterPath=" + posterPath +
-                ", backdropPath=" + backdropPath +
+                ", subtitleFiles=" + subtitleFiles +
+                ", posterPath='" + posterPath + '\'' +
+                ", backdropPath='" + backdropPath + '\'' +
                 '}';
     }
 
@@ -148,6 +160,28 @@ public class Movie {
         this.overview = overview;
     }
 
+    @ValidCharacters
+    @Length(length = LANGUAGE_MAX_LENGTH)
+    @Column(name = "language", length = LANGUAGE_MAX_LENGTH)
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    @ValidCharacters
+    @Length(length = EDITION_MAX_LENGTH)
+    @Column(name = "edition", length = EDITION_MAX_LENGTH)
+    public String getEdition() {
+        return edition;
+    }
+
+    public void setEdition(String edition) {
+        this.edition = edition;
+    }
+
     @NonNegative
     @Column(name = "runtime")
     public int getRuntime() {
@@ -184,7 +218,9 @@ public class Movie {
     @Embedded
     @Column(name = "video_file")
     @AttributeOverrides({
-            @AttributeOverride(name = "path", column = @Column(name = "video_file_path"))
+            @AttributeOverride(name = "path", column = @Column(name = "video_file_path")),
+            @AttributeOverride(name = "videoFormat", column = @Column(name = "video_format")),
+            @AttributeOverride(name = "audioFormat", column = @Column(name = "audio_format"))
     })
     public VideoFile getVideoFile() {
         return videoFile;
@@ -192,6 +228,19 @@ public class Movie {
 
     public void setVideoFile(VideoFile videoFile) {
         this.videoFile = videoFile;
+    }
+
+    @Valid
+    @ElementCollection(targetClass = SubtitleFile.class, fetch = FetchType.EAGER)
+    @AttributeOverrides({
+            @AttributeOverride(name = "path", column = @Column(name = "subtitle_file_path"))
+    })
+    public Set<SubtitleFile> getSubtitleFiles() {
+        return subtitleFiles;
+    }
+
+    public void setSubtitleFiles(Set<SubtitleFile> subtitleFiles) {
+        this.subtitleFiles = subtitleFiles;
     }
 
     @ValidCharacters
