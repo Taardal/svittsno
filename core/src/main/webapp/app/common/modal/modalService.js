@@ -4,14 +4,41 @@ angular.module('svittsApp').service('modalService', ['$uibModal', function ($uib
 
     var self = this;
 
-    self.open = function () {
-        console.log("Opening modal...");
+    self.open = function (templateUrl, payload) {
+
+        self.foo = "self";
+
         return $uibModal.open({
-            templateUrl: 'app/common/modal/modal.template.html',
-            controller: function () {
-                console.log("service controller");
+            templateUrl: templateUrl,
+            controller: function ($scope, $uibModalInstance, payload) {
+
+                $scope.acceptModal = function () {
+                    $uibModalInstance.close(self.foo);
+                };
+                $scope.dismissModal = function () {
+                    $uibModalInstance.dismiss('avbryt');
+                };
+
+            },
+            resolve: {
+                payload: function () {
+                    return payload;
+                }
             }
         });
+
     }
 
 }]);
+
+
+
+
+
+
+
+
+
+
+
+
