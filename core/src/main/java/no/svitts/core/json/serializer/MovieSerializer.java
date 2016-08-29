@@ -53,7 +53,7 @@ public class MovieSerializer extends Serializer implements JsonSerializer<Movie>
         if (genres != null) {
             JsonArray jsonArray = new JsonArray();
             for (Genre genre : genres) {
-                jsonArray.add(genre.toString());
+                jsonArray.add(genre.getValue());
             }
             return jsonArray;
         } else {
