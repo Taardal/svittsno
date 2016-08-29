@@ -5,7 +5,7 @@ import com.google.gson.JsonElement;
 abstract class Deserializer {
 
     String getString(JsonElement jsonElement) {
-        return isNotNull(jsonElement) && !jsonElement.getAsString().equals("null") ? jsonElement.getAsString() : null;
+        return isNotNull(jsonElement) && !jsonElement.getAsString().equals("null") ? jsonElement.getAsString() : "";
     }
 
     int getInt(JsonElement jsonElement) {

@@ -24,8 +24,8 @@ public class MovieBuilder implements Builder<Movie> {
     private Set<Genre> genres;
     private VideoFile videoFile;
     private Set<SubtitleFile> subtitleFiles;
-    private String posterImageFile;
-    private String backdropImageFile;
+    private String posterPath;
+    private String backdropPath;
 
     public MovieBuilder() {
         id = Id.get();
@@ -38,13 +38,27 @@ public class MovieBuilder implements Builder<Movie> {
         genres = getDefaultGenres();
         videoFile = new VideoFile("path/to/video/file", "1080p", "DTS-HD 5.1");
         subtitleFiles = getDefaultSubtitleFiles();
-        posterImageFile = "path/to/poster/file";
-        backdropImageFile = "path/to/backdrop/file";
+        posterPath = "path/to/poster/file";
+        backdropPath = "path/to/backdrop/file";
     }
 
     @Override
     public Movie build() {
-        return new Movie(id, title, imdbId, tagline, overview, language, edition, runtime, releaseDate, genres, videoFile, subtitleFiles, posterImageFile, backdropImageFile);
+        Movie movie = new Movie(id);
+        movie.setTitle(title);
+        movie.setImdbId(imdbId);
+        movie.setTagline(tagline);
+        movie.setOverview(overview);
+        movie.setLanguage(language);
+        movie.setEdition(edition);
+        movie.setRuntime(runtime);
+        movie.setReleaseDate(releaseDate);
+        movie.setGenres(genres);
+        movie.setVideoFile(videoFile);
+        movie.setSubtitleFiles(subtitleFiles);
+        movie.setPosterPath(posterPath);
+        movie.setBackdropPath(backdropPath);
+        return movie;
     }
 
     public MovieBuilder id(String id) {
@@ -108,12 +122,12 @@ public class MovieBuilder implements Builder<Movie> {
     }
 
     public MovieBuilder posterPath(String posterImageFile) {
-        this.posterImageFile = posterImageFile;
+        this.posterPath = posterImageFile;
         return this;
     }
 
     public MovieBuilder backdropPath(String backdropImageFile) {
-        this.backdropImageFile = backdropImageFile;
+        this.backdropPath = backdropImageFile;
         return this;
     }
 

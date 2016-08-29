@@ -46,21 +46,8 @@ public class Movie {
     private Movie() {
     }
 
-    public Movie(String id, String title, String imdbId, String tagline, String overview, String language, String edition, int runtime, ReleaseDate releaseDate, Set<Genre> genres, VideoFile videoFile, Set<SubtitleFile> subtitleFiles, String posterPath, String backdropPath) {
+    public Movie(String id) {
         this.id = id;
-        this.title = title;
-        this.imdbId = imdbId;
-        this.tagline = tagline;
-        this.overview = overview;
-        this.language = language;
-        this.edition = edition;
-        this.runtime = runtime;
-        this.releaseDate = releaseDate;
-        this.genres = genres;
-        this.videoFile = videoFile;
-        this.subtitleFiles = subtitleFiles;
-        this.posterPath = posterPath;
-        this.backdropPath = backdropPath;
     }
 
     @Override
