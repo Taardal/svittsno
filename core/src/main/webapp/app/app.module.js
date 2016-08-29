@@ -1,8 +1,3 @@
 'use strict';
 
-angular.module('svittsApp', [
-    'ui.bootstrap',
-    'navbar',
-    'movieList',
-    'movieRegistrationForm'
-]);
+angular.module('svittsApp', ['ngRoute', 'ui.bootstrap', 'navbar', 'movieList', 'movieRegistrationForm']);

@@ -2,15 +2,15 @@
 
 angular.module('navbar').component('navbar', {
     templateUrl: 'app/navbar/navbar.template.html',
-    controller: function ($http, modalService, notificationService) {
+    controller: function ($http, notificationService) {
 
         var ctrl = this;
         ctrl.genres = [];
 
         $http.get('./api/v1/genres').then(function (response) {
-            angular.forEach(response.data, function (genre, i) {
-                ctrl.genres[i] = getPrettyGenre(genre);
-            });
+            ctrl.genres = response.data;
+        }, function () {
+            notificationService.error("Could not get genres.");
         });
 
         ctrl.movie = {
@@ -18,12 +18,15 @@ angular.module('navbar').component('navbar', {
             imdbId: '',
             tagline: '',
             overview: '',
+            language: '',
+            edition: '',
             runtime: 0,
             releaseDate: new Date(),
             genres: [],
             videoFile: {
                 path: ''
             },
+            subtitleFiles: [],
             posterPath: '',
             backdropPath: ''
         };
@@ -32,24 +35,21 @@ angular.module('navbar').component('navbar', {
             if (!imdbId) {
                 notificationService.error("IMDB ID is required for auto-fill.");
             } else {
-                var tmdbApiKey = 'b041b0681fa9947874d41095ea1ca5ae';
-                $http.get('http://api.themoviedb.org/3/movie/' + imdbId + '?api_key=' + tmdbApiKey).then(function (response) {
-                    var tmdbMovie = response.data;
-                    ctrl.movie.title = tmdbMovie.title;
-                    ctrl.movie.tagline = tmdbMovie.tagline;
-                    ctrl.movie.overview = tmdbMovie.overview;
-                    ctrl.movie.runtime = tmdbMovie.runtime;
-                    ctrl.movie.releaseDate = getTMDbReleaseDateAsDate(tmdbMovie.release_date);
-                    angular.forEach(tmdbMovie.genres, function (genre) {
+                var theMovieDatabaseApiKey = 'b041b0681fa9947874d41095ea1ca5ae';
+                var imageBaseUrl = 'http://image.tmdb.org/t/p/original';
+                $http.get('http://api.themoviedb.org/3/movie/' + imdbId + '?api_key=' + theMovieDatabaseApiKey).then(function (response) {
+                    var theMovieDatabaseMovie = response.data;
+                    ctrl.movie.title = theMovieDatabaseMovie.title;
+                    ctrl.movie.tagline = theMovieDatabaseMovie.tagline;
+                    ctrl.movie.overview = theMovieDatabaseMovie.overview;
+                    ctrl.movie.language = theMovieDatabaseMovie.spoken_languages[0].name;
+                    ctrl.movie.runtime = theMovieDatabaseMovie.runtime;
+                    ctrl.movie.releaseDate = getTMDbReleaseDateAsDate(theMovieDatabaseMovie.release_date);
+                    angular.forEach(theMovieDatabaseMovie.genres, function (genre) {
                         ctrl.movie.genres.push(genre.name);
                     });
-                    $http.get('http://api.themoviedb.org/3/movie/' + imdbId + '/images?api_key=' + tmdbApiKey).then(function (response) {
-                        var imageBaseUrl = 'http://image.tmdb.org/t/p/original';
-                        ctrl.movie.posterPath = imageBaseUrl + response.data.posters[0].file_path;
-                        ctrl.movie.backdropPath = imageBaseUrl + response.data.backdrops[0].file_path;
-                    }, function () {
-                        notificationService.error("Could not get image paths for auto-fill.");
-                    });
+                    ctrl.movie.posterPath = imageBaseUrl + theMovieDatabaseMovie.poster_path;
+                    ctrl.movie.backdropPath = imageBaseUrl + theMovieDatabaseMovie.backdrop_path;
                 }, function () {
                     notificationService.error("Could not auto-fill movie details.");
                 });
@@ -57,11 +57,10 @@ angular.module('navbar').component('navbar', {
         };
 
         ctrl.registerMovie = function () {
-            console.log(angular.toJson(ctrl.movie, true));
             $http.post('./api/v1/movies', angular.toJson(ctrl.movie)).then(function () {
-                notificationService.success("Movie posted successfully.");
+                notificationService.success("Movie registered successfully.");
             }, function () {
-                notificationService.error("An unexpected error occurred.")
+                notificationService.error("Could not register movie.")
             });
         };
 
@@ -100,18 +99,6 @@ angular.module('navbar').component('navbar', {
 
     }
 });
-
-function getPrettyGenre(genre) {
-    var prettyGenre = "";
-    var parts = genre.split("_");
-    angular.forEach(parts, function (part, i) {
-        if (i > 0) {
-            prettyGenre += "-";
-        }
-        prettyGenre += part.charAt(0) + part.slice(1).toLowerCase();
-    });
-    return prettyGenre;
-}
 
 function getTMDbReleaseDateAsDate(tmdbReleaseDate) {
     var year = tmdbReleaseDate.split("-")[0];

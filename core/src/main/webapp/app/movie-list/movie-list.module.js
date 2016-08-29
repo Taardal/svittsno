@@ -1,3 +1,3 @@
 'use strict';
 
-angular.module('movieList', []);
+angular.module('movieList', ['ngRoute']);

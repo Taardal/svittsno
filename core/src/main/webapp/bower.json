@@ -12,6 +12,7 @@
     "angular-mocks": "^1.5.8",
     "angular-animate": "^1.5.8",
     "angular-bootstrap": "^2.0.2",
+    "angular-route": "^1.5.8",
     "pnotify": "^3.0.0"
   }
 }
