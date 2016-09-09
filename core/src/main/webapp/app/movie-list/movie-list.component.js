@@ -5,7 +5,10 @@ angular.module('movieList').component('movieList', {
     controller: function ($http, $routeParams, notificationService) {
 
         var ctrl = this;
+
         ctrl.genre = $routeParams.genre;
+        ctrl.posterWidth = 200;
+        ctrl.posterHeight = 320;
 
         $http.get('./api/v1/movies/genres/' + ctrl.genre).then(function (response) {
             ctrl.movies = response.data;
@@ -20,7 +23,7 @@ angular.module('movieList').component('movieList', {
                 }
             };
             $http(request).then(function () {
-                notificationService.success("Could not play movie. Is the player running?");
+
             }, function () {
                 notificationService.error("Could not play movie. Is the player running?");
             });

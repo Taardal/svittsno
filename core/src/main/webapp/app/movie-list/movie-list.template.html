@@ -2,7 +2,10 @@
     <div class="row">
         <div class="col-md-3" ng-repeat="movie in $ctrl.movies">
             <div class="card card-inverse medium">
-                <img class="card-img-top" ng-src="{{movie.posterPath || 'http://placehold.it/320x240'}}">
+                <img class="card-img-top"
+                     ng-src="{{movie.posterPath || 'http://placehold.it/' + $ctrl.posterWidth + 'x' + $ctrl.posterHeight}}"
+                     width="{{$ctrl.posterWidth}}px"
+                     height="{{$ctrl.posterHeight}}px">
                 <div class="card-block">
                     <h4 class="card-title">{{movie.title}}</h4>
                     <p class="card-text">{{movie.tagline}}</p>
