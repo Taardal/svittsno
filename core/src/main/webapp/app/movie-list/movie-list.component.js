@@ -10,6 +10,7 @@ angular.module('movieList').component('movieList', {
         ctrl.posterWidth = 200;
         ctrl.posterHeight = 320;
 
+        console.log('URL: ' + ctrl.url);
         $http.get('./api/v1/movies/genres/' + ctrl.genre).then(function (response) {
             ctrl.movies = response.data;
         });
@@ -29,5 +30,8 @@ angular.module('movieList').component('movieList', {
             });
         }
 
+    },
+    bindings: {
+        url: '@'
     }
 });

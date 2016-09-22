@@ -4,8 +4,9 @@ angular
     .module('svittsApp')
     .config(['$locationProvider', '$routeProvider', function ($locationProvider, $routeProvider) {
         $locationProvider.hashPrefix('!');
-        $routeProvider.when('/genres/:genre', {
-            template: '<movie-list></movie-list>'
+        $routeProvider.when('/', {
+            templateUrl: 'home.html'
+        }).when('/genres/:genre', {
+            template: '<movie-section type="genre"></movie-section>'
         }).otherwise('/');
-    }
-    ]);
+    }]);

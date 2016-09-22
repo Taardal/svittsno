@@ -1,12 +1,12 @@
 <nav class="navbar navbar-default">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand" href="/index.html">SVITTS</a>
+            <a class="navbar-brand" href="#!/">SVITTS</a>
         </div>
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
                 <li class="dropdown">
-                    <a class="dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    <a class="dropdown-toggle" href="" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                         Genres
                         <span class="caret"></span>
                     </a>
@@ -37,9 +37,7 @@
                         <span class="btn-group pull-right">
                             <button class="btn btn-primary" ng-click="$ctrl.autoFill($ctrl.movie.imdbId)">Auto</button>
                         </span>
-                        <h4>
-                            <h4 class="modal-title">Register</h4>
-                        </h4>
+                        <h4 class="modal-title">Register</h4>
                     </li>
                 </ul>
             </div>
@@ -66,6 +64,10 @@
                         <input id="runtime" class="form-control" type="text" ng-model="$ctrl.movie.runtime" placeholder="Runtime">
                     </div>
                     <div class="form-group">
+                        <label for="language">Language</label>
+                        <input id="language" class="form-control" type="text" ng-model="$ctrl.movie.language" placeholder="Language">
+                    </div>
+                    <div class="form-group">
                         <label for="releaseDate">Release date</label>
                         <div class="input-group">
                             <input id="releaseDate"
@@ -74,7 +76,7 @@
                                    ng-model="$ctrl.movie.releaseDate"
                                    ng-required="true"
                                    datepicker-options="$ctrl.dateOptions"
-                                   uib-datepicker-popup="{{$ctrl.defaultDateFormat}}"
+                                   uib-datepicker-popup="{{$ctrl.dateFormats[0]}}"
                                    is-open="$ctrl.datePicker.open"
                                    alt-input-formats="$ctrl.alternateInputFormats"
                                    close-text="Close"/>
@@ -90,7 +92,9 @@
                         <ul class="checkbox-grid">
                             <li ng-repeat="genre in $ctrl.genres">
                                 <label>
-                                    <input type="checkbox" value="{{genre}}" ng-checked="$ctrl.movie.genres.indexOf(genre) > -1"
+                                    <input type="checkbox"
+                                           value="{{genre}}"
+                                           ng-checked="$ctrl.movie.genres.indexOf(genre) > -1"
                                            ng-click="$ctrl.toggleSelectedGenre(genre)">
                                     {{genre}}
                                 </label>
