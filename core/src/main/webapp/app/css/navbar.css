@@ -3,8 +3,8 @@
 }
 
 .navbar-default {
-    margin-bottom: 30px;
     background-color: #ffffff;
+    margin-bottom: 0;
 }
 
 .navbar-default .navbar-brand,

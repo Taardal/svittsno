@@ -9,13 +9,8 @@ angular
             var ctrl = this;
 
             ctrl.genres = [];
-            ctrl.searchQuery = "";
-
-            $http.get('./api/v1/genres').then(function (response) {
-                ctrl.genres = response.data;
-            }, function () {
-                notificationService.error("Could not get genres.");
-            });
+            ctrl.dateFormats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy'];
+            ctrl.alternateInputFormats = ['M!/d!/yyyy'];
 
             ctrl.movie = {
                 title: '',
@@ -34,6 +29,24 @@ angular
                 posterPath: '',
                 backdropPath: ''
             };
+
+            ctrl.datePicker = {
+                open: false
+            };
+
+            ctrl.dateOptions = {
+                startingDay: 1,
+                datepickerMode: 'year',
+                dateDisabled: function () {
+
+                }
+            };
+
+            $http.get('./api/v1/genres').then(function (response) {
+                ctrl.genres = response.data;
+            }, function () {
+                notificationService.error("Could not get genres.");
+            });
 
             ctrl.autoFill = function (imdbId) {
                 if (!imdbId) {
@@ -68,22 +81,6 @@ angular
                 });
             };
 
-            ctrl.dateFormats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy'];
-            ctrl.defaultDateFormat = ctrl.dateFormats[0];
-            ctrl.alternateInputFormats = ['M!/d!/yyyy'];
-
-            ctrl.datePicker = {
-                open: false
-            };
-
-            ctrl.dateOptions = {
-                startingDay: 1,
-                datepickerMode: 'year',
-                dateDisabled: function () {
-
-                }
-            };
-
             ctrl.openDatePicker = function () {
                 ctrl.datePicker.open = true;
             };
@@ -99,7 +96,7 @@ angular
                 } else {
                     ctrl.movie.genres.push(genre);
                 }
-            };
+            }
 
         }
     });

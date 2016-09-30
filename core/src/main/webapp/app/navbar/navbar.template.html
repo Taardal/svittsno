@@ -1,36 +1,40 @@
-<nav class="navbar navbar-light bg-faded">
+<nav class="navbar navbar-default">
     <div class="container">
-        <a class="navbar-brand" href="#">SVITTS</a>
-        <ul class="nav navbar-nav">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" role="button">
-                    Genres
-                    <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu">
-                    <li ng-repeat="genre in $ctrl.genres">
-                        <a class="dropdown-item" href="#!/genres/{{genre}}">{{genre}}</a>
-                    </li>
-                </ul>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#" data-toggle="modal" data-target="#movieRegistrationModal">Register movie</a>
-            </li>
-        </ul>
-        <form class="form-inline pull-xs-right">
-            <input class="form-control" type="text" ng-model="$ctrl.searchQuery" placeholder="Search">
-            <a class="btn btn-primary" href="#!/search/{{$ctrl.searchQuery}}">Search</a>
-        </form>
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#!/">SVITTS</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" href="" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        Genres
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="genre in $ctrl.genres">
+                            <a href="#!/genres/{{genre}}">{{genre}}</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="#" data-toggle="modal" data-target="#movieRegistrationModal">Register movie</a>
+                </li>
+            </ul>
+            <form class="navbar-form form-inline pull-right">
+                <input class="form-control" type="text" placeholder="Search">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </form>
+        </div>
     </div>
 </nav>
 
-<div id="movieRegistrationModal" class="modal fade" tabindex="-1" role="dialog">
+<div id="movieRegistrationModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="registerTitle" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <ul class="list-inline">
                     <li class="col-xs-12">
-                        <span class="btn-group pull-xs-right">
+                        <span class="btn-group pull-right">
                             <button class="btn btn-primary" ng-click="$ctrl.autoFill($ctrl.movie.imdbId)">Auto</button>
                         </span>
                         <h4 class="modal-title">Register</h4>
@@ -60,6 +64,10 @@
                         <input id="runtime" class="form-control" type="text" ng-model="$ctrl.movie.runtime" placeholder="Runtime">
                     </div>
                     <div class="form-group">
+                        <label for="language">Language</label>
+                        <input id="language" class="form-control" type="text" ng-model="$ctrl.movie.language" placeholder="Language">
+                    </div>
+                    <div class="form-group">
                         <label for="releaseDate">Release date</label>
                         <div class="input-group">
                             <input id="releaseDate"
@@ -68,13 +76,13 @@
                                    ng-model="$ctrl.movie.releaseDate"
                                    ng-required="true"
                                    datepicker-options="$ctrl.dateOptions"
-                                   uib-datepicker-popup="{{$ctrl.defaultDateFormat}}"
+                                   uib-datepicker-popup="{{$ctrl.dateFormats[0]}}"
                                    is-open="$ctrl.datePicker.open"
                                    alt-input-formats="$ctrl.alternateInputFormats"
                                    close-text="Close"/>
                             <span class="input-group-btn">
                                 <button type="button" class="btn btn-default" ng-click="$ctrl.openDatePicker()">
-                                    <i class="octicon octicon-calendar"></i>
+                                    <i class="glyphicon glyphicon-calendar"></i>
                                 </button>
                             </span>
                         </div>
