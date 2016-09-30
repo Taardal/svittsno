@@ -10,6 +10,14 @@ public class MovieSearch extends Search {
         this.movieSearchType = movieSearchType;
     }
 
+    @Override
+    public String toString() {
+        return "MovieSearch{" +
+                "query='" + query + '\'' +
+                ", movieSearchType=" + movieSearchType +
+                '}';
+    }
+
     public String getQuery() {
         return query;
     }

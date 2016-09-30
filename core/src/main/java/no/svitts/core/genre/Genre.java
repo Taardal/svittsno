@@ -19,7 +19,7 @@ public enum Genre {
     MUSICAL("Musical"),
     MYSTERY("Mystery"),
     ROMANCE("Romance"),
-    SCI_FI("Sci-Fi"),
+    SCIENCE_FICTION("Science Fiction"),
     SPORT("Sport"),
     THRILLER("Thriller"),
     WAR("War"),

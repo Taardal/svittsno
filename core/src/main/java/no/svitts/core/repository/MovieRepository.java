@@ -43,7 +43,13 @@ public class MovieRepository extends CoreRepository<Movie> {
         MovieSearch movieSearch = (MovieSearch) search;
         LOGGER.info("Getting multiple movies from database by search [{}].", movieSearch.toString());
         try {
-            return getCurrentSession().createQuery(getSearchCriteriaQuery(movieSearch)).setMaxResults(movieSearch.getLimit()).setFirstResult(movieSearch.getOffset()).getResultList();
+            List<Movie> movies = getCurrentSession()
+                    .createQuery(getSearchCriteriaQuery(movieSearch))
+                    .setMaxResults(movieSearch.getLimit())
+                    .setFirstResult(movieSearch.getOffset())
+                    .getResultList();
+            LOGGER.info("Search found [{}] movies -> [{}]", movies.size(), movies);
+            return movies;
         } catch (HibernateException | IllegalStateException e) {
             LOGGER.error("Could not get multiple movies from database by search [{}]", movieSearch.toString());
             throw new RepositoryException(e);

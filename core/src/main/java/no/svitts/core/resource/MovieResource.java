@@ -56,7 +56,7 @@ public class MovieResource {
             Movie movie = movieService.get(id);
             return Response.ok(movie).build();
         } catch (ServiceException e) {
-            throw new InternalServerErrorException("Could not get movie with ID [" + id + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
+            throw new InternalServerErrorException("Could not get movie with ID [" + id + "].", e);
         }
     }
 
@@ -78,7 +78,7 @@ public class MovieResource {
             List<Movie> movies = movieService.search(movieSearch);
             return Response.ok(movies.toArray()).build();
         } catch (ServiceException e) {
-            throw new InternalServerErrorException("Could not get movies with genre [" + genre + "], limit [" + limit + "] and offset [" + offset + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
+            throw new InternalServerErrorException("Could not get movies with genre [" + genre + "], limit [" + limit + "] and offset [" + offset + "].", e);
         }
     }
 
@@ -101,7 +101,7 @@ public class MovieResource {
             List<Movie> movies = movieService.search(movieSearch);
             return Response.ok(movies.toArray()).build();
         } catch (ServiceException e) {
-            throw new InternalServerErrorException("Could not get movies by search query [" + query + "] with limit [" + limit + "] and offset [" + offset + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
+            throw new InternalServerErrorException("Could not get movies by search query [" + query + "] with limit [" + limit + "] and offset [" + offset + "].", e);
         }
     }
 
@@ -132,7 +132,7 @@ public class MovieResource {
             movieService.update(movie);
             return Response.ok().build();
         } catch (ServiceException e) {
-            throw new InternalServerErrorException("Could not update movie with ID [" + id + "] with values [" + movie.toString() + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
+            throw new InternalServerErrorException("Could not update movie with ID [" + id + "] with values [" + movie.toString() + "].", e);
         }
     }
 
@@ -148,7 +148,7 @@ public class MovieResource {
             movieService.delete(id);
             return Response.ok().build();
         } catch (ServiceException e) {
-            throw new InternalServerErrorException("Could not delete movie with ID [" + id + "]. This is most likely due to an unavailable data source or an invalid request to the database.", e);
+            throw new InternalServerErrorException("Could not delete movie with ID [" + id + "].", e);
         }
     }
 

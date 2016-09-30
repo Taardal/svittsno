@@ -5,7 +5,6 @@ import com.google.inject.Injector;
 import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.jaxrs.listing.ApiListingResource;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
-import no.svitts.core.configuration.ApplicationProperties;
 import no.svitts.core.exception.mapper.ConstraintViolationExceptionMapper;
 import no.svitts.core.exception.mapper.WebApplicationExceptionMapper;
 import no.svitts.core.json.GsonMessageBodyReader;
@@ -32,7 +31,7 @@ public class CoreApplication extends ResourceConfig {
         Injector injector = Guice.createInjector(new WebModule(), new PersistenceModule(new SessionFactoryProvider()));
         registerComponents(injector);
         setApplicationName(APPLICATION_NAME);
-        createSwaggerBean(new ApplicationProperties());
+        createSwaggerBean();
     }
 
     private void registerComponents(Injector injector) {
@@ -46,7 +45,7 @@ public class CoreApplication extends ResourceConfig {
         register(injector.getInstance(SwaggerSerializers.class));
     }
 
-    private void createSwaggerBean(ApplicationProperties applicationProperties) {
+    private void createSwaggerBean() {
         BeanConfig beanConfig = new BeanConfig();
         beanConfig.setTitle(getApplicationName());
         beanConfig.setResourcePackage("no.svitts.core.resource");
