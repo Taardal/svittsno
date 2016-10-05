@@ -19,12 +19,16 @@ angular
             ctrl.playMovie = function (movie) {
                 var request = {
                     method: 'GET',
-                    url: 'http://localhost:8181/player',
+                    url: 'http://localhost:8181',
                     headers: {
-                        path: movie.videoFile.path
+                        'path': movie.videoFile.path
                     }
                 };
-                $http(request).then(function () {
+                var payload = {
+                    path: movie.videoFile.path
+                };
+                console.log(angular.toJson(payload));
+                $http.post('http://localhost:8181', angular.toJson(payload)).then(function () {
                     notificationService.success("Playing movie " + movie.title);
                 }, function () {
                     notificationService.error("Could not play movie. Is the player running?");

@@ -17,13 +17,20 @@
             </li>
         </ul>
         <form class="form-inline pull-xs-right">
-            <input class="form-control" type="text" ng-model="$ctrl.searchQuery" placeholder="Search">
-            <a class="btn btn-primary" href="#!/search?q={{$ctrl.searchQuery}}">Search</a>
+            <input id="searchQueryInput" class="form-control" type="text" ng-model="$ctrl.searchQuery" placeholder="Search">
+            <a id="searchButton" class="btn btn-primary" href="#!/search?q={{$ctrl.searchQuery}}">Search</a>
+            <script type="text/javascript">
+                $("#searchQueryInput").keyup(function(event){
+                    if(event.keyCode == 13){
+                        $("#searchButton").click();
+                    }
+                });
+            </script>
         </form>
     </div>
 </nav>
 
-<div id="movieRegistrationModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="registerTitle" aria-hidden="true">
+<div id="movieRegistrationModal" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -63,6 +70,10 @@
                         <input id="language" class="form-control" type="text" ng-model="$ctrl.movie.language" placeholder="Language">
                     </div>
                     <div class="form-group">
+                        <label for="edition">Edition</label>
+                        <input id="edition" class="form-control" type="text" ng-model="$ctrl.movie.edition" placeholder="Edition">
+                    </div>
+                    <div class="form-group">
                         <label for="releaseDate">Release date</label>
                         <div class="input-group">
                             <input id="releaseDate"
@@ -76,9 +87,7 @@
                                    alt-input-formats="$ctrl.alternateInputFormats"
                                    close-text="Close"/>
                             <span class="input-group-btn">
-                                <button type="button" class="btn btn-default" ng-click="$ctrl.openDatePicker()">
-                                    <i class="glyphicon glyphicon-calendar"></i>
-                                </button>
+                                <button type="button" class="btn btn-outline-primary" ng-click="$ctrl.openDatePicker()">Choose</button>
                             </span>
                         </div>
                     </div>
@@ -100,6 +109,10 @@
                     <div class="form-group">
                         <label for="videoFilePath">Video file path</label>
                         <input id="videoFilePath" class="form-control" type="text" ng-model="$ctrl.movie.videoFile.path" placeholder="Video file">
+                    </div>
+                    <div class="form-group">
+                        <label for="subtitleFilePaths">Subtitle file paths</label>
+                        <textarea id="subtitleFilePaths" class="form-control" type="text" ng-model="$ctrl.subtitleFilesString" placeholder="Subtitle files"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="posterPath">Poster path</label>

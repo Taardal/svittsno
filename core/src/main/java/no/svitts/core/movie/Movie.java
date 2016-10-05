@@ -22,7 +22,7 @@ public class Movie {
     public static final int TITLE_MAX_LENGTH = 255;
     public static final int IMDB_ID_MAX_LENGTH = 255;
     public static final int TAGLINE_MAX_LENGTH = 255;
-    public static final int OVERVIEW_MAX_LENGTH = 510;
+    public static final int OVERVIEW_MAX_LENGTH = 1000;
     public static final int LANGUAGE_MAX_LENGTH = 255;
     public static final int EDITION_MAX_LENGTH = 255;
     public static final int POSTER_PATH_MAX_LENGTH = 255;

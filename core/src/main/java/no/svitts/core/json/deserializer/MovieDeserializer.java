@@ -6,16 +6,12 @@ import no.svitts.core.file.SubtitleFile;
 import no.svitts.core.file.VideoFile;
 import no.svitts.core.genre.Genre;
 import no.svitts.core.movie.Movie;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
 public class MovieDeserializer extends Deserializer implements JsonDeserializer<Movie> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MovieDeserializer.class);
 
     @Override
     public Movie deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
@@ -34,7 +30,6 @@ public class MovieDeserializer extends Deserializer implements JsonDeserializer<
         movie.setSubtitleFiles(getSubtitleFiles(jsonObject.get("subtitleFiles")));
         movie.setPosterPath(getString(jsonObject.get("posterPath")));
         movie.setBackdropPath(getString(jsonObject.get("backdropPath")));
-        LOGGER.info("Deserialized movie [{}]", movie.toString());
         return movie;
     }
 

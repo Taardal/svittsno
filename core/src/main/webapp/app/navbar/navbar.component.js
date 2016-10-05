@@ -31,6 +31,8 @@ angular
                 backdropPath: ''
             };
 
+            ctrl.subtitleFilesString = "";
+
             ctrl.datePicker = {
                 open: false
             };
@@ -75,10 +77,15 @@ angular
             };
 
             ctrl.registerMovie = function () {
+                ctrl.movie.subtitleFiles = getSubtitleFiles(ctrl.subtitleFilesString);
                 $http.post('./api/v1/movies', angular.toJson(ctrl.movie)).then(function () {
                     notificationService.success("Movie registered successfully.");
-                }, function () {
-                    notificationService.error("Could not register movie.")
+                }, function (response) {
+                    var errorMessage = "";
+                    angular.forEach(response.data.messages, function (message) {
+                      errorMessage = errorMessage + message + " ";
+                    });
+                    notificationService.error("[" + response.status + "] " + errorMessage);
                 });
             };
 
@@ -107,5 +114,18 @@ function getTMDbReleaseDateAsDate(tmdbReleaseDate) {
     var month = tmdbReleaseDate.split("-")[1];
     var day = tmdbReleaseDate.split("-")[2];
     return new Date(year, month, day);
+}
+
+function getSubtitleFiles(subtitleFilesString) {
+    var subtitleFiles = [];
+    angular.forEach(subtitleFilesString.replace(/\r?\n|\r/, "").replace(" ", "").split(","), function (subtitleFileString) {
+        var subtitleFileInfo = subtitleFileString.split("|");
+        var subtitleFile = {
+            path: subtitleFileInfo[0],
+            language: subtitleFileInfo[1] ? subtitleFileInfo[1] : ""
+        };
+        subtitleFiles.push(subtitleFile);
+    });
+    return subtitleFiles;
 }
 
