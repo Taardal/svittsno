@@ -17,17 +17,9 @@ angular
             });
 
             ctrl.playMovie = function (movie) {
-                var request = {
-                    method: 'GET',
-                    url: 'http://localhost:8181',
-                    headers: {
-                        'path': movie.videoFile.path
-                    }
-                };
                 var payload = {
                     path: movie.videoFile.path
                 };
-                console.log(angular.toJson(payload));
                 $http.post('http://localhost:8181', angular.toJson(payload)).then(function () {
                     notificationService.success("Playing movie " + movie.title);
                 }, function () {

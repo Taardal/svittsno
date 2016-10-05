@@ -9,6 +9,7 @@ angular
             var ctrl = this;
 
             ctrl.searchQuery = "";
+
             ctrl.genres = [];
             ctrl.dateFormats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy'];
             ctrl.alternateInputFormats = ['M!/d!/yyyy'];
