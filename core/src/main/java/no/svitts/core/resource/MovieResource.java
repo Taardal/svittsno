@@ -68,17 +68,18 @@ public class MovieResource {
                     "An invalid genre will generate a \"bad request\" response with a list of error messages to provide more details about the problem(s). "
     )
     public Response getMoviesByGenre(
-            @PathParam("genre") @Valid Genre genre,
+            @PathParam("genre") @ValidCharacters @Length(length = Genre.MAX_LENGTH) String genrePathParam,
             @QueryParam("limit") @DefaultValue("10") @NonNegative int limit,
             @QueryParam("offset") @DefaultValue("0") @NonNegative int offset
     ) {
-        LOGGER.info("Received request to GET movie(s) with genre [{}] with limit [{}] and offset [{}]", genre, limit, offset);
+        LOGGER.info("Received request to GET movie(s) with genre [{}] with limit [{}] and offset [{}]", genrePathParam, limit, offset);
         try {
+            Genre genre = Genre.valueOf(genrePathParam.toUpperCase().replaceAll("-", "_").replaceAll(" ", "_"));
             MovieSearch movieSearch = getMovieSearch(genre.toString(), MovieSearchType.GENRE, limit, offset);
             List<Movie> movies = movieService.search(movieSearch);
             return Response.ok(movies.toArray()).build();
-        } catch (ServiceException e) {
-            throw new InternalServerErrorException("Could not get movies with genre [" + genre + "], limit [" + limit + "] and offset [" + offset + "].", e);
+        } catch (ServiceException | IllegalArgumentException e) {
+            throw new InternalServerErrorException("Could not get movies with genre [" + genrePathParam + "], limit [" + limit + "] and offset [" + offset + "].", e);
         }
     }
 

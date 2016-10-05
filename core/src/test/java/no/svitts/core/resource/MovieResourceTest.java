@@ -106,9 +106,63 @@ public class MovieResourceTest extends JerseyTest {
         when(movieServiceMock.search(any(MovieSearch.class))).thenReturn(movies);
 
         Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE).path("genres").path(Genre.FILM_NOIR.toString()).request().get();
-        Movie[] moviesFromResponse = response.readEntity(Movie[].class);
 
         assertEquals(200, response.getStatus());
+        Movie[] moviesFromResponse = response.readEntity(Movie[].class);
+        assertEquals(movies.size(), moviesFromResponse.length);
+        assertArrayEquals(movies.toArray(), moviesFromResponse);
+        verify(movieServiceMock, times(1)).search(any(MovieSearch.class));
+        response.close();
+    }
+
+    @Test
+    public void getMoviesByGenre_GenreInLowerCase_ShouldReturnMovies() {
+        List<Movie> movies = new ArrayList<>();
+        movies.add(movieBuilder.build());
+        movies.add(movieBuilder.build());
+        when(movieServiceMock.search(any(MovieSearch.class))).thenReturn(movies);
+        String genre = "action";
+
+        Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE).path("genres").path(genre).request().get();
+
+        assertEquals(200, response.getStatus());
+        Movie[] moviesFromResponse = response.readEntity(Movie[].class);
+        assertEquals(movies.size(), moviesFromResponse.length);
+        assertArrayEquals(movies.toArray(), moviesFromResponse);
+        verify(movieServiceMock, times(1)).search(any(MovieSearch.class));
+        response.close();
+    }
+
+    @Test
+    public void getMoviesByGenre_GenreWithHyphen_ShouldReturnMovies() {
+        List<Movie> movies = new ArrayList<>();
+        movies.add(movieBuilder.build());
+        movies.add(movieBuilder.build());
+        when(movieServiceMock.search(any(MovieSearch.class))).thenReturn(movies);
+        String genre = "Film-Noir";
+
+        Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE).path("genres").path(genre).request().get();
+
+        assertEquals(200, response.getStatus());
+        Movie[] moviesFromResponse = response.readEntity(Movie[].class);
+        assertEquals(movies.size(), moviesFromResponse.length);
+        assertArrayEquals(movies.toArray(), moviesFromResponse);
+        verify(movieServiceMock, times(1)).search(any(MovieSearch.class));
+        response.close();
+    }
+
+    @Test
+    public void getMoviesByGenre_GenreWithSpaces_ShouldReturnMovies() {
+        List<Movie> movies = new ArrayList<>();
+        movies.add(movieBuilder.build());
+        movies.add(movieBuilder.build());
+        when(movieServiceMock.search(any(MovieSearch.class))).thenReturn(movies);
+        String genre = "Science Fiction";
+
+        Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE).path("genres").path(genre).request().get();
+
+        assertEquals(200, response.getStatus());
+        Movie[] moviesFromResponse = response.readEntity(Movie[].class);
         assertEquals(movies.size(), moviesFromResponse.length);
         assertArrayEquals(movies.toArray(), moviesFromResponse);
         verify(movieServiceMock, times(1)).search(any(MovieSearch.class));
@@ -127,6 +181,17 @@ public class MovieResourceTest extends JerseyTest {
     }
 
     @Test
+    public void getMoviesByGenre_InvalidGenreParameter_ShouldReturnInternalServerErrorResponse() {
+        String genre = "wrong genre";
+
+        Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE).path("genres").path(genre).request().get();
+
+        assertEquals(500, response.getStatus());
+        verify(movieServiceMock, times(0)).search(any(MovieSearch.class));
+        response.close();
+    }
+
+    @Test
     public void search_ValidRequest_ShouldReturnMovies() {
         List<Movie> movies = new ArrayList<>();
         movies.add(movieBuilder.build());
@@ -134,9 +199,9 @@ public class MovieResourceTest extends JerseyTest {
         when(movieServiceMock.search(any(MovieSearch.class))).thenReturn(movies);
 
         Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE).path("search").queryParam("q", "query").request().get();
-        Movie[] moviesFromResponse = response.readEntity(Movie[].class);
 
         assertEquals(200, response.getStatus());
+        Movie[] moviesFromResponse = response.readEntity(Movie[].class);
         assertEquals(movies.size(), moviesFromResponse.length);
         assertArrayEquals(movies.toArray(), moviesFromResponse);
         verify(movieServiceMock, times(1)).search(any(Search.class));

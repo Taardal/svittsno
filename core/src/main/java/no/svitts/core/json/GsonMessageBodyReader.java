@@ -2,6 +2,7 @@ package no.svitts.core.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import no.svitts.core.json.deserializer.MovieDeserializer;
 import no.svitts.core.movie.Movie;
 import org.slf4j.Logger;
@@ -46,9 +47,9 @@ public class GsonMessageBodyReader implements MessageBodyReader<Object> {
     public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) {
         try (InputStreamReader inputStreamReader = new InputStreamReader(entityStream, StandardCharsets.UTF_8)) {
             return gson.fromJson(inputStreamReader, type);
-        } catch (IOException e) {
+        } catch (IOException | JsonSyntaxException e) {
             String errorMessage = "Could not convert JSON to type [" + type + "]";
-            LOGGER.error(errorMessage);
+            LOGGER.error(errorMessage, e);
             throw new InternalServerErrorException(errorMessage, e);
         }
     }
