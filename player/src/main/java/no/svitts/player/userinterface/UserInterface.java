@@ -54,13 +54,13 @@ public class UserInterface extends BorderPane implements EventListener {
     private Button clearButton;
     private Button startStopButton;
 
-    public UserInterface(final JettyServer jettyServer, final Stage primaryStage) {
+    public UserInterface(JettyServer jettyServer, Stage stage) {
         dateTime = new DateTime();
         statusText = getStatusText(jettyServer);
         urlText = getUrlText(jettyServer);
         pathTextField = getPathTextField();
         eventLogTextArea = getEventLogTextArea();
-        browseButton = getButton("Browse", new BrowseEventHandler(primaryStage, this));
+        browseButton = getButton("Browse", new BrowseEventHandler(stage, this));
         saveButton = getButton("Save", new SaveEventHandler(this));
         clearButton = getButton("Clear", new ClearEventLogEventHandler(this));
         startStopButton = getStartStopButton(jettyServer);
@@ -82,12 +82,12 @@ public class UserInterface extends BorderPane implements EventListener {
     }
 
     @Override
-    public void onSetPath(String path) {
+    public void onSetMediaPlayerPath(String path) {
         pathTextField.setText(path);
     }
 
     @Override
-    public String onGetPath() {
+    public String onGetMediaPlayerPath() {
         return pathTextField.getText();
     }
 
@@ -115,7 +115,7 @@ public class UserInterface extends BorderPane implements EventListener {
     }
 
     private Text getUrlText(JettyServer jettyServer) {
-        return new Text(jettyServer.getHost() + ":" + jettyServer.getPort());
+        return new Text(jettyServer.getUrl());
     }
 
     private String getStartStopString(boolean running) {

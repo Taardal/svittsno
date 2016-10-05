@@ -27,12 +27,12 @@ public class SaveEventHandler implements EventHandler<ActionEvent> {
     @Override
     public void handle(ActionEvent event) {
         Path filePath = Paths.get(PATH_FILE);
-        String pathString = eventListener.onGetPath();
+        String mediaPlayerPath = eventListener.onGetMediaPlayerPath();
         try {
-            Files.write(filePath, pathString.getBytes());
-            eventListener.onAddEvent("Saved path [" + pathString + "] to file [" + filePath.toAbsolutePath().toString() + "]");
+            Files.write(filePath, mediaPlayerPath.getBytes());
+            eventListener.onAddEvent("Saved path [" + mediaPlayerPath + "] to file [" + filePath.toAbsolutePath().toString() + "]");
         } catch (IOException e) {
-            String errorMessage = "Could not save path [" + pathString + "] to file [" + filePath.toAbsolutePath().toString() + "]";
+            String errorMessage = "Could not save path [" + mediaPlayerPath + "] to file [" + filePath.toAbsolutePath().toString() + "]";
             eventListener.onAddEvent(errorMessage);
             LOGGER.error(errorMessage);
             throw new RuntimeException(e);

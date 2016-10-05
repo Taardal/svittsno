@@ -100,7 +100,7 @@ public class MovieRepository extends CoreRepository<Movie> {
         Root<Movie> movieRoot = movieCriteriaQuery.from(Movie.class);
         movieCriteriaQuery.select(movieRoot);
         if (movieSearch.getMovieSearchType() == MovieSearchType.TITLE) {
-            return movieCriteriaQuery.where(criteriaBuilder.like(movieRoot.get("title"), "%" + movieSearch.getQuery() + "%"));
+            return movieCriteriaQuery.where(criteriaBuilder.like(criteriaBuilder.upper(movieRoot.get("title")), "%" + movieSearch.getQuery().toUpperCase() + "%"));
         } else if (movieSearch.getMovieSearchType() == MovieSearchType.GENRE) {
             Genre genre = Genre.valueOf(movieSearch.getQuery());
             return movieCriteriaQuery.where(criteriaBuilder.isMember(genre, movieRoot.get("genres")));

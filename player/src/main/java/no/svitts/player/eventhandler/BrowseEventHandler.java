@@ -23,7 +23,7 @@ public class BrowseEventHandler implements EventHandler<ActionEvent> {
     public void handle(ActionEvent event) {
         File selectedFile = fileChooser.showOpenDialog(stage);
         if (selectedFile != null) {
-            eventListener.onSetPath(selectedFile.getPath());
+            eventListener.onSetMediaPlayerPath(selectedFile.getPath());
         }
     }
 

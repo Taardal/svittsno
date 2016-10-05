@@ -4,15 +4,16 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import no.svitts.player.server.JettyServer;
+import no.svitts.player.server.SvittsJettyServer;
 import no.svitts.player.servlet.PlayerServlet;
 import no.svitts.player.userinterface.UserInterface;
 
 public class Main extends Application {
 
-    private final JettyServer jettyServer;
+    private JettyServer jettyServer;
 
     public Main() {
-        jettyServer = new JettyServer(8181);
+        jettyServer = new SvittsJettyServer();
     }
 
     public static void main(String[] args) {

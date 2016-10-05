@@ -7,7 +7,7 @@ import no.svitts.player.server.JettyServer;
 
 public class JettyStartStopEventHandler implements EventHandler<ActionEvent> {
 
-    private final JettyServer jettyServer;
+    private JettyServer jettyServer;
     private EventListener eventListener;
 
     public JettyStartStopEventHandler(JettyServer jettyServer, EventListener eventListener) {
