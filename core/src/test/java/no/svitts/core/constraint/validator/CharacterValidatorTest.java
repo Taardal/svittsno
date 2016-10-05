@@ -32,7 +32,7 @@ public class CharacterValidatorTest {
 
     @Test
     public void isValid_InvalidCharacters_ShouldReturnFalse() {
-        String[] illegalCharacters = {"\\~", "\\#", "\\@", "\\*", "\\+", "\\%", "\\<", "\\>", "\\[", "\\]", "\\|", "\"", "\\_", "\\^", "\\£", "\\$", "\\€", "\\´"};
+        String[] illegalCharacters = {"\\~", "\\#", "\\@", "\\*", "\\+", "\\%", "\\<", "\\>", "\\[", "\\]", "\\|", "\"", "\\^", "\\£", "\\$", "\\€", "\\´"};
         for (String illegalCharacter : illegalCharacters) {
             assertFalse(characterValidator.isValid(illegalCharacter, constraintValidatorContextMock));
         }
