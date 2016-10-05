@@ -8,6 +8,7 @@ angular
 
             var ctrl = this;
 
+            ctrl.searchQuery = "";
             ctrl.genres = [];
             ctrl.dateFormats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy'];
             ctrl.alternateInputFormats = ['M!/d!/yyyy'];
@@ -53,7 +54,7 @@ angular
                     notificationService.error("IMDB ID is required for auto-fill.");
                 } else {
                     var theMovieDatabaseApiKey = 'b041b0681fa9947874d41095ea1ca5ae';
-                    var imageBaseUrl = 'http://image.tmdb.org/t/p/original';
+                    var theMovieDatabaseImageBaseUrl = 'http://image.tmdb.org/t/p/original';
                     $http.get('http://api.themoviedb.org/3/movie/' + imdbId + '?api_key=' + theMovieDatabaseApiKey).then(function (response) {
                         var theMovieDatabaseMovie = response.data;
                         ctrl.movie.title = theMovieDatabaseMovie.title;
@@ -65,8 +66,8 @@ angular
                         angular.forEach(theMovieDatabaseMovie.genres, function (genre) {
                             ctrl.movie.genres.push(genre.name);
                         });
-                        ctrl.movie.posterPath = imageBaseUrl + theMovieDatabaseMovie.poster_path;
-                        ctrl.movie.backdropPath = imageBaseUrl + theMovieDatabaseMovie.backdrop_path;
+                        ctrl.movie.posterPath = theMovieDatabaseImageBaseUrl + theMovieDatabaseMovie.poster_path;
+                        ctrl.movie.backdropPath = theMovieDatabaseImageBaseUrl + theMovieDatabaseMovie.backdrop_path;
                     }, function () {
                         notificationService.error("Could not auto-fill movie details.");
                     });

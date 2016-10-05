@@ -5,8 +5,10 @@ angular
     .config(['$locationProvider', '$routeProvider', function ($locationProvider, $routeProvider) {
         $locationProvider.hashPrefix('!');
         $routeProvider.when('/', {
-            templateUrl: 'home.html'
-        }).when('/genres/:genre', {
-            template: '<movie-section type="genre"></movie-section>'
-        }).otherwise('/');
+            template: '<home></home>'
+        }).when('/movies/:genre', {
+            template: '<movies-by-genre></movies-by-genre>'
+        }).when('/search', {
+            template: '<search></search>'
+        });
     }]);
