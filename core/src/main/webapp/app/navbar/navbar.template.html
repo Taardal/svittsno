@@ -21,7 +21,8 @@
             <a id="searchButton" class="btn btn-primary" href="#!/search?q={{$ctrl.searchQuery}}">Search</a>
             <script type="text/javascript">
                 $("#searchQueryInput").keyup(function(event){
-                    if(event.keyCode == 13){
+                    var enterKeyCode = 13;
+                    if(event.keyCode == enterKeyCode){
                         $("#searchButton").click();
                     }
                 });

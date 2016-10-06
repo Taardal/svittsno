@@ -78,7 +78,9 @@ angular
             };
 
             ctrl.registerMovie = function () {
-                ctrl.movie.subtitleFiles = getSubtitleFiles(ctrl.subtitleFilesString);
+                if (ctrl.subtitleFilesString.length > 0) {
+                    ctrl.movie.subtitleFiles = getSubtitleFiles(ctrl.subtitleFilesString);
+                }
                 $http.post('./api/v1/movies', angular.toJson(ctrl.movie)).then(function () {
                     notificationService.success("Movie registered successfully.");
                 }, function (response) {
