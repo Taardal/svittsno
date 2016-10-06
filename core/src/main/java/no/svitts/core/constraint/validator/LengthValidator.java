@@ -19,7 +19,7 @@ public class LengthValidator extends CoreValidator implements ConstraintValidato
         if (string == null || string.length() <= length) {
             return true;
         } else {
-            addConstraintViolation("Length is too long.", constraintValidatorContext);
+            addConstraintViolation("Length of string is too long [" + string + "]", constraintValidatorContext);
             return false;
         }
     }

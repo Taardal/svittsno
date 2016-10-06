@@ -19,7 +19,7 @@ public class CharacterValidator extends CoreValidator implements ConstraintValid
         if (string == null || isValidCharacters(string)) {
             return true;
         } else {
-            addConstraintViolation(string + " contains illegal characters.", constraintValidatorContext);
+            addConstraintViolation("String contains illegal characters [" + string + "]", constraintValidatorContext);
             return false;
         }
     }

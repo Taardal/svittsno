@@ -4,9 +4,8 @@ import com.google.inject.Inject;
 import no.svitts.core.exception.RepositoryException;
 import no.svitts.core.genre.Genre;
 import no.svitts.core.movie.Movie;
-import no.svitts.core.search.MovieSearch;
-import no.svitts.core.search.MovieSearchType;
 import no.svitts.core.search.Search;
+import no.svitts.core.search.SearchKey;
 import no.svitts.core.util.Id;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
@@ -40,18 +39,17 @@ public class MovieRepository extends CoreRepository<Movie> {
 
     @Override
     public List<Movie> search(Search search) {
-        MovieSearch movieSearch = (MovieSearch) search;
-        LOGGER.info("Getting multiple movies from database by search [{}].", movieSearch.toString());
+        LOGGER.info("Getting multiple movies from database by search [{}].", search.toString());
         try {
             List<Movie> movies = getCurrentSession()
-                    .createQuery(getSearchCriteriaQuery(movieSearch))
-                    .setMaxResults(movieSearch.getLimit())
-                    .setFirstResult(movieSearch.getOffset())
+                    .createQuery(getSearchCriteriaQuery(search))
+                    .setMaxResults(search.getLimit())
+                    .setFirstResult(search.getOffset())
                     .getResultList();
             LOGGER.info("Search found [{}] movies -> [{}]", movies.size(), movies);
             return movies;
         } catch (HibernateException | IllegalStateException e) {
-            LOGGER.error("Could not get multiple movies from database by search [{}]", movieSearch.toString());
+            LOGGER.error("Could not get multiple movies from database by search [{}]", search.toString());
             throw new RepositoryException(e);
         }
     }
@@ -94,15 +92,15 @@ public class MovieRepository extends CoreRepository<Movie> {
         }
     }
 
-    private CriteriaQuery<Movie> getSearchCriteriaQuery(MovieSearch movieSearch) {
+    private CriteriaQuery<Movie> getSearchCriteriaQuery(Search search) {
         CriteriaBuilder criteriaBuilder = getCurrentSession().getCriteriaBuilder();
         CriteriaQuery<Movie> movieCriteriaQuery = criteriaBuilder.createQuery(Movie.class);
         Root<Movie> movieRoot = movieCriteriaQuery.from(Movie.class);
         movieCriteriaQuery.select(movieRoot);
-        if (movieSearch.getMovieSearchType() == MovieSearchType.TITLE) {
-            return movieCriteriaQuery.where(criteriaBuilder.like(criteriaBuilder.upper(movieRoot.get("title")), "%" + movieSearch.getQuery().toUpperCase() + "%"));
-        } else if (movieSearch.getMovieSearchType() == MovieSearchType.GENRE) {
-            Genre genre = Genre.valueOf(movieSearch.getQuery());
+        if (search.getSearchKey() == SearchKey.TITLE) {
+            return movieCriteriaQuery.where(criteriaBuilder.like(criteriaBuilder.upper(movieRoot.get("title")), "%" + search.getQuery().toUpperCase() + "%"));
+        } else if (search.getSearchKey() == SearchKey.GENRE) {
+            Genre genre = Genre.valueOf(search.getQuery());
             return movieCriteriaQuery.where(criteriaBuilder.isMember(genre, movieRoot.get("genres")));
         } else {
             return movieCriteriaQuery;

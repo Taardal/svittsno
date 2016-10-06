@@ -8,7 +8,6 @@ import no.svitts.core.genre.Genre;
 import no.svitts.core.json.GsonMessageBodyReader;
 import no.svitts.core.json.GsonMessageBodyWriter;
 import no.svitts.core.movie.Movie;
-import no.svitts.core.search.MovieSearch;
 import no.svitts.core.search.Search;
 import no.svitts.core.service.MovieService;
 import no.svitts.core.service.Service;
@@ -103,7 +102,7 @@ public class MovieResourceTest extends JerseyTest {
         List<Movie> movies = new ArrayList<>();
         movies.add(movieBuilder.build());
         movies.add(movieBuilder.build());
-        when(movieServiceMock.search(any(MovieSearch.class))).thenReturn(movies);
+        when(movieServiceMock.search(any(Search.class))).thenReturn(movies);
 
         Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE).path("genres").path(Genre.FILM_NOIR.toString()).request().get();
 
@@ -111,7 +110,7 @@ public class MovieResourceTest extends JerseyTest {
         Movie[] moviesFromResponse = response.readEntity(Movie[].class);
         assertEquals(movies.size(), moviesFromResponse.length);
         assertArrayEquals(movies.toArray(), moviesFromResponse);
-        verify(movieServiceMock, times(1)).search(any(MovieSearch.class));
+        verify(movieServiceMock, times(1)).search(any(Search.class));
         response.close();
     }
 
@@ -120,7 +119,7 @@ public class MovieResourceTest extends JerseyTest {
         List<Movie> movies = new ArrayList<>();
         movies.add(movieBuilder.build());
         movies.add(movieBuilder.build());
-        when(movieServiceMock.search(any(MovieSearch.class))).thenReturn(movies);
+        when(movieServiceMock.search(any(Search.class))).thenReturn(movies);
         String genre = "action";
 
         Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE).path("genres").path(genre).request().get();
@@ -129,7 +128,7 @@ public class MovieResourceTest extends JerseyTest {
         Movie[] moviesFromResponse = response.readEntity(Movie[].class);
         assertEquals(movies.size(), moviesFromResponse.length);
         assertArrayEquals(movies.toArray(), moviesFromResponse);
-        verify(movieServiceMock, times(1)).search(any(MovieSearch.class));
+        verify(movieServiceMock, times(1)).search(any(Search.class));
         response.close();
     }
 
@@ -138,7 +137,7 @@ public class MovieResourceTest extends JerseyTest {
         List<Movie> movies = new ArrayList<>();
         movies.add(movieBuilder.build());
         movies.add(movieBuilder.build());
-        when(movieServiceMock.search(any(MovieSearch.class))).thenReturn(movies);
+        when(movieServiceMock.search(any(Search.class))).thenReturn(movies);
         String genre = "Film-Noir";
 
         Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE).path("genres").path(genre).request().get();
@@ -147,7 +146,7 @@ public class MovieResourceTest extends JerseyTest {
         Movie[] moviesFromResponse = response.readEntity(Movie[].class);
         assertEquals(movies.size(), moviesFromResponse.length);
         assertArrayEquals(movies.toArray(), moviesFromResponse);
-        verify(movieServiceMock, times(1)).search(any(MovieSearch.class));
+        verify(movieServiceMock, times(1)).search(any(Search.class));
         response.close();
     }
 
@@ -156,7 +155,7 @@ public class MovieResourceTest extends JerseyTest {
         List<Movie> movies = new ArrayList<>();
         movies.add(movieBuilder.build());
         movies.add(movieBuilder.build());
-        when(movieServiceMock.search(any(MovieSearch.class))).thenReturn(movies);
+        when(movieServiceMock.search(any(Search.class))).thenReturn(movies);
         String genre = "Science Fiction";
 
         Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE).path("genres").path(genre).request().get();
@@ -165,18 +164,18 @@ public class MovieResourceTest extends JerseyTest {
         Movie[] moviesFromResponse = response.readEntity(Movie[].class);
         assertEquals(movies.size(), moviesFromResponse.length);
         assertArrayEquals(movies.toArray(), moviesFromResponse);
-        verify(movieServiceMock, times(1)).search(any(MovieSearch.class));
+        verify(movieServiceMock, times(1)).search(any(Search.class));
         response.close();
     }
 
     @Test
     public void getMoviesByGenre_ThrowsServiceException_ShouldReturnInternalServerErrorResponse() {
-        when(movieServiceMock.search(any(MovieSearch.class))).thenThrow(new ServiceException());
+        when(movieServiceMock.search(any(Search.class))).thenThrow(new ServiceException());
 
         Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE).path("genres").path(Genre.FILM_NOIR.toString()).request().get();
 
         assertEquals(500, response.getStatus());
-        verify(movieServiceMock, times(1)).search(any(MovieSearch.class));
+        verify(movieServiceMock, times(1)).search(any(Search.class));
         response.close();
     }
 
@@ -187,7 +186,7 @@ public class MovieResourceTest extends JerseyTest {
         Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE).path("genres").path(genre).request().get();
 
         assertEquals(500, response.getStatus());
-        verify(movieServiceMock, times(0)).search(any(MovieSearch.class));
+        verify(movieServiceMock, times(0)).search(any(Search.class));
         response.close();
     }
 
@@ -196,7 +195,7 @@ public class MovieResourceTest extends JerseyTest {
         List<Movie> movies = new ArrayList<>();
         movies.add(movieBuilder.build());
         movies.add(movieBuilder.build());
-        when(movieServiceMock.search(any(MovieSearch.class))).thenReturn(movies);
+        when(movieServiceMock.search(any(Search.class))).thenReturn(movies);
 
         Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE).path("search").queryParam("q", "query").request().get();
 
@@ -210,12 +209,12 @@ public class MovieResourceTest extends JerseyTest {
 
     @Test
     public void search_ThrowsServiceException_ShouldReturnInternalServerErrorResponse() {
-        when(movieServiceMock.search(any(MovieSearch.class))).thenThrow(new ServiceException());
+        when(movieServiceMock.search(any(Search.class))).thenThrow(new ServiceException());
 
         Response response = client().register(gsonMessageBodyReader).target(getBaseUri()).path(MOVIE_RESOURCE).path("search").queryParam("q", "query").request().get();
 
         assertEquals(500, response.getStatus());
-        verify(movieServiceMock, times(1)).search(any(MovieSearch.class));
+        verify(movieServiceMock, times(1)).search(any(Search.class));
         response.close();
     }
 

@@ -161,17 +161,12 @@ a[data-tooltip]::after {
 }
 
 a[data-tooltip]::before {
-    /*
-     * using data-tooltip instead of title so we
-     * don't have the real tooltip overlapping
-     */
     content: attr(data-tooltip);
     background: #000;
     color: #fff;
     font-size: 13px;
     padding: 5px;
     border-radius: 5px;
-    /* we don't want the text to wrap */
     white-space: nowrap;
     text-decoration: none;
 }
@@ -188,9 +183,6 @@ a[data-tooltip]:hover::after {
     display: block;
 }
 
-/** positioning **/
-
-/* top tooltip */
 a[data-tooltip][data-placement="top"]::before {
     bottom: 100%;
     left: 0;

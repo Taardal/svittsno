@@ -15,8 +15,7 @@ public class DateValidator extends CoreValidator implements ConstraintValidator<
 
     @Override
     public boolean isValid(Long time, ConstraintValidatorContext constraintValidatorContext) {
-        ReleaseDate releaseDate = new ReleaseDate(1900, 1, 1);
-        if (time >= releaseDate.getTime()) {
+        if (time >= new ReleaseDate(1900, 1, 1).getTime()) {
             return true;
         } else {
             addConstraintViolation("Date is too early. Must be after 01.01.1900.", constraintValidatorContext);

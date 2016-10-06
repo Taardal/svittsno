@@ -10,8 +10,8 @@ import no.svitts.core.constraint.ValidCharacters;
 import no.svitts.core.exception.ServiceException;
 import no.svitts.core.genre.Genre;
 import no.svitts.core.movie.Movie;
-import no.svitts.core.search.MovieSearch;
-import no.svitts.core.search.MovieSearchType;
+import no.svitts.core.search.Search;
+import no.svitts.core.search.SearchKey;
 import no.svitts.core.service.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,8 +75,8 @@ public class MovieResource {
         LOGGER.info("Received request to GET movie(s) with genre [{}] with limit [{}] and offset [{}]", genrePathParam, limit, offset);
         try {
             Genre genre = Genre.valueOf(genrePathParam.toUpperCase().replaceAll("-", "_").replaceAll(" ", "_"));
-            MovieSearch movieSearch = getMovieSearch(genre.toString(), MovieSearchType.GENRE, limit, offset);
-            List<Movie> movies = movieService.search(movieSearch);
+            Search search = new Search(genre.toString(), SearchKey.GENRE, limit, offset);
+            List<Movie> movies = movieService.search(search);
             return Response.ok(movies.toArray()).build();
         } catch (ServiceException | IllegalArgumentException e) {
             throw new InternalServerErrorException("Could not get movies with genre [" + genrePathParam + "], limit [" + limit + "] and offset [" + offset + "].", e);
@@ -98,8 +98,8 @@ public class MovieResource {
     ) {
         LOGGER.info("Received request to GET movie(s) by search query [{}] with limit [{}] and offset [{}]", query, limit, offset);
         try {
-            MovieSearch movieSearch = getMovieSearch(query, MovieSearchType.TITLE, limit, offset);
-            List<Movie> movies = movieService.search(movieSearch);
+            Search search = new Search(query, SearchKey.TITLE, limit, offset);
+            List<Movie> movies = movieService.search(search);
             return Response.ok(movies.toArray()).build();
         } catch (ServiceException e) {
             throw new InternalServerErrorException("Could not get movies by search query [" + query + "] with limit [" + limit + "] and offset [" + offset + "].", e);
@@ -151,13 +151,6 @@ public class MovieResource {
         } catch (ServiceException e) {
             throw new InternalServerErrorException("Could not delete movie with ID [" + id + "].", e);
         }
-    }
-
-    private MovieSearch getMovieSearch(String query, MovieSearchType movieSearchType, int limit, int offset) {
-        MovieSearch movieSearch = new MovieSearch(query, movieSearchType);
-        movieSearch.setLimit(limit);
-        movieSearch.setOffset(offset);
-        return movieSearch;
     }
 
     private URI getLocation(String id) {

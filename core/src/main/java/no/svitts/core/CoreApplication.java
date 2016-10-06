@@ -10,7 +10,7 @@ import no.svitts.core.exception.mapper.WebApplicationExceptionMapper;
 import no.svitts.core.json.GsonMessageBodyReader;
 import no.svitts.core.json.GsonMessageBodyWriter;
 import no.svitts.core.module.PersistenceModule;
-import no.svitts.core.module.WebModule;
+import no.svitts.core.module.ResourceModule;
 import no.svitts.core.provider.SessionFactoryProvider;
 import no.svitts.core.resource.GenreResource;
 import no.svitts.core.resource.MovieResource;
@@ -28,7 +28,7 @@ public class CoreApplication extends ResourceConfig {
     static final String APPLICATION_PATH = "api/" + APPLICATION_VERSION;
 
     public CoreApplication() {
-        Injector injector = Guice.createInjector(new WebModule(), new PersistenceModule(new SessionFactoryProvider()));
+        Injector injector = Guice.createInjector(new ResourceModule(), new PersistenceModule(new SessionFactoryProvider()));
         registerComponents(injector);
         setApplicationName(APPLICATION_NAME);
         createSwaggerBean();

@@ -35,7 +35,9 @@ public class PlayerServlet extends HttpServlet {
         try {
             return gson.fromJson(request.getReader(), String.class);
         } catch (IOException e) {
-            LOGGER.error("Could not get path");
+            String errorMessage = "Could not get path from request.";
+            eventListener.onAddEvent(errorMessage);
+            LOGGER.error(errorMessage);
             throw new RuntimeException(e);
         }
     }

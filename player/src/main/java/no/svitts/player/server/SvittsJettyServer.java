@@ -1,7 +1,6 @@
 package no.svitts.player.server;
 
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.FilterMapping;
 import org.eclipse.jetty.servlet.ServletHandler;
@@ -15,6 +14,8 @@ import javax.servlet.http.HttpServlet;
 public class SvittsJettyServer implements JettyServer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SvittsJettyServer.class);
+    private static final String CROSS_ORIGIN_FILTER_NAME = "cross-origin";
+    private static final String CROSS_ORIGIN_FILTER_PATH = "*";
     private static final int PORT = 8181;
 
     private Server server;
@@ -44,7 +45,7 @@ public class SvittsJettyServer implements JettyServer {
 
     @Override
     public String getUrl() {
-        return getHost() + ":" + getPort();
+        return server.getURI().getHost() + ":" + Integer.toString(PORT);
     }
 
     @Override
@@ -60,18 +61,18 @@ public class SvittsJettyServer implements JettyServer {
 
     private FilterHolder getCrossOriginFilter() {
         FilterHolder filterHolder = new FilterHolder(CrossOriginFilter.class);
-        filterHolder.setInitParameter(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, "*");
-        filterHolder.setInitParameter(CrossOriginFilter.ACCESS_CONTROL_ALLOW_ORIGIN_HEADER, "*");
+        filterHolder.setInitParameter(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, CROSS_ORIGIN_FILTER_PATH);
+        filterHolder.setInitParameter(CrossOriginFilter.ACCESS_CONTROL_ALLOW_ORIGIN_HEADER, CROSS_ORIGIN_FILTER_PATH);
         filterHolder.setInitParameter(CrossOriginFilter.ALLOWED_METHODS_PARAM, "GET,POST,HEAD,OPTIONS");
         filterHolder.setInitParameter(CrossOriginFilter.ALLOWED_HEADERS_PARAM, "X-Requested-With,Content-Type,Accept,Origin");
-        filterHolder.setName("cross-origin");
+        filterHolder.setName(CROSS_ORIGIN_FILTER_NAME);
         return filterHolder;
     }
 
     private FilterMapping getCrossOriginFilterMapping() {
         FilterMapping filterMapping = new FilterMapping();
-        filterMapping.setFilterName("cross-origin");
-        filterMapping.setPathSpec("*");
+        filterMapping.setFilterName(CROSS_ORIGIN_FILTER_NAME);
+        filterMapping.setPathSpec(CROSS_ORIGIN_FILTER_PATH);
         return filterMapping;
     }
 
@@ -103,14 +104,6 @@ public class SvittsJettyServer implements JettyServer {
             LOGGER.error("Could not execute join on jetty server.", e);
             throw new RuntimeException(e);
         }
-    }
-
-    private String getHost() {
-        return server.getURI().getHost();
-    }
-
-    private int getPort() {
-        return ((ServerConnector) server.getConnectors()[0]).getPort();
     }
 
 }
