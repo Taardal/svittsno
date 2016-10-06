@@ -1,7 +1,5 @@
+/target
 
 ## IntelliJ IDEA
-
 *.iml
 .idea/
-/out/
-/target/

@@ -1,0 +1,38 @@
+.card-inverse,
+.card-inverse > img {
+    width: 250px;
+    height: 375px;
+}
+
+.card-inverse .card-img-overlay {
+    box-shadow: 4px 4px 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+.card-inverse .card-img-overlay .card-overlay {
+    position: absolute;
+    display: table;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    opacity: 0;
+    -webkit-transition: opacity 500ms;
+    -moz-transition: opacity 500ms;
+    -o-transition: opacity 500ms;
+    transition: opacity 500ms;
+}
+
+.card-inverse .card-img-overlay .card-overlay:hover {
+    opacity: 1;
+}
+
+.card-inverse .card-img-overlay .card-overlay .card-overlay-content {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+}
+
+
