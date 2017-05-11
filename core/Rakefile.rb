@@ -13,20 +13,16 @@
 
 require 'net/ssh'
 require 'net/scp'
-require 'date'
 
 namespace :default do
-  puts ''
   puts '-------------------------------------------------------'
   puts ' AVAILABLE RAKE TASKS'
   puts '-------------------------------------------------------'
   puts ' - rake deploy:test'
   puts ' - rake deploy:prod'
   puts '-------------------------------------------------------'
-  puts ''
 end
 
-today = Date.today
 api_version = 'v1'
 
 build_profile = ''
@@ -38,7 +34,7 @@ server_tomcat_webapps_path = ''
 
 test_build_profile = 'test'
 test_server_user = 'taardal'
-test_server_address = '172.16.42.19'
+test_server_address = 'taardal-dev'
 test_tomcat_port = '8080'
 test_tomcat_catalina_base = '/var/lib/tomcat8'
 test_tomcat_catalina_home = '/usr/share/tomcat8'
