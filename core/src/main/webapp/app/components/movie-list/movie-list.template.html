@@ -1,0 +1,28 @@
+<div id="movie-list" class="container col-md-12">
+    <div class="row" ng-repeat="(i, _) in $ctrl.data" ng-if="$index % $ctrl.itemsPerRow == 0">
+        <ul>
+            <li class="movie-tile" ng-repeat="(j, _) in $ctrl.data | limitTo:$ctrl.itemsPerRow">
+                <img ng-src="{{$ctrl.data[i + j].posterPath}}" alt="{{$ctrl.data[i + j].title}}">
+                <div class="movie-tile-overlay">
+                    <div class="play-button" ng-if="$ctrl.data[i + j].videoFile.path"></div>
+                    <div class="movie-tile-overlay-content">
+                        <span class="movie-title">{{$ctrl.data[i + j].title}}<br/><br/></span>
+                        <span ng-if="$ctrl.data[i + j].overview">{{$ctrl.data[i + j].overview}}<br/><br/></span>
+                        <span id="metadata">
+                            <a id="imdb" ng-if="$ctrl.data[i + j].title"
+                               href="http://imdb.com/find?s=all&q={{$ctrl.data[i + j].title}}" target="_blank">IMDb</a>
+                            <span ng-if="$ctrl.data[i + j].releaseDate">
+                                <span ng-if="$ctrl.data[i + j].releaseDate && !$ctrl.isMetadataEmpty()"> | </span>
+                                {{$ctrl.data[i + j].releaseDate.getFullYear()}}
+                            </span>
+                            <span ng-if="$ctrl.data[i + j].language">
+                                <span ng-if="$ctrl.data[i + j].language && !$ctrl.isMetadataEmpty()"> | </span>
+                                {{$ctrl.data[i + j].language}}
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

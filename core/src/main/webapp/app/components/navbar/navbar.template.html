@@ -1,0 +1,45 @@
+<script type="text/javascript">
+
+    $(function () {
+        $('#nav').find('> ul').dropotron();
+    });
+
+    $("#search").keyup(function(event){
+        var enterKeyCode = 13;
+        if(event.keyCode === enterKeyCode){
+            $("#searchButton").click();
+        }
+    });
+
+</script>
+
+<div class="nav-container">
+    <nav id="nav">
+        <ul>
+            <li>
+                <a href="#!/">Home</a>
+            </li>
+            <li>
+                <a href="">Genres</a>
+                <ul>
+                    <li ng-repeat="genre in $ctrl.genres">
+                        <a href="#!/movies/{{genre}}">{{genre}}</a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="#!/register">Register</a>
+            </li>
+            <li>
+                <a href="#!/discover">Discover</a>
+            </li>
+            <li>
+                <div class="nav-search">
+                    <span class="icon"><i class="fa fa-search"></i></span>
+                    <input id="search" name="search" type="text" ng-model="$ctrl.searchQuery" autocomplete="off" title="search">
+                    <a id="searchButton" class="btn btn-primary" href="#!/search?q={{$ctrl.searchQuery}}" style="display: none"></a>
+                </div>
+            </li>
+        </ul>
+    </nav>
+</div>

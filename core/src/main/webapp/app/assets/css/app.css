@@ -1,0 +1,247 @@
+@import url("http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400italic,700,900");
+
+html {
+    overflow-y: scroll;
+}
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    vertical-align: baseline;
+}
+
+body, input, textarea, select {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 400;
+    color: #919499;
+    font-size: 13pt;
+    letter-spacing: 0.025em;
+}
+
+hr {
+    margin: 2em 0 2em 0;
+}
+
+form label {
+    margin: 0.25em 0 0.5em 0;
+}
+
+form label {
+    display: block;
+    font-weight: 700;
+    color: #484d55;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="password"],
+form select,
+form textarea {
+    -moz-transition: all .25s ease-in-out;
+    -webkit-transition: all .25s ease-in-out;
+    transition: all .25s ease-in-out;
+    -webkit-appearance: none;
+    display: block;
+    border: 0;
+    background: #eee;
+    box-shadow: inset 0 0 1px 0 #a0a1a7;
+    border-radius: 0.35em;
+    width: 100%;
+    padding: 0.75em 1em 0.75em 1em;
+}
+
+form input[type="text"]:focus,
+form input[type="email"]:focus,
+form input[type="password"]:focus,
+form select:focus,
+form textarea:focus {
+    background: #f8f8f8;
+}
+
+form input[type="text"],
+form input[type="email"],
+input[type="password"] {
+    line-height: 1em;
+}
+
+form select {
+    line-height: 1em;
+}
+
+form textarea {
+    min-height: 10em;
+}
+
+form ::-webkit-input-placeholder {
+    color: #555 !important;
+    font-style: italic;
+    line-height: 1.35em;
+}
+
+form :-moz-placeholder {
+    color: #555 !important;
+    font-style: italic;
+}
+
+form ::-moz-placeholder {
+    color: #555 !important;
+    font-style: italic;
+}
+
+form :-ms-input-placeholder {
+    color: #555 !important;
+    font-style: italic;
+}
+
+form ::-moz-focus-inner {
+    border: 0;
+}
+
+form ul.actions {
+    margin-top: 0;
+}
+
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+button.button-small {
+    font-size: 0.7rem;
+}
+
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+button {
+    -moz-transition: all .25s ease-in-out;
+    -webkit-transition: all .25s ease-in-out;
+    -ms-transition: all .25s ease-in-out;
+    transition: all .25s ease-in-out;
+    display: inline-block;
+    background: #444;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-decoration: none;
+    border-radius: 0.35em;
+    border: 0;
+    outline: 0;
+    cursor: pointer;
+}
+
+input[type="button"]:hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover,
+button:hover {
+    background-color: #f98780;
+}
+
+input[type="button"].button-red,
+input[type="submit"].button-red,
+input[type="reset"].button-red,
+button.button-red {
+    background: #e97770 url("../images/overlay.png");
+    color: #fff;
+}
+
+input[type="button"].button-red:hover,
+input[type="submit"].button-red:hover,
+input[type="reset"].button-red:hover,
+button.button-red:hover {
+    background-color: #f98780;
+}
+
+input[type="button"].button-red:active,
+input[type="submit"].button-red:active,
+input[type="reset"].button-red:active,
+button.button-red:active {
+    background-color: #d96760;
+}
+
+input[type="button"].button-white,
+input[type="submit"].button-white,
+input[type="reset"].button-white,
+button.button-white {
+    background: none;
+    color: #606167;
+    box-shadow: inset 0 0 2px 0 #a0a1a7;
+}
+
+input[type="button"].button-white:hover,
+input[type="submit"].button-white:hover,
+input[type="reset"].button-white:hover,
+button.button-white:hover {
+    box-shadow: inset 0 0 2px 0 #606167;
+}
+
+input[type="button"].button-white:active,
+input[type="submit"].button-white:active,
+input[type="reset"].button-white:active,
+button.button-white:active {
+    box-shadow: inset 0 0 2px 0 #202127;
+}
+
+input[type="button"].button-black,
+input[type="submit"].button-black,
+input[type="reset"].button-black,
+button.button-black {
+    background: #2f333b url("../images/overlay.png");
+    color: #fff;
+}
+
+input[type="button"].button-black:hover,
+input[type="submit"].button-black:hover,
+input[type="reset"].button-black:hover,
+button.button-black:hover {
+    background-color: #3f434b;
+}
+
+input[type="button"].button-black:active,
+input[type="submit"].button-black:active,
+input[type="reset"].button-black:active,
+button.button-black:active {
+    background-color: #1f232b;
+}
+
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+button {
+    padding: 0 2.25em 0 2.25em;
+    font-size: 0.9em;
+    min-width: 12em;
+    height: 4em;
+    line-height: 4em;
+}
+
+input[type="button"].big,
+input[type="submit"].big,
+input[type="reset"].big,
+button.big {
+    font-size: 1em;
+    min-width: 14em;
+}
+
+ul.actions {
+    margin: 3em 0 0 0;
+}
+
+ul.actions li {
+    display: inline-block;
+    margin: 0 0.75em 0 0.75em;
+}
+
+ul.actions li:first-child {
+    margin-left: 0;
+}
+
+ul.actions li:last-child {
+    margin-right: 0;
+}
+
+li {
+    list-style: none;
+}
+
+

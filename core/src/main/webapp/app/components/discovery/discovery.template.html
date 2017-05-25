@@ -1,0 +1,26 @@
+<div class="section section-theme-white">
+    <div class="section-title">
+        Discover movies
+    </div>
+    <div class="container col-6">
+        <form name="movieRegistrationForm" role="form">
+            <div class="form-group">
+                <div class="input-group">
+                    <input id="path" type="text" ng-model="$ctrl.path" placeholder="Path">
+                    <span class="input-group-btn">
+                        <button class="btn button-small button-red" type="button" ng-click="$ctrl.autoFill()">Discover</button>
+                    </span>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-6">
+                    <input id="username" type="text" ng-model="$ctrl.username" placeholder="Username">
+                </div>
+                <div class="col-6">
+                    <input id="password" type="text" ng-model="$ctrl.password" placeholder="Password">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div id="result"></div>
+</div>
