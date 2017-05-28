@@ -24,7 +24,7 @@ angular
                 if (ctrl.subtitleFilesString) {
                     ctrl.movie.subtitleFiles = getSubtitleFiles(ctrl.subtitleFilesString);
                 }
-                Movie.save({
+                Movie.request().save({
                     title: ctrl.movie.title,
                     imdbId: ctrl.movie.imdbId,
                     tagline: ctrl.movie.tagline,
@@ -39,7 +39,7 @@ angular
                     posterPath: ctrl.movie.posterPath,
                     backdropPath: ctrl.movie.backdropPath
                 }, function () {
-                    notificationService.success("Movie registered successfully.");
+                    notificationService.success("Movie [" + ctrl.movie.title + "] registered successfully.");
                     ctrl.reset();
                 }, function (response) {
                     var errorMessage = "";

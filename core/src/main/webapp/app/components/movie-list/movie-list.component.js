@@ -2,19 +2,17 @@ angular
     .module('svittsApp.movieList')
     .component('movieList', {
         templateUrl: 'app/components/movie-list/movie-list.template.html',
-        controller: function ($http, $routeParams, notificationService) {
+        controller: function ($http, $routeParams, Movie, notificationService) {
 
             var ctrl = this;
 
             ctrl.itemsPerRow = 7;
 
             ctrl.playMovie = function (movie) {
-                var payload = {
-                    path: movie.videoFile.path
-                };
-                $http.post('http://localhost:8181', angular.toJson(payload)).then(function () {
+                console.log("Playing movie: " + movie);
+                Movie.request().play({path: movie.videoFile.path}, function () {
                     notificationService.success("Playing movie " + movie.title);
-                }, function () {
+                }, function (error) {
                     notificationService.error("Could not play movie. Is the player running?");
                 });
             };

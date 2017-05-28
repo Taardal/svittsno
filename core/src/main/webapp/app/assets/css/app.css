@@ -159,26 +159,26 @@ button.button-red:active {
     background-color: #d96760;
 }
 
-input[type="button"].button-white,
-input[type="submit"].button-white,
-input[type="reset"].button-white,
-button.button-white {
+input[type="button"].button-no-color,
+input[type="submit"].button-no-color,
+input[type="reset"].button-no-color,
+button.button-no-color {
     background: none;
     color: #606167;
     box-shadow: inset 0 0 2px 0 #a0a1a7;
 }
 
-input[type="button"].button-white:hover,
-input[type="submit"].button-white:hover,
-input[type="reset"].button-white:hover,
-button.button-white:hover {
+input[type="button"].button-no-color:hover,
+input[type="submit"].button-no-color:hover,
+input[type="reset"].button-no-color:hover,
+button.button-no-color:hover {
     box-shadow: inset 0 0 2px 0 #606167;
 }
 
-input[type="button"].button-white:active,
-input[type="submit"].button-white:active,
-input[type="reset"].button-white:active,
-button.button-white:active {
+input[type="button"].button-no-color:active,
+input[type="submit"].button-no-color:active,
+input[type="reset"].button-no-color:active,
+button.button-no-color:active {
     box-shadow: inset 0 0 2px 0 #202127;
 }
 

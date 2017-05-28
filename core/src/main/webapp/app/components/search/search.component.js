@@ -7,7 +7,7 @@ angular
             var ctrl = this;
 
             ctrl.q = $routeParams.q;
-            ctrl.movies = Movie.search({q: ctrl.q});
+            ctrl.movies = Movie.request().search({q: ctrl.q});
 
         }
     });

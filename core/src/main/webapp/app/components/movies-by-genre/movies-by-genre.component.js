@@ -12,7 +12,7 @@ angular
             ctrl.itemsPerRow = 7;
             ctrl.rows = ctrl.movies.length / ctrl.itemsPerRow;
 
-            ctrl.movies = Movie.query({genre: ctrl.genre});
+            ctrl.movies = Movie.request().query({genre: ctrl.genre});
 
         }
     });

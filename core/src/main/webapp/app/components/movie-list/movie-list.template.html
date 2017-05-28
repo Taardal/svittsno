@@ -4,20 +4,33 @@
             <li class="movie-tile" ng-repeat="(j, _) in $ctrl.data | limitTo:$ctrl.itemsPerRow">
                 <img ng-src="{{$ctrl.data[i + j].posterPath}}" alt="{{$ctrl.data[i + j].title}}">
                 <div class="movie-tile-overlay">
-                    <div class="play-button" ng-if="$ctrl.data[i + j].videoFile.path"></div>
+                    <div class="play-button" ng-if="$ctrl.data[i + j].videoFile.path"
+                         ng-click="$ctrl.playMovie($ctrl.data[i + j])"></div>
                     <div class="movie-tile-overlay-content">
-                        <span class="movie-title">{{$ctrl.data[i + j].title}}<br/><br/></span>
+                        <span class="movie-title">
+                            <a id="imdb" ng-if="$ctrl.data[i + j].title"
+                               href="http://imdb.com/find?s=all&q={{$ctrl.data[i + j].title}}" target="_blank">{{$ctrl.data[i + j].title}}</a>
+                            <br/>
+                        </span>
+                        <span ng-if="$ctrl.data[i + j].edition">{{$ctrl.data[i + j].edition}}<br/></span><br/>
                         <span ng-if="$ctrl.data[i + j].overview">{{$ctrl.data[i + j].overview}}<br/><br/></span>
                         <span id="metadata">
-                            <a id="imdb" ng-if="$ctrl.data[i + j].title"
-                               href="http://imdb.com/find?s=all&q={{$ctrl.data[i + j].title}}" target="_blank">IMDb</a>
+                            <span ng-if="$ctrl.data[i + j].language">{{$ctrl.data[i + j].language}}</span>
                             <span ng-if="$ctrl.data[i + j].releaseDate">
                                 <span ng-if="$ctrl.data[i + j].releaseDate && !$ctrl.isMetadataEmpty()"> | </span>
                                 {{$ctrl.data[i + j].releaseDate.getFullYear()}}
                             </span>
-                            <span ng-if="$ctrl.data[i + j].language">
-                                <span ng-if="$ctrl.data[i + j].language && !$ctrl.isMetadataEmpty()"> | </span>
-                                {{$ctrl.data[i + j].language}}
+                            <span ng-if="$ctrl.data[i + j].runtime">
+                                <span ng-if="$ctrl.data[i + j].runtime && !$ctrl.isMetadataEmpty()"> | </span>
+                                {{$ctrl.data[i + j].runtime | duration}}
+                            </span>
+                            <span ng-if="$ctrl.data[i + j].videoFile.videoFormat">
+                                <span ng-if="$ctrl.data[i + j].videoFile.videoFormat && !$ctrl.isMetadataEmpty()"> | </span>
+                                {{$ctrl.data[i + j].videoFile.videoFormat}}
+                            </span>
+                            <span ng-if="$ctrl.data[i + j].videoFile.audioFormat">
+                                <span ng-if="$ctrl.data[i + j].videoFile.audioFormat && !$ctrl.isMetadataEmpty()"> | </span>
+                                {{$ctrl.data[i + j].videoFile.audioFormat}}
                             </span>
                         </span>
                     </div>
