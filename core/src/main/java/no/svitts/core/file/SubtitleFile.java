@@ -11,6 +11,7 @@ import java.io.File;
 @Embeddable
 public class SubtitleFile {
 
+    public static final String[] SUBTITLE_FORMATS = {"ssa", "sub","rt", "aqt", "ssf", "mpl", "usf", "ttxt", "jss", "dks", "smi", "cvd", "svcd", "srt", "pjs", "idx", "psb"};
     public static final int PATH_MAX_LENGTH = 255;
     public static final int NAME_MAX_LENGTH = 255;
     public static final int LANGUAGE_MAX_LENGTH = 255;

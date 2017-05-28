@@ -11,6 +11,8 @@ import java.io.File;
 @Embeddable
 public class VideoFile {
 
+
+    public static final String[] VIDEO_FORMATS = {"gif", "vob", "amv", "ogg", "nsv", "rmvb", "f4a", "drc", "avi", "mov", "roq", "f4b", "mkv", "mxf", "yuv", "3gp", "3g2", "ogv", "wmv"," qt", "mpe", "f4p", "mpg", "mng", "svi", "m4p", "f4v", "webm", "m4v", "mp2", "mp4", "m2v", "flv", "mpv", "asf", "mpeg", "rm"};
     public static final int PATH_MAX_LENGTH = 255;
     public static final int NAME_MAX_LENGTH = 255;
     public static final int VIDEO_FORMAT_MAX_LENGTH = 255;
@@ -23,6 +25,10 @@ public class VideoFile {
     private String audioFormat;
 
     private VideoFile() {
+    }
+
+    public VideoFile(String path) {
+        this(path, "", "");
     }
 
     public VideoFile(String path, String videoFormat, String audioFormat) {

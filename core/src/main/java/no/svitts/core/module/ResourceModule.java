@@ -8,6 +8,10 @@ import no.svitts.core.exception.mapper.WebApplicationExceptionMapper;
 import no.svitts.core.json.GsonMessageBodyReader;
 import no.svitts.core.json.GsonMessageBodyWriter;
 import no.svitts.core.movie.Movie;
+import no.svitts.core.service.LocalMovieDiscoveryService;
+import no.svitts.core.service.LocalDiscoveryService;
+import no.svitts.core.service.RemoteDiscoveryService;
+import no.svitts.core.service.RemoteMovieDiscoveryService;
 import no.svitts.core.service.MovieService;
 import no.svitts.core.service.Service;
 
@@ -26,6 +30,8 @@ public class ResourceModule implements Module {
         binder.bind(new TypeLiteral<ExceptionMapper<ConstraintViolationException>>(){}).to(ConstraintViolationExceptionMapper.class);
         binder.bind(new TypeLiteral<MessageBodyReader<Object>>(){}).to(GsonMessageBodyReader.class);
         binder.bind(new TypeLiteral<MessageBodyWriter<Object>>(){}).to(GsonMessageBodyWriter.class);
+        binder.bind(LocalDiscoveryService.class).to(LocalMovieDiscoveryService.class);
+        binder.bind(RemoteDiscoveryService.class).to(RemoteMovieDiscoveryService.class);
     }
 
 }
