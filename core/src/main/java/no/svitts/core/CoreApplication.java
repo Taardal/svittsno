@@ -12,6 +12,7 @@ import no.svitts.core.json.GsonMessageBodyWriter;
 import no.svitts.core.module.PersistenceModule;
 import no.svitts.core.module.ResourceModule;
 import no.svitts.core.provider.SessionFactoryProvider;
+import no.svitts.core.resource.DiscoveryResource;
 import no.svitts.core.resource.GenreResource;
 import no.svitts.core.resource.MovieResource;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -37,6 +38,7 @@ public class CoreApplication extends ResourceConfig {
     private void registerComponents(Injector injector) {
         register(injector.getInstance(MovieResource.class));
         register(injector.getInstance(GenreResource.class));
+        register(injector.getInstance(DiscoveryResource.class));
         register(injector.getInstance(WebApplicationExceptionMapper.class));
         register(injector.getInstance(ConstraintViolationExceptionMapper.class));
         register(injector.getInstance(GsonMessageBodyReader.class));

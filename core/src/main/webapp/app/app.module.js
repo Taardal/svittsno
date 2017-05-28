@@ -1,3 +1,12 @@
-'use strict';
-
-angular.module('svittsApp', ['ngRoute', 'ui.bootstrap', 'navbar', 'home', 'search', 'moviesByGenre', 'movieList', 'tmdbMovieList']);
+angular
+    .module('svittsApp', [
+        'ngRoute',
+        'ngResource',
+        'ui.bootstrap',
+        'svittsApp.navbar',
+        'svittsApp.home',
+        'svittsApp.moviesByGenre',
+        'svittsApp.movieList',
+        'svittsApp.registration',
+        'svittsApp.discovery',
+        'svittsApp.search']);

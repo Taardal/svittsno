@@ -1,0 +1,45 @@
+<div class="section section-theme-white" style="padding-bottom: 5em">
+    <div class="section-title">
+        Discover movies
+    </div>
+    <div class="container col-6">
+        <form role="form">
+            <div class="form-group">
+                <div class="input-group">
+                    <input id="path" type="text" ng-model="$ctrl.path" placeholder="Path">
+                    <span class="input-group-btn">
+                        <button class="btn button-small button-red" type="button" ng-model="$ctrl.path"
+                                ng-click="$ctrl.discover()">Discover</button>
+                    </span>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-6">
+                    <input id="username" type="text" ng-model="$ctrl.username" placeholder="Username">
+                </div>
+                <div class="col-6">
+                    <input id="password" type="text" ng-model="$ctrl.password" placeholder="Password">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="container col-6" ng-if="$ctrl.discoveredMovies" style="padding-top: 3em">
+        <div class="row justify-content-md-center">
+            <form role="form" class="col-md-auto">
+                <div class="form-group">
+                    <ul class="actions">
+                        <li><input type="submit" class="button-black" value="Register" ng-click="$ctrl.registerDiscoveredMovies()"/>
+                        </li>
+                        <li><input type="reset" class="button-no-color" value="Reset" ng-click="$ctrl.reset()"/></li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="section section-theme-red" ng-if="$ctrl.discoveredMovies">
+    <div class="section-title">
+        Found {{$ctrl.discoveredMovies.length}} movies
+    </div>
+    <movie-list data="$ctrl.discoveredMovies"></movie-list>
+</div>

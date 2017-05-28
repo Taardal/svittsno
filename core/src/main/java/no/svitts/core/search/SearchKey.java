@@ -2,6 +2,6 @@ package no.svitts.core.search;
 
 public enum SearchKey {
 
-    TITLE, GENRE
+    TITLE, VIDEO_FILE_PATH, GENRE
 
 }

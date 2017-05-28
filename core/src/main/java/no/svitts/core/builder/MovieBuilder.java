@@ -7,8 +7,10 @@ import no.svitts.core.genre.Genre;
 import no.svitts.core.movie.Movie;
 import no.svitts.core.util.Id;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class MovieBuilder implements Builder<Movie> {
 
@@ -29,17 +31,17 @@ public class MovieBuilder implements Builder<Movie> {
 
     public MovieBuilder() {
         id = Id.get();
-        title = "name";
-        imdbId = "imdbId";
-        tagline = "tagline";
-        overview = "overview";
+        title = "";
+        imdbId = "";
+        tagline = "";
+        overview = "";
         runtime = 0;
-        releaseDate = new ReleaseDate(2016, 1, 1);
-        genres = getDefaultGenres();
-        videoFile = new VideoFile("path/to/video/file", "1080p", "DTS-HD 5.1");
-        subtitleFiles = getDefaultSubtitleFiles();
-        posterPath = "path/to/poster/file";
-        backdropPath = "path/to/backdrop/file";
+        releaseDate = null;
+        genres = new HashSet<>();
+        videoFile = new VideoFile("", "", "");
+        subtitleFiles = new HashSet<>();
+        posterPath = "";
+        backdropPath = "";
     }
 
     @Override
@@ -111,6 +113,11 @@ public class MovieBuilder implements Builder<Movie> {
         return this;
     }
 
+    public MovieBuilder genres(Genre... genres) {
+        this.genres = Arrays.stream(genres).collect(Collectors.toSet());
+        return this;
+    }
+
     public MovieBuilder videoFile(VideoFile videoFile) {
         this.videoFile = videoFile;
         return this;
@@ -131,6 +138,40 @@ public class MovieBuilder implements Builder<Movie> {
         return this;
     }
 
+    public MovieBuilder from(Movie movie) {
+        this.id = movie.getId();
+        this.title = movie.getTitle();
+        this.imdbId = movie.getImdbId();
+        this.tagline = movie.getTagline();
+        this.overview = movie.getOverview();
+        this.language = movie.getLanguage();
+        this.edition = movie.getEdition();
+        this.runtime = movie.getRuntime();
+        this.releaseDate = movie.getReleaseDate();
+        this.genres = movie.getGenres();
+        this.videoFile = movie.getVideoFile();
+        this.subtitleFiles = movie.getSubtitleFiles();
+        this.posterPath = movie.getPosterPath();
+        this.backdropPath = movie.getBackdropPath();
+        return this;
+    }
+
+    public MovieBuilder testMovie() {
+        id = Id.get();
+        title = "name";
+        imdbId = "imdbId";
+        tagline = "tagline";
+        overview = "overview";
+        runtime = 0;
+        releaseDate = new ReleaseDate(2016, 1, 1);
+        genres = getDefaultGenres();
+        videoFile = new VideoFile("path/to/video/file", "1080p", "DTS-HD 5.1");
+        subtitleFiles = getDefaultSubtitleFiles();
+        posterPath = "path/to/poster/file";
+        backdropPath = "path/to/backdrop/file";
+        return this;
+    }
+
     private Set<Genre> getDefaultGenres() {
         Set<Genre> genres = new HashSet<>();
         genres.add(Genre.FILM_NOIR);
@@ -144,4 +185,5 @@ public class MovieBuilder implements Builder<Movie> {
         subtitleFiles.add(new SubtitleFile("path/to/subtitle/file", "Norwegian"));
         return subtitleFiles;
     }
+
 }

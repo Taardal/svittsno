@@ -102,6 +102,8 @@ public class MovieRepository extends CoreRepository<Movie> {
         } else if (search.getSearchKey() == SearchKey.GENRE) {
             Genre genre = Genre.valueOf(search.getQuery());
             return movieCriteriaQuery.where(criteriaBuilder.isMember(genre, movieRoot.get("genres")));
+        } else if (search.getSearchKey() == SearchKey.VIDEO_FILE_PATH) {
+            return movieCriteriaQuery.where(criteriaBuilder.equal(criteriaBuilder.upper(movieRoot.get("videoFile").get("path")), search.getQuery().toUpperCase()));
         } else {
             return movieCriteriaQuery;
         }

@@ -1,0 +1,77 @@
+<div class="section section-theme-white">
+    <div class="section-title">
+        Register movie
+    </div>
+    <div class="container">
+        <form name="movieRegistrationForm" role="form">
+            <div class="row form-group">
+                <div class="form-group col-10">
+                    <div class="form-group">
+                        <input id="title" type="text" ng-model="$ctrl.movie.title" placeholder="Title">
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-6">
+                            <input id="edition" type="text" ng-model="$ctrl.movie.edition" placeholder="Edition">
+                        </div>
+                        <div class="col-6 input-group">
+                            <input id="imdbId" type="text" ng-model="$ctrl.movie.imdbId" placeholder="IMDb id">
+                            <span class="input-group-btn">
+                                <button class="btn button-small button-red" type="button"
+                                        ng-click="$ctrl.autoFill()">Auto</button>
+                            </span>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <input id="videoFilePath" type="text" ng-model="$ctrl.movie.videoFile.path"
+                               placeholder="Video file path">
+                    </div>
+                    <div class="form-group">
+                        <input id="posterPath" type="text" ng-model="$ctrl.movie.posterPath"
+                               placeholder="Poster file path">
+                    </div>
+                    <div class="form-group">
+                        <input id="backdropPath" type="text" ng-model="$ctrl.movie.backdropPath"
+                               placeholder="Backdrop file path">
+                    </div>
+                    <hr>
+                    <div class="row form-group">
+                        <div class="col-4">
+                            <input id="language" type="text" ng-model="$ctrl.movie.language" placeholder="Language">
+                        </div>
+                        <div class="col-4">
+                            <input id="releaseDate" type="text" ng-value="$ctrl.movie.releaseDate | date"
+                                   placeholder="Release date)"/>
+                        </div>
+                        <div class="col-4">
+                            <input id="runtime" type="text" ng-value="$ctrl.movie.runtime | duration"
+                                   placeholder="Runtime">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input id="tagline" type="text" ng-model="$ctrl.movie.tagline" placeholder="Tagline">
+                    </div>
+                    <div class="form-group">
+                        <textarea id="overview" type="text" ng-model="$ctrl.movie.overview"
+                                  placeholder="Overview"></textarea>
+                    </div>
+                </div>
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label" ng-repeat="genre in $ctrl.genres">
+                        <input type="checkbox"
+                               value="{{genre}}"
+                               ng-checked="$ctrl.movie.genres.indexOf(genre) > -1"
+                               ng-click="$ctrl.toggleSelectedGenre(genre)">
+                        {{genre}}
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <ul class="actions">
+                    <li><input type="submit" class="button-red" value="Register" ng-click="$ctrl.registerMovie()"/></li>
+                    <li><input type="reset" class="button-no-color" value="Reset" ng-click="$ctrl.reset()"/></li>
+                </ul>
+            </div>
+        </form>
+    </div>
+</div>
