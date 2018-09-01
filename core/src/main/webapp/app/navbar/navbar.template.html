@@ -1,0 +1,135 @@
+<nav class="navbar navbar-light bg-faded">
+    <div class="container">
+        <a class="navbar-brand" href="#!/">SVITTS</a>
+        <ul class="nav navbar-nav">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    Genres
+                </a>
+                <ul class="dropdown-menu">
+                    <li ng-repeat="genre in $ctrl.genres">
+                        <a class="dropdown-item" href="#!/movies/{{genre}}">{{genre}}</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-toggle="modal" data-target="#movieRegistrationModal">Register movie</a>
+            </li>
+        </ul>
+        <form class="form-inline pull-xs-right">
+            <input id="searchQueryInput" class="form-control" type="text" ng-model="$ctrl.searchQuery" placeholder="Search">
+            <a id="searchButton" class="btn btn-primary" href="#!/search?q={{$ctrl.searchQuery}}">Search</a>
+            <script type="text/javascript">
+                $("#searchQueryInput").keyup(function(event){
+                    var enterKeyCode = 13;
+                    if(event.keyCode == enterKeyCode){
+                        $("#searchButton").click();
+                    }
+                });
+            </script>
+        </form>
+    </div>
+</nav>
+
+<div id="movieRegistrationModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <ul class="list-inline">
+                    <li class="col-xs-12">
+                        <span class="btn-group pull-xs-right">
+                            <button class="btn btn-primary" ng-click="$ctrl.autoFill($ctrl.movie.imdbId)">Auto</button>
+                        </span>
+                        <h4 class="modal-title">Register</h4>
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-body">
+                <form name="movieRegistrationForm">
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input id="title" class="form-control" type="text" ng-model="$ctrl.movie.title" placeholder="Title">
+                    </div>
+                    <div class="form-group">
+                        <label for="imdbId">IMDB ID</label>
+                        <input id="imdbId" class="form-control" type="text" ng-model="$ctrl.movie.imdbId" placeholder="IMDB ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="tagline">Tagline</label>
+                        <input id="tagline" class="form-control" ng-model="$ctrl.movie.tagline" placeholder="Tagline">
+                    </div>
+                    <div class="form-group">
+                        <label for="overview">Overview</label>
+                        <textarea id="overview" class="form-control" ng-model="$ctrl.movie.overview" placeholder="Overview"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="runtime">Runtime</label>
+                        <input id="runtime" class="form-control" type="text" ng-model="$ctrl.movie.runtime" placeholder="Runtime">
+                    </div>
+                    <div class="form-group">
+                        <label for="language">Language</label>
+                        <input id="language" class="form-control" type="text" ng-model="$ctrl.movie.language" placeholder="Language">
+                    </div>
+                    <div class="form-group">
+                        <label for="edition">Edition</label>
+                        <input id="edition" class="form-control" type="text" ng-model="$ctrl.movie.edition" placeholder="Edition">
+                    </div>
+                    <div class="form-group">
+                        <label for="releaseDate">Release date</label>
+                        <div class="input-group">
+                            <input id="releaseDate"
+                                   type="text"
+                                   class="form-control"
+                                   ng-model="$ctrl.movie.releaseDate"
+                                   ng-required="true"
+                                   datepicker-options="$ctrl.dateOptions"
+                                   uib-datepicker-popup="{{$ctrl.dateFormats[0]}}"
+                                   is-open="$ctrl.datePicker.open"
+                                   alt-input-formats="$ctrl.alternateInputFormats"
+                                   close-text="Close"/>
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-outline-primary" ng-click="$ctrl.openDatePicker()">Choose</button>
+                            </span>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <ul class="checkbox-grid">
+                            <li ng-repeat="genre in $ctrl.genres">
+                                <label>
+                                    <input type="checkbox"
+                                           value="{{genre}}"
+                                           ng-checked="$ctrl.movie.genres.indexOf(genre) > -1"
+                                           ng-click="$ctrl.toggleSelectedGenre(genre)">
+                                    {{genre}}
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label for="videoFilePath">Video file path</label>
+                        <input id="videoFilePath" class="form-control" type="text" ng-model="$ctrl.movie.videoFile.path" placeholder="Video file">
+                    </div>
+                    <div class="form-group">
+                        <label for="subtitleFilePaths">Subtitle file paths</label>
+                        <textarea id="subtitleFilePaths" class="form-control" type="text" ng-model="$ctrl.subtitleFilesString" placeholder="Subtitle files"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="posterPath">Poster path</label>
+                        <input id="posterPath" class="form-control" type="text" ng-model="$ctrl.movie.posterPath" placeholder="Poster path">
+                    </div>
+                    <div class="form-group">
+                        <label for="backdropPath">Backdrop path</label>
+                        <input id="backdropPath" class="form-control" type="text" ng-model="$ctrl.movie.backdropPath" placeholder="Backdrop path">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="$ctrl.registerMovie()">Register</button>
+            </div>
+        </div>
+    </div>
+</div>
+

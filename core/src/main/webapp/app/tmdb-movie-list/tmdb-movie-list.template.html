@@ -1,0 +1,18 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-3" ng-repeat="movie in $ctrl.movies">
+            <div class="card card-inverse">
+                <img class="card-img" ng-src="{{movie.posterPath}}" alt="{{movie.title}}">
+                <div class="card-img-overlay">
+                    <div class="card-overlay">
+                        <div class="card-overlay-content">
+                            <h4 class="card-title">{{movie.title}}</h4>
+                            <p class="card-text">{{movie.tagline}}</p>
+                            <a class="btn btn-info" href="http://imdb.com/find?s=all&q={{movie.title}}" target="_blank">IMDB</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
